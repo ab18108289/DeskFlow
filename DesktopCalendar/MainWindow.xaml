@@ -1,0 +1,2257 @@
+<Window x:Class="DesktopCalendar.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="桌面日历 - 任务管理"
+        Width="1000" Height="700"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterScreen"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+
+    <Window.Resources>
+        <!-- 导航按钮样式 -->
+        <Style x:Key="NavButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#90FFFFFF"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="14,11"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#15FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- 选中的导航按钮样式 -->
+        <Style x:Key="NavButtonActive" TargetType="Button" BasedOn="{StaticResource NavButton}">
+            <Setter Property="Background" Value="#20FFFFFF"/>
+            <Setter Property="Foreground" Value="White"/>
+        </Style>
+        
+        <!-- 时间选项按钮样式 -->
+        <Style x:Key="TimeOptionButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="16,10"/>
+            <Setter Property="Margin" Value="2"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Bd" Property="Background" Value="#30FFFFFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border x:Name="MainBorder" CornerRadius="16" BorderThickness="1">
+        <Border.Background>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop x:Name="GradientStart" Color="#FF0D0D12" Offset="0"/>
+                <GradientStop x:Name="GradientEnd" Color="#FF1A1A24" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.Background>
+        <Border.BorderBrush>
+            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#30FFFFFF" Offset="0"/>
+                <GradientStop Color="#10FFFFFF" Offset="1"/>
+            </LinearGradientBrush>
+        </Border.BorderBrush>
+        
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="240"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- ========== 左侧边栏 ========== -->
+            <Border Grid.Column="0" Background="#08FFFFFF" CornerRadius="16,0,0,16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- 顶部标题 -->
+                    <Grid Grid.Row="0" Margin="18,18,18,24">
+                        <StackPanel Orientation="Horizontal">
+                            <Border Width="36" Height="36" CornerRadius="10">
+                                <Border.Background>
+                                    <LinearGradientBrush EndPoint="1,1">
+                                        <GradientStop Color="#6366F1" Offset="0"/>
+                                        <GradientStop Color="#8B5CF6" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock Text="📅" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="桌面日历" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
+                                <TextBlock Text="Todo Manager" Foreground="#50FFFFFF" FontSize="10"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- 导航菜单 -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden" Margin="10,0">
+                        <StackPanel>
+                            <!-- 快捷入口 -->
+                            <Grid Margin="0,0,0,16">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- 今日卡片 -->
+                                <Border Grid.Column="0" CornerRadius="12" Margin="0,0,4,0" Cursor="Hand"
+                                        MouseLeftButtonDown="QuickNav_Today">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#3B82F6" Offset="0"/>
+                                            <GradientStop Color="#2563EB" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <StackPanel Margin="14,16">
+                                        <TextBlock Text="📌" FontSize="20"/>
+                                        <TextBlock x:Name="TodayCardCount" Text="0" Foreground="White" FontSize="28" FontWeight="Bold" Margin="0,6,0,2"/>
+                                        <TextBlock Text="今日待办" Foreground="#C0FFFFFF" FontSize="11"/>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <!-- 紧急卡片 -->
+                                <Border Grid.Column="1" CornerRadius="12" Margin="4,0,0,0" Cursor="Hand"
+                                        MouseLeftButtonDown="QuickNav_Urgent">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#EF4444" Offset="0"/>
+                                            <GradientStop Color="#DC2626" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <StackPanel Margin="14,16">
+                                        <TextBlock Text="⚡" FontSize="20"/>
+                                        <TextBlock x:Name="UrgentCardCount" Text="0" Foreground="White" FontSize="28" FontWeight="Bold" Margin="0,6,0,2"/>
+                                        <TextBlock Text="紧急任务" Foreground="#C0FFFFFF" FontSize="11"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                            
+                            <!-- 视图列表 -->
+                            <TextBlock Text="视图" Foreground="#45FFFFFF" FontSize="10" FontWeight="Medium" Margin="8,0,0,8"/>
+                            
+                            <Button x:Name="NavToday" Tag="Today" Click="NavFilter_Click" Style="{StaticResource NavButtonActive}">
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="◉" Foreground="#3B82F6" FontSize="8" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <TextBlock Text="今天" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="NavTodayCount" Text="" Foreground="#50FFFFFF" FontSize="11" 
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Button>
+                            
+                            <Button x:Name="NavWeek" Tag="Week" Click="NavFilter_Click" Style="{StaticResource NavButton}">
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="◉" Foreground="#8B5CF6" FontSize="8" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <TextBlock Text="最近7天" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="NavWeekCount" Text="" Foreground="#50FFFFFF" FontSize="11" 
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Button>
+                            
+                            <Button x:Name="NavOverdue" Tag="Overdue" Click="NavFilter_Click" Style="{StaticResource NavButton}">
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="◉" Foreground="#F97316" FontSize="8" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <TextBlock Text="已逾期/顺延" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="NavOverdueCount" Text="" Foreground="#F97316" FontSize="11" 
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Button>
+                            
+                            <Button x:Name="NavCompleted" Tag="Completed" Click="NavFilter_Click" Style="{StaticResource NavButton}">
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="✓" Foreground="#22C55E" FontSize="10" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <TextBlock Text="已完成" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="NavCompletedCount" Text="" Foreground="#50FFFFFF" FontSize="11" 
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Button>
+                            
+                            <Button x:Name="NavAll" Tag="All" Click="NavFilter_Click" Style="{StaticResource NavButton}">
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="◉" Foreground="#60FFFFFF" FontSize="8" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                        <TextBlock Text="全部待办" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <TextBlock x:Name="NavAllCount" Text="" Foreground="#50FFFFFF" FontSize="11" 
+                                               HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                </Grid>
+                            </Button>
+
+                            <Separator Background="#10FFFFFF" Margin="4,16"/>
+                            
+                            <!-- 分类管理（第一个） -->
+                            <Grid Margin="8,0,0,8">
+                                <TextBlock Text="分类" Foreground="#45FFFFFF" FontSize="10" FontWeight="Medium"/>
+                                <Button Content="＋" HorizontalAlignment="Right" FontSize="12" Foreground="#8B5CF6"
+                                        Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="4,0"
+                                        Click="AddProject_Click" ToolTip="新建分类"/>
+                            </Grid>
+                            
+                            <!-- 分类列表 -->
+                            <ItemsControl x:Name="ProjectNavList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Tag="{Binding Id}" Click="ProjectNav_Click" Style="{StaticResource NavButton}" Margin="0,0,0,2">
+                                            <Grid>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Icon}" FontSize="14" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                                <TextBlock Text="{Binding TaskCount}" Foreground="#8B5CF6" FontSize="11" 
+                                                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            
+                            <Separator Background="#10FFFFFF" Margin="4,16"/>
+                            
+                            <!-- 习惯打卡（第二个） -->
+                            <TextBlock Text="习惯" Foreground="#45FFFFFF" FontSize="10" FontWeight="Medium" Margin="8,0,0,8"/>
+                            
+                            <Button x:Name="NavHabit" Tag="Habit" Click="NavHabit_Click" Style="{StaticResource NavButton}">
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Width="18" Height="18" CornerRadius="5" Margin="0,0,10,0">
+                                            <Border.Background>
+                                                <LinearGradientBrush EndPoint="1,1">
+                                                    <GradientStop Color="#22C55E" Offset="0"/>
+                                                    <GradientStop Color="#16A34A" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                            <TextBlock Text="🎯" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="习惯打卡" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock x:Name="NavHabitProgress" Text="" Foreground="#22C55E" FontSize="11"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+                            
+                            <Separator Background="#10FFFFFF" Margin="4,16"/>
+                            
+                            <!-- 复盘入口（第三个） -->
+                            <TextBlock Text="复盘" Foreground="#45FFFFFF" FontSize="10" FontWeight="Medium" Margin="8,0,0,8"/>
+                            
+                            <Button x:Name="NavReview" Tag="Review" Click="NavReview_Click" Style="{StaticResource NavButton}">
+                                <Grid>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Border Width="18" Height="18" CornerRadius="5" Margin="0,0,10,0">
+                                            <Border.Background>
+                                                <LinearGradientBrush EndPoint="1,1">
+                                                    <GradientStop Color="#6366F1" Offset="0"/>
+                                                    <GradientStop Color="#8B5CF6" Offset="1"/>
+                                                </LinearGradientBrush>
+                                            </Border.Background>
+                                            <TextBlock Text="📊" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="数据复盘" VerticalAlignment="Center"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Button>
+
+                            <Separator Background="#10FFFFFF" Margin="4,16"/>
+                            
+                            <!-- 主题切换 -->
+                            <TextBlock Text="主题" Foreground="#45FFFFFF" FontSize="10" FontWeight="Medium" Margin="8,0,0,8"/>
+                            <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
+                                <Border Width="28" Height="28" CornerRadius="14" Margin="0,0,8,0" Cursor="Hand"
+                                        BorderBrush="#40FFFFFF" BorderThickness="2" MouseLeftButtonDown="Theme_Dark">
+                                    <Border.Background>
+                                        <LinearGradientBrush EndPoint="1,1">
+                                            <GradientStop Color="#0D0D12" Offset="0"/>
+                                            <GradientStop Color="#1A1A24" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                                <Border Width="28" Height="28" CornerRadius="14" Margin="0,0,8,0" Cursor="Hand"
+                                        BorderBrush="Transparent" BorderThickness="2" MouseLeftButtonDown="Theme_Blue">
+                                    <Border.Background>
+                                        <LinearGradientBrush EndPoint="1,1">
+                                            <GradientStop Color="#1E3A5F" Offset="0"/>
+                                            <GradientStop Color="#0F172A" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                                <Border Width="28" Height="28" CornerRadius="14" Margin="0,0,8,0" Cursor="Hand"
+                                        BorderBrush="Transparent" BorderThickness="2" MouseLeftButtonDown="Theme_Purple">
+                                    <Border.Background>
+                                        <LinearGradientBrush EndPoint="1,1">
+                                            <GradientStop Color="#2E1E3F" Offset="0"/>
+                                            <GradientStop Color="#1A0F2E" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                                <Border Width="28" Height="28" CornerRadius="14" Cursor="Hand"
+                                        BorderBrush="Transparent" BorderThickness="2" MouseLeftButtonDown="Theme_Green">
+                                    <Border.Background>
+                                        <LinearGradientBrush EndPoint="1,1">
+                                            <GradientStop Color="#1E2E1E" Offset="0"/>
+                                            <GradientStop Color="#0F1A0F" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                </Border>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- 底部统计 -->
+                    <Border Grid.Row="2" Margin="10,0,10,10" CornerRadius="12" Padding="16,14">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                <GradientStop Color="#15FFFFFF" Offset="0"/>
+                                <GradientStop Color="#08FFFFFF" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <StackPanel>
+                            <!-- 完成率 -->
+                            <Grid Margin="0,0,0,10">
+                                <TextBlock Text="今日进度" Foreground="#70FFFFFF" FontSize="11"/>
+                                <TextBlock x:Name="CompletionRate" Text="0%" Foreground="#22C55E" FontSize="11" FontWeight="Bold" HorizontalAlignment="Right"/>
+                            </Grid>
+                            <Border Background="#15FFFFFF" CornerRadius="4" Height="8">
+                                <Border x:Name="ProgressBar" Background="#22C55E" CornerRadius="4" HorizontalAlignment="Left" Width="0"/>
+                            </Border>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- ========== 右侧主内容区 ========== -->
+            <Grid Grid.Column="1" Margin="24,20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 标题 -->
+                <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                    <TextBlock x:Name="ViewTitle" Text="今天" Foreground="White" FontSize="28" FontWeight="Bold"/>
+                    <TextBlock x:Name="ViewSubtitle" Text="" Foreground="#50FFFFFF" FontSize="13" Margin="0,6,0,0"/>
+                </StackPanel>
+
+                <!-- 今日回顾卡片 -->
+                <Border x:Name="TodayReviewCard" Grid.Row="1" CornerRadius="16" Padding="20,16" Margin="0,0,0,16" Cursor="Hand"
+                        MouseLeftButtonDown="TodayReviewCard_Click">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#6366F1" Offset="0"/>
+                            <GradientStop Color="#8B5CF6" Offset="0.5"/>
+                            <GradientStop Color="#A855F7" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- 左侧信息 -->
+                        <StackPanel Grid.Column="0">
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                <TextBlock Text="🌟" FontSize="18" Margin="0,0,8,0"/>
+                                <TextBlock Text="今日回顾" FontSize="16" FontWeight="Bold" Foreground="White"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock x:Name="TodayCompletedText" Text="完成 0 项" Foreground="#E0FFFFFF" FontSize="13"/>
+                                <TextBlock Text=" · " Foreground="#80FFFFFF" FontSize="13"/>
+                                <TextBlock x:Name="TodayStreakText" Text="连续 0 天高效" Foreground="#E0FFFFFF" FontSize="13"/>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <!-- 右侧进度环 -->
+                        <Grid Grid.Column="1" Width="56" Height="56">
+                            <Ellipse Stroke="#40FFFFFF" StrokeThickness="4" Fill="Transparent"/>
+                            <Ellipse x:Name="TodayProgressRing" Stroke="White" StrokeThickness="4" Fill="Transparent"
+                                     StrokeDashArray="100,100" StrokeDashOffset="25" RenderTransformOrigin="0.5,0.5">
+                                <Ellipse.RenderTransform>
+                                    <RotateTransform Angle="-90"/>
+                                </Ellipse.RenderTransform>
+                            </Ellipse>
+                            <TextBlock x:Name="TodayProgressText" Text="0%" FontSize="12" FontWeight="Bold" 
+                                       Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <!-- 快捷添加 -->
+                <Border Grid.Row="2" CornerRadius="14" Padding="18,16" Margin="0,0,0,20"
+                        BorderBrush="#15FFFFFF" BorderThickness="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                            <GradientStop Color="#12FFFFFF" Offset="0"/>
+                            <GradientStop Color="#08FFFFFF" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- 输入行 -->
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <TextBox x:Name="QuickAddBox" Background="Transparent" BorderThickness="0"
+                                     Foreground="White" FontSize="15" CaretBrush="White" VerticalAlignment="Center"
+                                     KeyDown="QuickAdd_KeyDown"/>
+                            <TextBlock Text="＋ 添加待办（支持：明天、下周一、周五）" 
+                                       Foreground="#35FFFFFF" FontSize="15" VerticalAlignment="Center"
+                                       IsHitTestVisible="False"
+                                       Visibility="{Binding Text.Length, ElementName=QuickAddBox, Converter={StaticResource LengthToVisibilityConverter}}"/>
+                            
+                            <Button Grid.Column="1" Content="添加" Foreground="White"
+                                    Padding="24,12" BorderThickness="0" Cursor="Hand" Click="QuickAdd_Click" FontWeight="Medium">
+                                <Button.Background>
+                                    <LinearGradientBrush EndPoint="1,0">
+                                        <GradientStop Color="#6366F1" Offset="0"/>
+                                        <GradientStop Color="#8B5CF6" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Opacity" Value="0.9"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                        
+                        <!-- 选项行 -->
+                        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,14,0,0">
+                            <!-- 优先级 -->
+                            <Border x:Name="PriorityHigh" Background="Transparent" BorderBrush="#EF4444" BorderThickness="1.5" 
+                                    CornerRadius="6" Padding="12,6" Margin="0,0,8,0" Cursor="Hand" MouseLeftButtonDown="Priority_Select" Tag="High">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="#EF4444" Margin="0,0,6,0"/>
+                                    <TextBlock Text="紧急" Foreground="#EF4444" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
+                            <Border x:Name="PriorityMedium" Background="Transparent" BorderBrush="#F59E0B" BorderThickness="1.5" 
+                                    CornerRadius="6" Padding="12,6" Margin="0,0,8,0" Cursor="Hand" MouseLeftButtonDown="Priority_Select" Tag="Medium">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="#F59E0B" Margin="0,0,6,0"/>
+                                    <TextBlock Text="重要" Foreground="#F59E0B" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
+                            <Border x:Name="PriorityLow" CornerRadius="6" Padding="12,6" Cursor="Hand" MouseLeftButtonDown="Priority_Select" Tag="Low">
+                                <Border.Background>
+                                    <LinearGradientBrush EndPoint="1,0">
+                                        <GradientStop Color="#22C55E" Offset="0"/>
+                                        <GradientStop Color="#16A34A" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="White" Margin="0,0,6,0"/>
+                                    <TextBlock Text="普通" Foreground="White" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
+                            
+                            <Border Background="#20FFFFFF" Width="1" Height="20" Margin="16,0"/>
+                            
+                            <!-- 分组 -->
+                            <ComboBox x:Name="GroupCombo" FontSize="12" Width="100" SelectedIndex="0">
+                                <ComboBox.Style>
+                                    <Style TargetType="ComboBox">
+                                        <Setter Property="Background" Value="#25FFFFFF"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ComboBox">
+                                                    <Grid>
+                                                        <Border x:Name="Bd" Background="#20FFFFFF" CornerRadius="6" Padding="10,6">
+                                                            <Grid>
+                                                                <ContentPresenter Content="{TemplateBinding SelectionBoxItem}" 
+                                                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                                                  VerticalAlignment="Center"/>
+                                                                <TextBlock Text="▼" FontSize="8" Foreground="#70FFFFFF" 
+                                                                           HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                            </Grid>
+                                                        </Border>
+                                                        <Popup x:Name="PART_Popup" IsOpen="{TemplateBinding IsDropDownOpen}" 
+                                                               Placement="Bottom" AllowsTransparency="True">
+                                                            <Border Background="#252530" CornerRadius="6" Margin="0,4,0,0"
+                                                                    BorderBrush="#30FFFFFF" BorderThickness="1">
+                                                                <ItemsPresenter/>
+                                                            </Border>
+                                                        </Popup>
+                                                        <ToggleButton x:Name="ToggleButton" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                                                      Background="Transparent" BorderThickness="0" Opacity="0"/>
+                                                    </Grid>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ComboBox.Style>
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="Padding" Value="10,8"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ComboBoxItem">
+                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Bd" Property="Background" Value="#3B82F6"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                                <ComboBoxItem Content="未分组" Tag=""/>
+                            </ComboBox>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <!-- 待办列表 -->
+                <ListBox Grid.Row="3" x:Name="TodoList" Background="Transparent" BorderThickness="0"
+                         ItemsSource="{Binding FilteredTodos}" ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         MouseDoubleClick="TodoList_DoubleClick">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border CornerRadius="12" Padding="16,14" BorderBrush="#10FFFFFF" BorderThickness="1">
+                                <Border.Margin>
+                                    <MultiBinding Converter="{StaticResource SubTaskIndentConverter}">
+                                        <Binding Path="IsSubTask"/>
+                                    </MultiBinding>
+                                </Border.Margin>
+                                <!-- 子任务背景稍深 -->
+                                <Border.Style>
+                                    <Style TargetType="Border">
+                                        <Setter Property="Background" Value="#08FFFFFF"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsSubTask}" Value="True">
+                                                <Setter Property="Background" Value="#05FFFFFF"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Border.Style>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- 展开/收起按钮（仅有子任务的父任务显示） -->
+                                    <Button Grid.Column="0" Width="20" Height="20" Margin="0,0,8,0" Cursor="Hand"
+                                            Style="{StaticResource IconButton}" FontSize="9"
+                                            Content="{Binding IsExpanded, Converter={StaticResource ExpandIconConverter}}"
+                                            Click="ToggleExpand_Click" Tag="{Binding Id}"
+                                            Visibility="{Binding HasSubTasks, Converter={StaticResource BoolToVisibilityConverter}}"
+                                            Foreground="#60FFFFFF" ToolTip="展开/收起子任务"/>
+
+                                    <!-- 完成按钮 -->
+                                    <Border Grid.Column="1" Width="24" Height="24" CornerRadius="12" 
+                                            BorderBrush="{Binding Priority, Converter={StaticResource PriorityToColorConverter}}" 
+                                            BorderThickness="2" Margin="0,0,14,0" Cursor="Hand"
+                                            Background="{Binding IsCompleted, Converter={StaticResource CompletedToBackgroundConverter}}"
+                                            MouseLeftButtonDown="ToggleComplete_Click" Tag="{Binding Id}">
+                                        <TextBlock Text="✓" Foreground="White" FontSize="12" FontWeight="Bold"
+                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                   Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                    </Border>
+
+                                    <!-- 优先级条 -->
+                                    <Border Grid.Column="2" Width="4" CornerRadius="2" Margin="0,0,14,0"
+                                            Background="{Binding Priority, Converter={StaticResource PriorityToColorConverter}}"/>
+
+                                    <!-- 内容 -->
+                                    <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Title}" FontSize="14"
+                                                       Foreground="{Binding IsCompleted, Converter={StaticResource CompletedToForegroundConverter}}"
+                                                       TextDecorations="{Binding IsCompleted, Converter={StaticResource CompletedToStrikethroughConverter}}"/>
+                                            <!-- 子任务进度标签 -->
+                                            <Border CornerRadius="10" Padding="8,2" Margin="10,0,0,0"
+                                                    Visibility="{Binding HasSubTasks, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#3B82F6" Opacity="0.2"/>
+                                                </Border.Background>
+                                                <TextBlock FontSize="11" FontWeight="SemiBold" Foreground="#3B82F6">
+                                                    <Run Text="📋 "/><Run Text="{Binding SubTaskProgress, Mode=OneWay}"/>
+                                                </TextBlock>
+                                            </Border>
+                                        </StackPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                            <!-- 日期 -->
+                                            <Border Background="#15FFFFFF" CornerRadius="4" Padding="8,3" Margin="0,0,8,0"
+                                                    Visibility="{Binding DueDate, Converter={StaticResource NullToVisibilityConverter}}">
+                                                <TextBlock Text="{Binding DueDate, StringFormat='M月d日'}" 
+                                                           Foreground="#70FFFFFF" FontSize="11"/>
+                                            </Border>
+                                            <!-- 分组（子任务不显示分组） -->
+                                            <Border Background="#10FFFFFF" CornerRadius="4" Padding="8,3">
+                                                <Border.Style>
+                                                    <Style TargetType="Border">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsSubTask}" Value="True">
+                                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Border.Style>
+                                                <TextBlock Text="{Binding GroupId, Converter={StaticResource GroupToNameConverter}}" 
+                                                           Foreground="#50FFFFFF" FontSize="11"/>
+                                            </Border>
+                                            <!-- 逾期标记 -->
+                                            <Border CornerRadius="4" Padding="8,3" Margin="8,0,0,0"
+                                                    Visibility="{Binding IsOverdue, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#EF4444" Opacity="0.2"/>
+                                                </Border.Background>
+                                                <TextBlock Text="已逾期" Foreground="#EF4444" FontSize="11"/>
+                                            </Border>
+                                            <!-- 已顺延标记 -->
+                                            <Border CornerRadius="4" Padding="8,3" Margin="8,0,0,0"
+                                                    Visibility="{Binding IsPostponed, Converter={StaticResource BoolToVisibilityConverter}}">
+                                                <Border.Background>
+                                                    <SolidColorBrush Color="#F59E0B" Opacity="0.2"/>
+                                                </Border.Background>
+                                                <TextBlock Text="已顺延" Foreground="#F59E0B" FontSize="11"/>
+                                            </Border>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- 操作 -->
+                                    <StackPanel Grid.Column="4" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <!-- 添加子任务按钮（仅非子任务显示） -->
+                                        <Button Content="＋" FontSize="14" ToolTip="添加子任务"
+                                                Click="AddSubTask_Click" Tag="{Binding Id}" Foreground="#60FFFFFF">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource IconButton}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsSubTask}" Value="True">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                        <!-- 顺延按钮（仅逾期未完成任务显示） -->
+                                        <Button Content="→今天" Style="{StaticResource IconButton}" FontSize="10" ToolTip="顺延到今天"
+                                                Click="PostponeTask_Click" Tag="{Binding Id}" Foreground="#F59E0B"
+                                                Visibility="{Binding IsOverdue, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                        <Button Content="✏️" Style="{StaticResource IconButton}" FontSize="13" ToolTip="编辑"
+                                                Click="EditTodo_Click" Tag="{Binding Id}"/>
+                                        <Button Content="🗑️" Style="{StaticResource IconButton}" FontSize="13" ToolTip="删除"
+                                                Click="DeleteTodo_Click" Tag="{Binding Id}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="Margin" Value="0"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <ContentPresenter/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+                
+                <!-- 空状态 -->
+                <StackPanel x:Name="EmptyState" Grid.Row="3" VerticalAlignment="Center" HorizontalAlignment="Center"
+                            Visibility="Collapsed">
+                    <Border Width="80" Height="80" CornerRadius="40" Background="#10FFFFFF" Margin="0,0,0,20">
+                        <TextBlock Text="📝" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="暂无待办事项" Foreground="#60FFFFFF" FontSize="16" HorizontalAlignment="Center"/>
+                    <TextBlock Text="在上方输入框添加你的第一个待办" Foreground="#35FFFFFF" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                </StackPanel>
+            </Grid>
+            
+            <!-- ========== 复盘面板 ========== -->
+            <Border x:Name="ReviewPanel" Grid.Column="1" Visibility="Collapsed" Background="#F8101018">
+                <Grid Margin="24,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- 标题 -->
+                    <Grid Grid.Row="0" Margin="0,0,0,24">
+                        <StackPanel>
+                            <TextBlock x:Name="ReviewTitle" Text="📊 数据统计" Foreground="White" FontSize="28" FontWeight="Bold"/>
+                            <TextBlock x:Name="ReviewSubtitle" Text="查看您的任务完成趋势和效率分析" Foreground="#50FFFFFF" FontSize="13" Margin="0,6,0,0"/>
+                        </StackPanel>
+                        <Button Content="×" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,70,0"
+                                Style="{StaticResource IconButton}" FontSize="20" Click="CloseReview_Click"/>
+                    </Grid>
+                    
+                    <!-- 时间段切换 -->
+                    <Border Grid.Row="1" Background="#12FFFFFF" CornerRadius="12" Padding="6" Margin="0,0,0,24">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button x:Name="ReviewDay" Grid.Column="0" Content="日复盘" Click="ReviewPeriod_Click" Tag="Day"
+                                    Background="#6366F1" Foreground="White" BorderThickness="0" Padding="16,12" Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button x:Name="ReviewWeek" Grid.Column="1" Content="周复盘" Click="ReviewPeriod_Click" Tag="Week"
+                                    Background="Transparent" Foreground="#90FFFFFF" BorderThickness="0" Padding="16,12" Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="#15FFFFFF"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button x:Name="ReviewMonth" Grid.Column="2" Content="月复盘" Click="ReviewPeriod_Click" Tag="Month"
+                                    Background="Transparent" Foreground="#90FFFFFF" BorderThickness="0" Padding="16,12" Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="#15FFFFFF"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button x:Name="ReviewYear" Grid.Column="3" Content="年复盘" Click="ReviewPeriod_Click" Tag="Year"
+                                    Background="Transparent" Foreground="#90FFFFFF" BorderThickness="0" Padding="16,12" Cursor="Hand">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="#15FFFFFF"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- 复盘内容区 -->
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="380"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- 左侧：统计数据 -->
+                            <StackPanel Grid.Column="0" Margin="0,0,20,0">
+                                <!-- 统计卡片 -->
+                                <Grid Margin="0,0,0,20">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <!-- 总任务 -->
+                                    <Border Grid.Column="0" CornerRadius="12" Margin="0,0,8,0" Padding="16">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#3B82F6" Offset="0"/>
+                                                <GradientStop Color="#1D4ED8" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <StackPanel>
+                                            <TextBlock Text="📋" FontSize="20"/>
+                                            <TextBlock x:Name="ReviewTotalCount" Text="0" Foreground="White" FontSize="26" FontWeight="Bold" Margin="0,6,0,0"/>
+                                            <TextBlock Text="总任务" Foreground="#C0FFFFFF" FontSize="11"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <!-- 已完成 -->
+                                    <Border Grid.Column="1" CornerRadius="12" Margin="4,0" Padding="16">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#22C55E" Offset="0"/>
+                                                <GradientStop Color="#16A34A" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <StackPanel>
+                                            <TextBlock Text="✅" FontSize="20"/>
+                                            <TextBlock x:Name="ReviewCompletedCount" Text="0" Foreground="White" FontSize="26" FontWeight="Bold" Margin="0,6,0,0"/>
+                                            <TextBlock Text="已完成" Foreground="#C0FFFFFF" FontSize="11"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <!-- 完成率 -->
+                                    <Border Grid.Column="2" CornerRadius="12" Margin="4,0" Padding="16">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#8B5CF6" Offset="0"/>
+                                                <GradientStop Color="#6D28D9" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <StackPanel>
+                                            <TextBlock Text="📈" FontSize="20"/>
+                                            <TextBlock x:Name="ReviewCompletionRate" Text="0%" Foreground="White" FontSize="26" FontWeight="Bold" Margin="0,6,0,0"/>
+                                            <TextBlock Text="完成率" Foreground="#C0FFFFFF" FontSize="11"/>
+                                        </StackPanel>
+                                    </Border>
+                                    
+                                    <!-- 逾期数 -->
+                                    <Border Grid.Column="3" CornerRadius="12" Margin="8,0,0,0" Padding="16">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="#EF4444" Offset="0"/>
+                                                <GradientStop Color="#DC2626" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+                                        <StackPanel>
+                                            <TextBlock Text="⚠️" FontSize="20"/>
+                                            <TextBlock x:Name="ReviewOverdueCount" Text="0" Foreground="White" FontSize="26" FontWeight="Bold" Margin="0,6,0,0"/>
+                                            <TextBlock Text="逾期" Foreground="#C0FFFFFF" FontSize="11"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                                
+                                <!-- 分组统计（动态） -->
+                                <Border x:Name="ReviewGroupSection" Background="#10FFFFFF" CornerRadius="14" Padding="20" Margin="0,0,0,16" Visibility="Collapsed">
+                                    <StackPanel>
+                                        <TextBlock Text="📂 分组完成情况" Foreground="White" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,14"/>
+                                        <ItemsControl x:Name="ReviewGroupList">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <UniformGrid Rows="1"/>
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <StackPanel HorizontalAlignment="Center" Margin="8,0">
+                                                        <Border Width="44" Height="44" CornerRadius="22" Margin="0,0,0,8">
+                                                            <Border.Background>
+                                                                <SolidColorBrush Color="{Binding Color}" Opacity="0.3"/>
+                                                            </Border.Background>
+                                                            <TextBlock Text="{Binding Icon}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        <TextBlock Text="{Binding Stats}" Foreground="White" FontSize="13" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding Name}" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" MaxWidth="60" TextTrimming="CharacterEllipsis"/>
+                                                    </StackPanel>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <!-- 优先级统计 -->
+                                <Border Background="#10FFFFFF" CornerRadius="14" Padding="20" Margin="0,0,0,16">
+                                    <StackPanel>
+                                        <TextBlock Text="🎯 优先级分布" Foreground="White" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,14"/>
+                                        
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="40"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Ellipse Width="8" Height="8" Fill="#EF4444" Margin="0,0,8,0"/>
+                                                <TextBlock Text="紧急" Foreground="#90FFFFFF" FontSize="12"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Background="#20FFFFFF" CornerRadius="3" Height="8">
+                                                <Border x:Name="ReviewHighBar" Background="#EF4444" CornerRadius="3" HorizontalAlignment="Left" Width="0"/>
+                                            </Border>
+                                            <TextBlock x:Name="ReviewHighCount" Grid.Column="2" Text="0" Foreground="White" FontSize="12" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                        
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="40"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Ellipse Width="8" Height="8" Fill="#F59E0B" Margin="0,0,8,0"/>
+                                                <TextBlock Text="重要" Foreground="#90FFFFFF" FontSize="12"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Background="#20FFFFFF" CornerRadius="3" Height="8">
+                                                <Border x:Name="ReviewMediumBar" Background="#F59E0B" CornerRadius="3" HorizontalAlignment="Left" Width="0"/>
+                                            </Border>
+                                            <TextBlock x:Name="ReviewMediumCount" Grid.Column="2" Text="0" Foreground="White" FontSize="12" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                        
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="60"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="40"/>
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Orientation="Horizontal">
+                                                <Ellipse Width="8" Height="8" Fill="#22C55E" Margin="0,0,8,0"/>
+                                                <TextBlock Text="普通" Foreground="#90FFFFFF" FontSize="12"/>
+                                            </StackPanel>
+                                            <Border Grid.Column="1" Background="#20FFFFFF" CornerRadius="3" Height="8">
+                                                <Border x:Name="ReviewLowBar" Background="#22C55E" CornerRadius="3" HorizontalAlignment="Left" Width="0"/>
+                                            </Border>
+                                            <TextBlock x:Name="ReviewLowCount" Grid.Column="2" Text="0" Foreground="White" FontSize="12" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <!-- 已完成任务列表 -->
+                                <Border Background="#10FFFFFF" CornerRadius="14" Padding="20">
+                                    <StackPanel>
+                                        <TextBlock Text="✅ 已完成任务" Foreground="White" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,14"/>
+                                        <ItemsControl x:Name="ReviewCompletedList" MaxHeight="200">
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate>
+                                                    <Border Background="#08FFFFFF" CornerRadius="6" Padding="12,10" Margin="0,0,0,6">
+                                                        <Grid>
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="Auto"/>
+                                                                <ColumnDefinition Width="*"/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <TextBlock Text="✓" Foreground="#22C55E" FontWeight="Bold" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                                                            <TextBlock Grid.Column="1" Text="{Binding Title}" Foreground="#C0FFFFFF" FontSize="12" 
+                                                                       TextDecorations="Strikethrough" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+                                                        </Grid>
+                                                    </Border>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                        <TextBlock x:Name="ReviewNoTasks" Text="暂无已完成任务" Foreground="#40FFFFFF" FontSize="12" 
+                                                   HorizontalAlignment="Center" Margin="0,16,0,16" Visibility="Collapsed"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                            
+                            <!-- 右侧：趋势与分析 -->
+                            <StackPanel Grid.Column="1">
+                                <!-- 完成趋势图 -->
+                                <Border Background="#10FFFFFF" CornerRadius="14" Padding="20" Margin="0,0,0,16">
+                                    <StackPanel>
+                                        <TextBlock Text="📈 完成趋势（最近7天）" Foreground="White" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                                        
+                                        <!-- 趋势柱状图 -->
+                                        <Grid Height="120">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            
+                                            <StackPanel Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <Border x:Name="TrendBar0" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
+                                                <TextBlock x:Name="TrendLabel0" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <Border x:Name="TrendBar1" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
+                                                <TextBlock x:Name="TrendLabel1" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <Border x:Name="TrendBar2" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
+                                                <TextBlock x:Name="TrendLabel2" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="3" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <Border x:Name="TrendBar3" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
+                                                <TextBlock x:Name="TrendLabel3" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="4" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <Border x:Name="TrendBar4" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
+                                                <TextBlock x:Name="TrendLabel4" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="5" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <Border x:Name="TrendBar5" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
+                                                <TextBlock x:Name="TrendLabel5" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Grid.Column="6" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <Border x:Name="TrendBar6" Width="28" Background="#8B5CF6" CornerRadius="4,4,0,0" Height="0"/>
+                                                <TextBlock x:Name="TrendLabel6" Text="今天" Foreground="#8B5CF6" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0" FontWeight="Bold"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <!-- 周对比 -->
+                                <Border Background="#10FFFFFF" CornerRadius="14" Padding="20" Margin="0,0,0,16">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        
+                                        <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                            <TextBlock Text="上周" Foreground="#60FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="LastWeekCount" Text="0" Foreground="White" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="完成" Foreground="#60FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0">
+                                            <TextBlock x:Name="WeekCompareIcon" Text="→" Foreground="#60FFFFFF" FontSize="20" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="WeekCompareText" Text="+0%" Foreground="#22C55E" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                        
+                                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                                            <TextBlock Text="本周" Foreground="#60FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
+                                            <TextBlock x:Name="ThisWeekCount" Text="0" Foreground="White" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
+                                            <TextBlock Text="完成" Foreground="#60FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                                
+                                <!-- 鼓励语 -->
+                                <Border CornerRadius="14" Padding="20">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#22C55E" Offset="0"/>
+                                            <GradientStop Color="#16A34A" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <StackPanel>
+                                        <TextBlock Text="💪" FontSize="24" HorizontalAlignment="Center"/>
+                                        <TextBlock x:Name="EncourageText" Text="继续保持，你做得很棒！" Foreground="White" FontSize="14" 
+                                                   FontWeight="Medium" HorizontalAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap" TextAlignment="Center"/>
+                                    </StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+            
+            <!-- ========== 习惯打卡面板 ========== -->
+            <Border x:Name="HabitPanel" Grid.Column="1" Visibility="Collapsed" Background="#F8101018">
+                <Grid Margin="24,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- 标题 -->
+                    <Grid Grid.Row="0" Margin="0,0,0,24">
+                        <StackPanel>
+                            <TextBlock Text="🎯 习惯打卡" Foreground="White" FontSize="28" FontWeight="Bold"/>
+                            <TextBlock Text="每日坚持，养成好习惯" Foreground="#50FFFFFF" FontSize="13" Margin="0,6,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,70,0">
+                            <Button Content="＋ 添加习惯" Background="#22C55E" Foreground="White"
+                                    Padding="16,10" BorderThickness="0" Cursor="Hand" Click="AddHabit_Click" Margin="0,0,10,0">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button Content="×" Style="{StaticResource IconButton}" FontSize="20" Click="CloseHabit_Click"/>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <!-- 今日统计 -->
+                    <Grid Grid.Row="1" Margin="0,0,0,24">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- 今日完成 -->
+                        <Border Grid.Column="0" CornerRadius="14" Margin="0,0,8,0" Padding="20">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#22C55E" Offset="0"/>
+                                    <GradientStop Color="#16A34A" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <StackPanel>
+                                <TextBlock Text="✅" FontSize="24"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,10,0,4">
+                                    <TextBlock x:Name="HabitTodayDone" Text="0" Foreground="White" FontSize="32" FontWeight="Bold"/>
+                                    <TextBlock Text=" / " Foreground="#80FFFFFF" FontSize="20" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
+                                    <TextBlock x:Name="HabitTodayTotal" Text="0" Foreground="#80FFFFFF" FontSize="20" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
+                                </StackPanel>
+                                <TextBlock Text="今日打卡" Foreground="#C0FFFFFF" FontSize="12"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- 连续天数 -->
+                        <Border Grid.Column="1" CornerRadius="14" Margin="4,0" Padding="20" Background="#15FFFFFF">
+                            <StackPanel>
+                                <TextBlock Text="🔥" FontSize="24"/>
+                                <TextBlock x:Name="HabitMaxStreak" Text="0" Foreground="White" FontSize="32" FontWeight="Bold" Margin="0,10,0,4"/>
+                                <TextBlock Text="最长连续天数" Foreground="#70FFFFFF" FontSize="12"/>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- 本周完成率 -->
+                        <Border Grid.Column="2" CornerRadius="14" Margin="8,0,0,0" Padding="20" Background="#15FFFFFF">
+                            <StackPanel>
+                                <TextBlock Text="📈" FontSize="24"/>
+                                <TextBlock x:Name="HabitWeekRate" Text="0%" Foreground="White" FontSize="32" FontWeight="Bold" Margin="0,10,0,4"/>
+                                <TextBlock Text="本周完成率" Foreground="#70FFFFFF" FontSize="12"/>
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                    
+                    <!-- 习惯列表 -->
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="320"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- 今日打卡 -->
+                        <Border Grid.Column="0" Background="#10FFFFFF" CornerRadius="14" Padding="20" Margin="0,0,16,0">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Text="📅 今日习惯" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                                
+                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl x:Name="TodayHabitList">
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="#08FFFFFF" CornerRadius="12" Padding="16,14" Margin="0,0,0,10"
+                                                        BorderBrush="#10FFFFFF" BorderThickness="1">
+                                                    <Grid>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*"/>
+                                                            <ColumnDefinition Width="Auto"/>
+                                                        </Grid.ColumnDefinitions>
+                                                        
+                                                        <!-- 图标 -->
+                                                        <Border Grid.Column="0" Width="44" Height="44" CornerRadius="22" Margin="0,0,14,0"
+                                                                Background="{Binding Color, Converter={StaticResource HabitColorConverter}}">
+                                                            <TextBlock Text="{Binding Icon}" FontSize="22" 
+                                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Border>
+                                                        
+                                                        <!-- 信息 -->
+                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                            <TextBlock Text="{Binding Name}" Foreground="White" FontSize="15" FontWeight="Medium"/>
+                                                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                                                <TextBlock Text="🔥 " Foreground="#F97316" FontSize="11"/>
+                                                                <TextBlock Text="{Binding CurrentStreak}" Foreground="#F97316" FontSize="11"/>
+                                                                <TextBlock Text=" 天连续" Foreground="#60FFFFFF" FontSize="11"/>
+                                                                <TextBlock Text="  ·  " Foreground="#30FFFFFF" FontSize="11"/>
+                                                                <TextBlock Text="最长 " Foreground="#50FFFFFF" FontSize="11"/>
+                                                                <TextBlock Text="{Binding LongestStreak}" Foreground="#50FFFFFF" FontSize="11"/>
+                                                                <TextBlock Text=" 天" Foreground="#50FFFFFF" FontSize="11"/>
+                                                            </StackPanel>
+                                                        </StackPanel>
+                                                        
+                                                        <!-- 打卡按钮 -->
+                                                        <Border Grid.Column="2" Width="50" Height="50" CornerRadius="25" Cursor="Hand"
+                                                                MouseLeftButtonDown="ToggleHabitCheck_Click" Tag="{Binding Id}"
+                                                                x:Name="CheckBorder">
+                                                            <Border.Style>
+                                                                <Style TargetType="Border">
+                                                                    <Setter Property="Background" Value="#20FFFFFF"/>
+                                                                    <Setter Property="BorderBrush" Value="#30FFFFFF"/>
+                                                                    <Setter Property="BorderThickness" Value="2"/>
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding IsCheckedToday}" Value="True">
+                                                                            <Setter Property="Background" Value="#22C55E"/>
+                                                                            <Setter Property="BorderBrush" Value="#22C55E"/>
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </Border.Style>
+                                                            <TextBlock FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                <TextBlock.Style>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="Text" Value="○"/>
+                                                                        <Setter Property="Foreground" Value="#50FFFFFF"/>
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsCheckedToday}" Value="True">
+                                                                                <Setter Property="Text" Value="✓"/>
+                                                                                <Setter Property="Foreground" Value="White"/>
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBlock.Style>
+                                                            </TextBlock>
+                                                        </Border>
+                                                    </Grid>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                                
+                                <!-- 空状态 -->
+                                <StackPanel x:Name="HabitEmptyState" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                            Visibility="Collapsed">
+                                    <TextBlock Text="🎯" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+                                    <TextBlock Text="还没有习惯" Foreground="#60FFFFFF" FontSize="16" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="点击右上角「添加习惯」开始吧！" Foreground="#35FFFFFF" FontSize="12" 
+                                               HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        
+                        <!-- 右侧：周视图 + 管理 -->
+                        <Border Grid.Column="1" Background="#10FFFFFF" CornerRadius="14" Padding="20">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Text="📆 本周打卡" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,16"/>
+                                
+                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                    <StackPanel x:Name="WeekHabitView">
+                                        <!-- 周视图动态生成 -->
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </Grid>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </Border>
+            
+            <!-- ========== 添加习惯弹窗 ========== -->
+            <Border x:Name="AddHabitPopup" Grid.ColumnSpan="2" Visibility="Collapsed" Background="#E0080810">
+                <Border CornerRadius="16" Width="400" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Padding="28" BorderBrush="#20FFFFFF" BorderThickness="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#1A1A24" Offset="0"/>
+                            <GradientStop Color="#12121A" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <StackPanel>
+                        <Grid Margin="0,0,0,24">
+                            <TextBlock Text="添加新习惯" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
+                            <Button Content="×" HorizontalAlignment="Right" Style="{StaticResource IconButton}" 
+                                    FontSize="22" Click="CloseHabitPopup_Click"/>
+                        </Grid>
+                        
+                        <!-- 习惯名称 -->
+                        <TextBlock Text="习惯名称" Foreground="#70FFFFFF" FontSize="12" Margin="0,0,0,8"/>
+                        <Border Background="#12FFFFFF" CornerRadius="10" Padding="14,12" Margin="0,0,0,18"
+                                BorderBrush="#15FFFFFF" BorderThickness="1">
+                            <TextBox x:Name="HabitNameBox" Background="Transparent" BorderThickness="0"
+                                     Foreground="White" FontSize="14" CaretBrush="White"/>
+                        </Border>
+                        
+                        <!-- 选择图标 -->
+                        <TextBlock Text="选择图标" Foreground="#70FFFFFF" FontSize="12" Margin="0,0,0,8"/>
+                        <WrapPanel Margin="0,0,0,18">
+                            <Border x:Name="Icon1" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
+                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="💊">
+                                <TextBlock Text="💊" FontSize="20"/>
+                            </Border>
+                            <Border x:Name="Icon2" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
+                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="💧">
+                                <TextBlock Text="💧" FontSize="20"/>
+                            </Border>
+                            <Border x:Name="Icon3" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
+                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="🏃">
+                                <TextBlock Text="🏃" FontSize="20"/>
+                            </Border>
+                            <Border x:Name="Icon4" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
+                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="📖">
+                                <TextBlock Text="📖" FontSize="20"/>
+                            </Border>
+                            <Border x:Name="Icon5" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
+                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="🧘">
+                                <TextBlock Text="🧘" FontSize="20"/>
+                            </Border>
+                            <Border x:Name="Icon6" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
+                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="😴">
+                                <TextBlock Text="😴" FontSize="20"/>
+                            </Border>
+                            <Border x:Name="Icon7" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
+                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="🎸">
+                                <TextBlock Text="🎸" FontSize="20"/>
+                            </Border>
+                            <Border x:Name="Icon8" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,0,8" 
+                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="✍️">
+                                <TextBlock Text="✍️" FontSize="20"/>
+                            </Border>
+                        </WrapPanel>
+                        
+                        <!-- 选择颜色 -->
+                        <TextBlock Text="选择颜色" Foreground="#70FFFFFF" FontSize="12" Margin="0,0,0,8"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
+                            <Border x:Name="Color1" Width="32" Height="32" CornerRadius="16" Background="#3B82F6" 
+                                    Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#3B82F6"
+                                    BorderThickness="3" BorderBrush="#3B82F6"/>
+                            <Border x:Name="Color2" Width="32" Height="32" CornerRadius="16" Background="#22C55E" 
+                                    Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#22C55E"/>
+                            <Border x:Name="Color3" Width="32" Height="32" CornerRadius="16" Background="#F97316" 
+                                    Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#F97316"/>
+                            <Border x:Name="Color4" Width="32" Height="32" CornerRadius="16" Background="#8B5CF6" 
+                                    Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#8B5CF6"/>
+                            <Border x:Name="Color5" Width="32" Height="32" CornerRadius="16" Background="#EF4444" 
+                                    Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#EF4444"/>
+                            <Border x:Name="Color6" Width="32" Height="32" CornerRadius="16" Background="#EC4899" 
+                                    Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#EC4899"/>
+                        </StackPanel>
+                        
+                        <!-- 按钮 -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="取消" Background="#20FFFFFF" Foreground="#B0FFFFFF"
+                                    Padding="0,14" Margin="0,0,8,0" BorderThickness="0" Cursor="Hand" Click="CloseHabitPopup_Click">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button Grid.Column="1" Content="添加" Foreground="White"
+                                    Padding="0,14" Margin="8,0,0,0" BorderThickness="0" Cursor="Hand" Click="SaveHabit_Click">
+                                <Button.Background>
+                                    <LinearGradientBrush EndPoint="1,0">
+                                        <GradientStop Color="#22C55E" Offset="0"/>
+                                        <GradientStop Color="#16A34A" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Border>
+            
+            <!-- ========== 项目管理面板 ========== -->
+            <Border x:Name="ProjectPanel" Grid.Column="1" Visibility="Collapsed" Background="#FF101018">
+                <Grid Margin="24,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- 标题栏 -->
+                    <Grid Grid.Row="0" Margin="0,0,0,24">
+                        <StackPanel>
+                            <TextBlock Text="📁 我的分类" Foreground="White" FontSize="28" FontWeight="Bold"/>
+                            <TextBlock Text="把大目标拆解成小任务，一步步完成" Foreground="#50FFFFFF" FontSize="13" Margin="0,6,0,0"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,80,0">
+                            <Button Content="＋ 新建分类" Background="#8B5CF6" Foreground="White"
+                                    Padding="16,10" BorderThickness="0" Cursor="Hand" Click="AddProject_Click">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                    
+                    <!-- 项目列表 -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <!-- 项目卡片列表 -->
+                            <ItemsControl x:Name="ProjectList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#10FFFFFF" CornerRadius="12" Padding="20,16" Margin="0,0,0,12"
+                                                Cursor="Hand" MouseLeftButtonDown="ProjectCard_Click" Tag="{Binding Id}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                
+                                                <!-- 图标 -->
+                                                <Border Grid.Column="0" Width="48" Height="48" CornerRadius="12" Margin="0,0,16,0">
+                                                    <Border.Background>
+                                                        <SolidColorBrush Color="{Binding Color}" Opacity="0.2"/>
+                                                    </Border.Background>
+                                                    <TextBlock Text="{Binding Icon}" FontSize="24" 
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                
+                                                <!-- 内容 -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold" Foreground="White"/>
+                                                    <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                                        <TextBlock FontSize="12" Foreground="#8B5CF6" FontWeight="SemiBold">
+                                                            <Run Text="✅ "/>
+                                                            <Run Text="{Binding ProgressText, Mode=OneWay}"/>
+                                                            <Run Text=" 完成"/>
+                                                        </TextBlock>
+                                                        <TextBlock Text=" · " Foreground="#40FFFFFF" FontSize="12"
+                                                                   Visibility="{Binding ConsecutiveDays, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                                        <TextBlock FontSize="12" Foreground="#F59E0B"
+                                                                   Visibility="{Binding ConsecutiveDays, Converter={StaticResource NullToVisibilityConverter}}">
+                                                            <Run Text="🔥 连续"/>
+                                                            <Run Text="{Binding ConsecutiveDays, Mode=OneWay}"/>
+                                                            <Run Text="天"/>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                    <!-- 最近完成 -->
+                                                    <TextBlock FontSize="11" Foreground="#50FFFFFF" Margin="0,4,0,0"
+                                                               Visibility="{Binding LatestCompletedTask, Converter={StaticResource NullToVisibilityConverter}}">
+                                                        <Run Text="最近：完成了「"/>
+                                                        <Run Text="{Binding LatestCompletedTask.Title, Mode=OneWay}"/>
+                                                        <Run Text="」"/>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                                
+                                                <!-- 箭头 -->
+                                                <TextBlock Grid.Column="2" Text="›" FontSize="24" Foreground="#40FFFFFF" 
+                                                           VerticalAlignment="Center"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            
+                            <!-- 空状态 -->
+                            <StackPanel x:Name="EmptyProjectState" Visibility="Collapsed" 
+                                        HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,60,0,0">
+                                <Border Width="80" Height="80" CornerRadius="40" Background="#10FFFFFF" Margin="0,0,0,20">
+                                    <TextBlock Text="📁" FontSize="36" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="还没有分类" Foreground="#60FFFFFF" FontSize="16" HorizontalAlignment="Center"/>
+                                <TextBlock Text="点击【新建分类】开始你的第一个分类" Foreground="#35FFFFFF" FontSize="12" 
+                                           HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Border>
+            
+            <!-- ========== 项目详情面板 ========== -->
+            <Border x:Name="ProjectDetailPanel" Grid.Column="1" Visibility="Collapsed" Background="#FF101018">
+                <Grid Margin="24,20">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    
+                    <!-- 返回 + 标题 -->
+                    <Grid Grid.Row="0" Margin="0,0,0,20">
+                        <StackPanel Orientation="Horizontal">
+                            <Button Content="← 返回" Style="{StaticResource IconButton}" 
+                                    Click="BackToProjectList_Click" Foreground="#80FFFFFF" FontSize="13"/>
+                            <TextBlock x:Name="ProjectDetailIcon" Text="📁" FontSize="28" Margin="16,0,12,0" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="ProjectDetailName" Text="分类名称" FontSize="24" FontWeight="Bold" 
+                                       Foreground="White" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Button Content="🗑️" Style="{StaticResource IconButton}" HorizontalAlignment="Right" Margin="0,0,70,0"
+                                Click="DeleteProject_Click" ToolTip="删除分类" Foreground="#EF4444"/>
+                    </Grid>
+                    
+                    <!-- 统计卡片 -->
+                    <Border Grid.Row="1" Background="#15FFFFFF" CornerRadius="12" Padding="24,20" Margin="0,0,0,20">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                                <TextBlock x:Name="ProjectDetailProgress" Text="0/0" FontSize="48" FontWeight="Bold" 
+                                           Foreground="#8B5CF6" HorizontalAlignment="Center"/>
+                                <TextBlock Text="已完成任务" Foreground="#60FFFFFF" FontSize="13" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                            </StackPanel>
+                            
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="40,0,0,0">
+                                <TextBlock Foreground="#F59E0B" FontSize="14">
+                                    <Run Text="🔥 连续推进 "/>
+                                    <Run x:Name="ProjectDetailDays" Text="0"/>
+                                    <Run Text=" 天"/>
+                                </TextBlock>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- 成长记录 -->
+                    <Border Grid.Row="2" Margin="0,0,0,20">
+                        <StackPanel>
+                            <TextBlock Text="📅 成长记录" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,12"/>
+                            <ItemsControl x:Name="GrowthRecordList" MaxHeight="150">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                                            <TextBlock Text="{Binding Date}" FontSize="12" Foreground="#8B5CF6" FontWeight="SemiBold" Width="50"/>
+                                            <TextBlock Text="{Binding Title}" Foreground="#80FFFFFF" FontSize="12"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock x:Name="NoGrowthRecordText" Text="还没有完成任何任务，加油！" 
+                                       Foreground="#40FFFFFF" FontSize="12" Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- 关联待办 -->
+                    <Border Grid.Row="3" x:Name="LinkedTodosSection" Margin="0,0,0,20">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                <TextBlock Text="📋 关联待办" FontSize="16" FontWeight="SemiBold" Foreground="White"/>
+                                <TextBlock x:Name="LinkedTodosHint" Text="（通过分组添加）" FontSize="12" Foreground="#50FFFFFF" 
+                                           VerticalAlignment="Center" Margin="8,0,0,0"/>
+                            </StackPanel>
+                            <ItemsControl x:Name="LinkedTodosList" MaxHeight="200">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#08FFFFFF" CornerRadius="8" Padding="14,10" Margin="0,0,0,6">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                
+                                                <!-- 完成状态 -->
+                                                <Border Grid.Column="0" Width="20" Height="20" CornerRadius="10" 
+                                                        BorderBrush="#3B82F6" BorderThickness="2" Margin="0,0,12,0" 
+                                                        Cursor="Hand" Tag="{Binding Id}"
+                                                        Background="{Binding IsCompleted, Converter={StaticResource CompletedToBackgroundConverter}}"
+                                                        MouseLeftButtonDown="ToggleLinkedTodo_Click">
+                                                    <TextBlock Text="✓" Foreground="White" FontSize="10" FontWeight="Bold"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                               Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                </Border>
+                                                
+                                                <!-- 内容 -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Title}" FontSize="13"
+                                                               Foreground="{Binding IsCompleted, Converter={StaticResource CompletedToForegroundConverter}}"
+                                                               TextDecorations="{Binding IsCompleted, Converter={StaticResource CompletedToStrikethroughConverter}}"/>
+                                                    <TextBlock Text="{Binding DueDateDisplay}" FontSize="10" Foreground="#50FFFFFF"
+                                                               Visibility="{Binding DueDate, Converter={StaticResource NullToVisibilityConverter}}"
+                                                               Margin="0,2,0,0"/>
+                                                </StackPanel>
+                                                
+                                                <!-- 优先级指示 -->
+                                                <Border Grid.Column="2" Width="8" Height="8" CornerRadius="4" VerticalAlignment="Center"
+                                                        Background="{Binding Priority, Converter={StaticResource PriorityToColorConverter}}"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <TextBlock x:Name="NoLinkedTodosText" Text="添加待办时选择此分类即可关联" 
+                                       Foreground="#40FFFFFF" FontSize="12" Visibility="Collapsed"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <!-- 任务列表 -->
+                    <Border Grid.Row="4">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            
+                            <TextBlock Grid.Row="0" Text="📝 分类任务" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,12"/>
+                            
+                            <!-- 添加任务输入框 -->
+                            <Border Grid.Row="1" Background="#10FFFFFF" CornerRadius="8" Padding="4" Margin="0,0,0,12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox x:Name="ProjectTaskInput" Grid.Column="0" Background="Transparent" BorderThickness="0"
+                                             Foreground="White" FontSize="14" Padding="12,10" VerticalAlignment="Center"
+                                             KeyDown="ProjectTaskInput_KeyDown" CaretBrush="White">
+                                        <TextBox.Style>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Template">
+                                                    <Setter.Value>
+                                                        <ControlTemplate TargetType="TextBox">
+                                                            <Grid>
+                                                                <ScrollViewer x:Name="PART_ContentHost"/>
+                                                                <TextBlock Text="+ 添加新任务，按Enter确认" Foreground="#40FFFFFF" 
+                                                                           VerticalAlignment="Center" Margin="12,0,0,0"
+                                                                           Visibility="{Binding Text.IsEmpty, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                            </Grid>
+                                                        </ControlTemplate>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style>
+                                        </TextBox.Style>
+                                    </TextBox>
+                                    <Button Grid.Column="1" Content="添加" Padding="16,8" Margin="4" Cursor="Hand"
+                                            Click="AddProjectTask_Click" Background="#8B5CF6" Foreground="White" BorderThickness="0">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </Grid>
+                            </Border>
+                            
+                            <!-- 任务列表 -->
+                            <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl x:Name="ProjectTaskList">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Background="#08FFFFFF" CornerRadius="8" Padding="14,12" Margin="0,0,0,6">
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                        <ColumnDefinition Width="*"/>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    
+                                                    <!-- 完成按钮 -->
+                                                    <Border Grid.Column="0" Width="22" Height="22" CornerRadius="11" 
+                                                            BorderBrush="#8B5CF6" BorderThickness="2" Margin="0,0,12,0" 
+                                                            Cursor="Hand" Tag="{Binding Id}"
+                                                            Background="{Binding IsCompleted, Converter={StaticResource CompletedToBackgroundConverter}}"
+                                                            MouseLeftButtonDown="ToggleProjectTask_Click">
+                                                        <TextBlock Text="✓" Foreground="White" FontSize="11" FontWeight="Bold"
+                                                                   HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                   Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                    </Border>
+                                                    
+                                                    <!-- 任务名称 -->
+                                                    <TextBlock Grid.Column="1" Text="{Binding Title}" FontSize="14" VerticalAlignment="Center"
+                                                               Foreground="{Binding IsCompleted, Converter={StaticResource CompletedToForegroundConverter}}"
+                                                               TextDecorations="{Binding IsCompleted, Converter={StaticResource CompletedToStrikethroughConverter}}"/>
+                                                    
+                                                    <!-- 删除按钮 -->
+                                                    <Button Grid.Column="2" Content="✕" Style="{StaticResource IconButton}" 
+                                                            FontSize="11" Tag="{Binding Id}" Click="DeleteProjectTask_Click"
+                                                            Foreground="#40FFFFFF" ToolTip="删除任务"/>
+                                                </Grid>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+            
+            <!-- ========== 新建项目弹窗 ========== -->
+            <Border x:Name="AddProjectPopup" Grid.ColumnSpan="2" Visibility="Collapsed">
+                <Border.Background>
+                    <SolidColorBrush Color="#000000" Opacity="0.85"/>
+                </Border.Background>
+                <Border CornerRadius="16" Width="420" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Padding="32" BorderBrush="#30FFFFFF" BorderThickness="1" Background="#FF1A1A22">
+                    <StackPanel>
+                        <TextBlock Text="📁 新建分类" FontSize="20" FontWeight="Bold" Foreground="White" Margin="0,0,0,24"/>
+                        
+                        <!-- 分类名称 -->
+                        <TextBlock Text="分类名称" Foreground="#80FFFFFF" FontSize="12" Margin="0,0,0,8"/>
+                        <Border Background="#15FFFFFF" CornerRadius="8" Padding="4" Margin="0,0,0,16">
+                            <TextBox x:Name="NewProjectName" Background="Transparent" BorderThickness="0"
+                                     Foreground="White" FontSize="14" Padding="12,10" CaretBrush="White"/>
+                        </Border>
+                        
+                        <!-- 选择图标 -->
+                        <TextBlock Text="选择图标" Foreground="#80FFFFFF" FontSize="12" Margin="0,0,0,8"/>
+                        <WrapPanel x:Name="ProjectIconList" Margin="0,0,0,16">
+                            <Border Width="40" Height="40" CornerRadius="8" Margin="0,0,8,8" Cursor="Hand" Background="#20FFFFFF"
+                                    MouseLeftButtonDown="SelectProjectIcon_Click" Tag="📁"><TextBlock Text="📁" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                            <Border Width="40" Height="40" CornerRadius="8" Margin="0,0,8,8" Cursor="Hand" Background="#20FFFFFF"
+                                    MouseLeftButtonDown="SelectProjectIcon_Click" Tag="📱"><TextBlock Text="📱" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                            <Border Width="40" Height="40" CornerRadius="8" Margin="0,0,8,8" Cursor="Hand" Background="#20FFFFFF"
+                                    MouseLeftButtonDown="SelectProjectIcon_Click" Tag="💻"><TextBlock Text="💻" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                            <Border Width="40" Height="40" CornerRadius="8" Margin="0,0,8,8" Cursor="Hand" Background="#20FFFFFF"
+                                    MouseLeftButtonDown="SelectProjectIcon_Click" Tag="📚"><TextBlock Text="📚" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                            <Border Width="40" Height="40" CornerRadius="8" Margin="0,0,8,8" Cursor="Hand" Background="#20FFFFFF"
+                                    MouseLeftButtonDown="SelectProjectIcon_Click" Tag="🎨"><TextBlock Text="🎨" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                            <Border Width="40" Height="40" CornerRadius="8" Margin="0,0,8,8" Cursor="Hand" Background="#20FFFFFF"
+                                    MouseLeftButtonDown="SelectProjectIcon_Click" Tag="🎮"><TextBlock Text="🎮" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                            <Border Width="40" Height="40" CornerRadius="8" Margin="0,0,8,8" Cursor="Hand" Background="#20FFFFFF"
+                                    MouseLeftButtonDown="SelectProjectIcon_Click" Tag="🏠"><TextBlock Text="🏠" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                            <Border Width="40" Height="40" CornerRadius="8" Margin="0,0,8,8" Cursor="Hand" Background="#20FFFFFF"
+                                    MouseLeftButtonDown="SelectProjectIcon_Click" Tag="✈️"><TextBlock Text="✈️" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/></Border>
+                        </WrapPanel>
+                        
+                        <!-- 按钮 -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,8,0,0">
+                            <Button Content="取消" Style="{StaticResource IconButton}" Padding="20,10"
+                                    Click="CloseAddProjectPopup_Click" Foreground="#80FFFFFF"/>
+                            <Button Content="创建分类" Padding="24,10" Margin="12,0,0,0" Cursor="Hand"
+                                    Click="ConfirmAddProject_Click" Background="#8B5CF6" Foreground="White" BorderThickness="0">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Border>
+            
+            <!-- ========== 添加子任务弹窗 ========== -->
+            <Popup x:Name="SubTaskPopup" Placement="Center" StaysOpen="False" AllowsTransparency="True"
+                   PlacementTarget="{Binding ElementName=TodoList}">
+                <Border Background="#FF1A1A22" CornerRadius="12" Padding="20" 
+                        BorderBrush="#30FFFFFF" BorderThickness="1" Width="380">
+                    <Border.Effect>
+                        <DropShadowEffect Color="Black" BlurRadius="20" Opacity="0.5"/>
+                    </Border.Effect>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- 隐藏的父任务ID -->
+                        <TextBlock x:Name="SubTaskParentId" Visibility="Collapsed"/>
+                        
+                        <!-- 标题 -->
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
+                            <TextBlock Text="📋" FontSize="18" Margin="0,0,10,0"/>
+                            <TextBlock Text="添加子任务" FontSize="16" FontWeight="SemiBold" Foreground="White"/>
+                            <Button Content="✕" Style="{StaticResource IconButton}" HorizontalAlignment="Right"
+                                    Click="CloseSubTaskPopup_Click" Margin="180,0,0,0" Foreground="#80FFFFFF"/>
+                        </StackPanel>
+                        
+                        <!-- 输入框 -->
+                        <Border Grid.Row="1" Background="#15FFFFFF" CornerRadius="8" Padding="2" Margin="0,0,0,16">
+                            <TextBox x:Name="SubTaskInput" Background="Transparent" BorderThickness="0"
+                                     Foreground="White" FontSize="14" Padding="12,10"
+                                     KeyDown="SubTaskInput_KeyDown">
+                                <TextBox.Style>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="CaretBrush" Value="White"/>
+                                    </Style>
+                                </TextBox.Style>
+                            </TextBox>
+                        </Border>
+                        
+                        <!-- 按钮 -->
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="取消" Style="{StaticResource IconButton}" Padding="16,8"
+                                    Click="CloseSubTaskPopup_Click" Foreground="#80FFFFFF"/>
+                            <Button Content="添加" Padding="20,8" Margin="10,0,0,0" Cursor="Hand"
+                                    Click="ConfirmAddSubTask_Click" FontWeight="SemiBold">
+                                <Button.Style>
+                                    <Style TargetType="Button">
+                                        <Setter Property="Background" Value="#3B82F6"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="BorderThickness" Value="0"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border Background="{TemplateBinding Background}" 
+                                                            CornerRadius="8" Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="#2563EB"/>
+                                            </Trigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </Button.Style>
+                            </Button>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+            </Popup>
+            
+            <!-- ========== 编辑弹窗 ========== -->
+            <Border x:Name="EditPopup" Grid.ColumnSpan="2" Visibility="Collapsed">
+                <Border.Background>
+                    <SolidColorBrush Color="#000000" Opacity="0.85"/>
+                </Border.Background>
+                <Border CornerRadius="16" Width="480" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Padding="36" BorderBrush="#50FFFFFF" BorderThickness="1" Background="#FF1A1A22">
+                    <StackPanel>
+                        <Grid Margin="0,0,0,28">
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="32" Height="32" CornerRadius="8" Background="#306366F1" Margin="0,0,12,0">
+                                    <TextBlock Text="✎" Foreground="White" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <TextBlock Text="编辑待办" Foreground="White" FontSize="22" FontWeight="Bold" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Button Content="×" HorizontalAlignment="Right" Style="{StaticResource IconButton}" 
+                                    FontSize="24" Click="CloseEditPopup_Click"/>
+                        </Grid>
+                        
+                        <!-- 标题 -->
+                        <TextBlock Text="标题" Foreground="#AAAAAA" FontSize="12" FontWeight="Medium" Margin="0,0,0,8"/>
+                        <Border Background="#FF252530" CornerRadius="10" Padding="16,14" Margin="0,0,0,20" BorderBrush="#40FFFFFF" BorderThickness="1">
+                            <TextBox x:Name="EditTitleBox" Background="Transparent" BorderThickness="0"
+                                     Foreground="White" FontSize="15" CaretBrush="#8B5CF6" FontWeight="Medium"/>
+                        </Border>
+                        
+                        <!-- 优先级 -->
+                        <TextBlock Text="优先级" Foreground="#AAAAAA" FontSize="12" FontWeight="Medium" Margin="0,0,0,8"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,20">
+                            <Border x:Name="EditPriorityHigh" Background="#40EF4444" BorderBrush="#EF4444" BorderThickness="2" 
+                                    CornerRadius="8" Padding="16,10" Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="EditPriority_Select" Tag="High">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="#EF4444" Margin="0,0,8,0"/>
+                                    <TextBlock Text="紧急" Foreground="#FF6B6B" FontSize="13" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Border>
+                            <Border x:Name="EditPriorityMedium" Background="#40F59E0B" BorderBrush="#F59E0B" BorderThickness="2" 
+                                    CornerRadius="8" Padding="16,10" Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="EditPriority_Select" Tag="Medium">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="#F59E0B" Margin="0,0,8,0"/>
+                                    <TextBlock Text="重要" Foreground="#FFB347" FontSize="13" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Border>
+                            <Border x:Name="EditPriorityLow" Background="#4022C55E" BorderBrush="#22C55E" BorderThickness="2" 
+                                    CornerRadius="8" Padding="16,10" Cursor="Hand" MouseLeftButtonDown="EditPriority_Select" Tag="Low">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="#22C55E" Margin="0,0,8,0"/>
+                                    <TextBlock Text="普通" Foreground="#4ADE80" FontSize="13" FontWeight="SemiBold"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                        
+                        <!-- 截止日期 & 时间 -->
+                        <TextBlock Text="截止日期" Foreground="#AAAAAA" FontSize="12" FontWeight="Medium" Margin="0,0,0,8"/>
+                        <Grid Margin="0,0,0,20">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="110"/>
+                            </Grid.ColumnDefinitions>
+                            
+                            <!-- 日期选择 -->
+                            <Border Grid.Column="0" Background="#FF252530" CornerRadius="10" Margin="0,0,10,0" BorderBrush="#40FFFFFF" BorderThickness="1">
+                                <DatePicker x:Name="EditDatePicker" BorderThickness="0" FontSize="14" Padding="16,12" Foreground="White">
+                                    <DatePicker.Resources>
+                                        <Style TargetType="DatePickerTextBox">
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="Background" Value="Transparent"/>
+                                            <Setter Property="CaretBrush" Value="#8B5CF6"/>
+                                            <Setter Property="Control.Template">
+                                                <Setter.Value>
+                                                    <ControlTemplate TargetType="DatePickerTextBox">
+                                                        <Grid>
+                                                            <TextBox x:Name="PART_TextBox" Background="Transparent" BorderThickness="0"
+                                                                     Foreground="White" FontSize="14"
+                                                                     Text="{Binding Path=Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                                                            <TextBlock Text="选择日期" Foreground="#555555" FontSize="14" VerticalAlignment="Center"
+                                                                       IsHitTestVisible="False">
+                                                                <TextBlock.Style>
+                                                                    <Style TargetType="TextBlock">
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding Text, ElementName=PART_TextBox}" Value="">
+                                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </TextBlock.Style>
+                                                            </TextBlock>
+                                                        </Grid>
+                                                    </ControlTemplate>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Style>
+                                    </DatePicker.Resources>
+                                </DatePicker>
+                            </Border>
+                            
+                            <!-- 时间选择 -->
+                            <Grid Grid.Column="1">
+                                <Button x:Name="TimePickerButton" Click="TimePickerButton_Click" Cursor="Hand">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="#FF252530" CornerRadius="10" BorderBrush="#40FFFFFF" BorderThickness="1" Padding="16,12">
+                                                <TextBlock x:Name="TimeDisplay" Text="时间" Foreground="#888888" FontSize="14" 
+                                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                                <Popup x:Name="TimePopup" PlacementTarget="{Binding ElementName=TimePickerButton}" 
+                                       Placement="Bottom" StaysOpen="False" AllowsTransparency="True">
+                                    <Border Background="#FF1E1E28" BorderBrush="#50FFFFFF" BorderThickness="1" 
+                                            CornerRadius="10" Margin="0,4,0,0" Padding="6">
+                                        <ScrollViewer MaxHeight="220" VerticalScrollBarVisibility="Auto">
+                                            <StackPanel>
+                                                <Button Tag="08:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="08:00"/>
+                                                <Button Tag="09:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="09:00"/>
+                                                <Button Tag="10:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="10:00"/>
+                                                <Button Tag="11:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="11:00"/>
+                                                <Button Tag="12:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="12:00"/>
+                                                <Button Tag="14:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="14:00"/>
+                                                <Button Tag="15:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="15:00"/>
+                                                <Button Tag="16:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="16:00"/>
+                                                <Button Tag="17:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="17:00"/>
+                                                <Button Tag="18:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="18:00"/>
+                                                <Button Tag="19:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="19:00"/>
+                                                <Button Tag="20:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="20:00"/>
+                                                <Button Tag="21:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="21:00"/>
+                                                <Button Tag="22:00" Click="TimeOption_ButtonClick" Style="{StaticResource TimeOptionButton}" Content="22:00"/>
+                                            </StackPanel>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Popup>
+                                <ComboBox x:Name="EditTimeCombo" Visibility="Collapsed"/>
+                            </Grid>
+                            <!-- 隐藏的时间输入框，保持代码兼容 -->
+                            <TextBox x:Name="EditTimeBox" Visibility="Collapsed"/>
+                        </Grid>
+                        
+                        <!-- 分组 -->
+                        <TextBlock Text="分组" Foreground="#AAAAAA" FontSize="12" FontWeight="Medium" Margin="0,0,0,8"/>
+                        <Border Background="#FF252530" CornerRadius="10" Margin="0,0,0,20" BorderBrush="#40FFFFFF" BorderThickness="1">
+                            <ComboBox x:Name="EditGroupCombo" FontSize="14"
+                                      Background="Transparent" Foreground="White" BorderThickness="0" VerticalAlignment="Center">
+                                <ComboBox.Template>
+                                    <ControlTemplate TargetType="ComboBox">
+                                        <Grid>
+                                            <ToggleButton x:Name="ToggleButton" Focusable="False" Background="Transparent" ClickMode="Press"
+                                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                                                <ToggleButton.Template>
+                                                    <ControlTemplate TargetType="ToggleButton">
+                                                        <Border Background="Transparent" Padding="16,14">
+                                                            <Grid>
+                                                                <ContentPresenter HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                                                                <Path Fill="#888888" Data="M 0 0 L 5 5 L 10 0 Z" 
+                                                                      HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                                                            </Grid>
+                                                        </Border>
+                                                    </ControlTemplate>
+                                                </ToggleButton.Template>
+                                            </ToggleButton>
+                                            <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False" Margin="16,14"
+                                                              Content="{TemplateBinding SelectionBoxItem}"
+                                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                              VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                            <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}"
+                                                   AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
+                                                <Border Background="#FF1E1E28" BorderBrush="#50FFFFFF" BorderThickness="1" 
+                                                        CornerRadius="8" Margin="0,4,0,0" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="250">
+                                                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                                        <StackPanel IsItemsHost="True"/>
+                                                    </ScrollViewer>
+                                                </Border>
+                                            </Popup>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </ComboBox.Template>
+                                <ComboBox.ItemContainerStyle>
+                                    <Style TargetType="ComboBoxItem">
+                                        <Setter Property="Background" Value="Transparent"/>
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="Padding" Value="16,12"/>
+                                        <Setter Property="Cursor" Value="Hand"/>
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ComboBoxItem">
+                                                    <Border x:Name="Bd" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
+                                                        <ContentPresenter/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="Bd" Property="Background" Value="#30FFFFFF"/>
+                                                        </Trigger>
+                                                        <Trigger Property="IsSelected" Value="True">
+                                                            <Setter TargetName="Bd" Property="Background" Value="#408B5CF6"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ComboBox.ItemContainerStyle>
+                                <ComboBoxItem Content="📂 未分组" Tag=""/>
+                            </ComboBox>
+                        </Border>
+                        
+                        <!-- 备注 -->
+                        <TextBlock Text="备注" Foreground="#AAAAAA" FontSize="12" FontWeight="Medium" Margin="0,0,0,8"/>
+                        <Border Background="#FF252530" CornerRadius="10" Padding="16,14" Margin="0,0,0,28" BorderBrush="#40FFFFFF" BorderThickness="1">
+                            <Grid>
+                                <TextBox x:Name="EditNoteBox" Background="Transparent" BorderThickness="0"
+                                         Foreground="White" FontSize="14" CaretBrush="#8B5CF6" AcceptsReturn="True"
+                                         Height="70" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+                                <TextBlock Text="添加备注信息..." Foreground="#555555" FontSize="14" IsHitTestVisible="False" VerticalAlignment="Top"
+                                           Visibility="{Binding Text.Length, ElementName=EditNoteBox, Converter={StaticResource LengthToVisibilityConverter}}"/>
+                            </Grid>
+                        </Border>
+                        
+                        <!-- 按钮 -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Content="取消" Background="#30FFFFFF" Foreground="White"
+                                    Padding="0,16" Margin="0,0,10,0" BorderThickness="0" Cursor="Hand" Click="CloseEditPopup_Click" FontSize="14" FontWeight="SemiBold">
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="12" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Background" Value="#40FFFFFF"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                            <Button Grid.Column="1" Content="✓ 保存" Foreground="White" FontSize="14" FontWeight="SemiBold"
+                                    Padding="0,16" Margin="10,0,0,0" BorderThickness="0" Cursor="Hand" Click="SaveEdit_Click">
+                                <Button.Background>
+                                    <LinearGradientBrush EndPoint="1,0">
+                                        <GradientStop Color="#6366F1" Offset="0"/>
+                                        <GradientStop Color="#8B5CF6" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                                <Button.Template>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="12" Padding="{TemplateBinding Padding}">
+                                            <ContentPresenter HorizontalAlignment="Center"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Bd" Property="Opacity" Value="0.85"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Button.Template>
+                            </Button>
+                        </Grid>
+                    </StackPanel>
+                </Border>
+            </Border>
+            
+            <!-- ========== 添加分组弹窗 ========== -->
+            <Border x:Name="AddGroupPopup" Grid.ColumnSpan="2" Visibility="Collapsed" Background="#E0080810">
+                <Border CornerRadius="14" Width="320" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Padding="24" BorderBrush="#25FFFFFF" BorderThickness="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#F8181822" Offset="0"/>
+                            <GradientStop Color="#F8101018" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <StackPanel>
+                        <Grid Margin="0,0,0,18">
+                            <TextBlock Text="添加分组" Foreground="White" FontSize="18" FontWeight="SemiBold"/>
+                            <Button Content="✕" HorizontalAlignment="Right" Style="{StaticResource IconButton}"
+                                    FontSize="14" Click="CloseGroupPopup_Click"/>
+                        </Grid>
+                        
+                        <!-- 分组名称 -->
+                        <TextBlock Text="分组名称" Foreground="#70FFFFFF" FontSize="12" Margin="0,0,0,8"/>
+                        <Border Background="#12FFFFFF" CornerRadius="10" Padding="14,12" Margin="0,0,0,16"
+                                BorderBrush="#15FFFFFF" BorderThickness="1">
+                            <TextBox x:Name="GroupNameInput" Background="Transparent" BorderThickness="0"
+                                     Foreground="White" FontSize="14" CaretBrush="White" MaxLength="20"/>
+                        </Border>
+                        
+                        <!-- 图标选择 -->
+                        <TextBlock Text="选择图标" Foreground="#70FFFFFF" FontSize="12" Margin="0,0,0,8"/>
+                        <WrapPanel x:Name="IconSelector" Margin="0,0,0,16">
+                            <Border Tag="📁" MouseLeftButtonDown="SelectIcon_Click" Cursor="Hand" CornerRadius="8"
+                                    Margin="0,0,8,8" Padding="10" Background="#15FFFFFF" BorderBrush="#25FFFFFF" BorderThickness="1">
+                                <TextBlock Text="📁" FontSize="18"/>
+                            </Border>
+                            <Border Tag="💼" MouseLeftButtonDown="SelectIcon_Click" Cursor="Hand" CornerRadius="8"
+                                    Margin="0,0,8,8" Padding="10" Background="#15FFFFFF">
+                                <TextBlock Text="💼" FontSize="18"/>
+                            </Border>
+                            <Border Tag="🏠" MouseLeftButtonDown="SelectIcon_Click" Cursor="Hand" CornerRadius="8"
+                                    Margin="0,0,8,8" Padding="10" Background="#15FFFFFF">
+                                <TextBlock Text="🏠" FontSize="18"/>
+                            </Border>
+                            <Border Tag="📚" MouseLeftButtonDown="SelectIcon_Click" Cursor="Hand" CornerRadius="8"
+                                    Margin="0,0,8,8" Padding="10" Background="#15FFFFFF">
+                                <TextBlock Text="📚" FontSize="18"/>
+                            </Border>
+                            <Border Tag="🎮" MouseLeftButtonDown="SelectIcon_Click" Cursor="Hand" CornerRadius="8"
+                                    Margin="0,0,8,8" Padding="10" Background="#15FFFFFF">
+                                <TextBlock Text="🎮" FontSize="18"/>
+                            </Border>
+                            <Border Tag="💪" MouseLeftButtonDown="SelectIcon_Click" Cursor="Hand" CornerRadius="8"
+                                    Margin="0,0,8,8" Padding="10" Background="#15FFFFFF">
+                                <TextBlock Text="💪" FontSize="18"/>
+                            </Border>
+                            <Border Tag="❤️" MouseLeftButtonDown="SelectIcon_Click" Cursor="Hand" CornerRadius="8"
+                                    Margin="0,0,8,8" Padding="10" Background="#15FFFFFF">
+                                <TextBlock Text="❤️" FontSize="18"/>
+                            </Border>
+                            <Border Tag="⭐" MouseLeftButtonDown="SelectIcon_Click" Cursor="Hand" CornerRadius="8"
+                                    Margin="0,0,8,8" Padding="10" Background="#15FFFFFF">
+                                <TextBlock Text="⭐" FontSize="18"/>
+                            </Border>
+                        </WrapPanel>
+                        
+                        <!-- 颜色选择 -->
+                        <TextBlock Text="选择颜色" Foreground="#70FFFFFF" FontSize="12" Margin="0,0,0,8"/>
+                        <WrapPanel x:Name="ColorSelector" Margin="0,0,0,20">
+                            <Border Tag="#6366F1" MouseLeftButtonDown="SelectColor_Click" Cursor="Hand" CornerRadius="14"
+                                    Width="28" Height="28" Margin="0,0,8,8" Background="#6366F1" BorderBrush="#40FFFFFF" BorderThickness="2"/>
+                            <Border Tag="#8B5CF6" MouseLeftButtonDown="SelectColor_Click" Cursor="Hand" CornerRadius="14"
+                                    Width="28" Height="28" Margin="0,0,8,8" Background="#8B5CF6"/>
+                            <Border Tag="#EC4899" MouseLeftButtonDown="SelectColor_Click" Cursor="Hand" CornerRadius="14"
+                                    Width="28" Height="28" Margin="0,0,8,8" Background="#EC4899"/>
+                            <Border Tag="#EF4444" MouseLeftButtonDown="SelectColor_Click" Cursor="Hand" CornerRadius="14"
+                                    Width="28" Height="28" Margin="0,0,8,8" Background="#EF4444"/>
+                            <Border Tag="#F97316" MouseLeftButtonDown="SelectColor_Click" Cursor="Hand" CornerRadius="14"
+                                    Width="28" Height="28" Margin="0,0,8,8" Background="#F97316"/>
+                            <Border Tag="#22C55E" MouseLeftButtonDown="SelectColor_Click" Cursor="Hand" CornerRadius="14"
+                                    Width="28" Height="28" Margin="0,0,8,8" Background="#22C55E"/>
+                            <Border Tag="#14B8A6" MouseLeftButtonDown="SelectColor_Click" Cursor="Hand" CornerRadius="14"
+                                    Width="28" Height="28" Margin="0,0,8,8" Background="#14B8A6"/>
+                            <Border Tag="#3B82F6" MouseLeftButtonDown="SelectColor_Click" Cursor="Hand" CornerRadius="14"
+                                    Width="28" Height="28" Margin="0,0,8,8" Background="#3B82F6"/>
+                        </WrapPanel>
+                        
+                        <!-- 确认按钮 -->
+                        <Button Content="添加分组" Foreground="White" Padding="0,14" BorderThickness="0" 
+                                Cursor="Hand" Click="ConfirmAddGroup_Click">
+                            <Button.Background>
+                                <LinearGradientBrush EndPoint="1,0">
+                                    <GradientStop Color="#6366F1" Offset="0"/>
+                                    <GradientStop Color="#8B5CF6" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Button.Background>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="0.9"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Border>
+            
+            <!-- ========== 窗口控制按钮（右上角） ========== -->
+            <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,12,16,0">
+                <Button Content="─" Style="{StaticResource IconButton}" Click="Minimize_Click" FontSize="14" Padding="12,8"/>
+                <Button Content="✕" Style="{StaticResource IconButton}" Click="Close_Click" FontSize="14" Padding="12,8"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

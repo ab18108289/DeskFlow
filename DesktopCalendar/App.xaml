@@ -1,0 +1,47 @@
+<Application x:Class="DesktopCalendar.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:converters="clr-namespace:DesktopCalendar.Converters"
+             ShutdownMode="OnExplicitShutdown">
+    <Application.Resources>
+        <converters:PriorityToColorConverter x:Key="PriorityToColorConverter"/>
+        <converters:CompletedToStrikethroughConverter x:Key="CompletedToStrikethroughConverter"/>
+        <converters:LengthToVisibilityConverter x:Key="LengthToVisibilityConverter"/>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <converters:CompletedToBackgroundConverter x:Key="CompletedToBackgroundConverter"/>
+        <converters:CompletedToForegroundConverter x:Key="CompletedToForegroundConverter"/>
+        <converters:GroupToNameConverter x:Key="GroupToNameConverter"/>
+        <converters:HabitColorConverter x:Key="HabitColorConverter"/>
+        <converters:SubTaskIndentConverter x:Key="SubTaskIndentConverter"/>
+        <converters:ExpandIconConverter x:Key="ExpandIconConverter"/>
+        
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#3B82F6"/>
+        
+        <Style x:Key="IconButton" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#808080"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#20FFFFFF"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Application.Resources>
+</Application>

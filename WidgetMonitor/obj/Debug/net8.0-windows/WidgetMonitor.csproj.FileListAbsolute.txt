@@ -1,0 +1,14 @@
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\bin\Debug\net8.0-windows\WidgetMonitor.exe
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\bin\Debug\net8.0-windows\WidgetMonitor.deps.json
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\bin\Debug\net8.0-windows\WidgetMonitor.runtimeconfig.json
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\bin\Debug\net8.0-windows\WidgetMonitor.dll
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\bin\Debug\net8.0-windows\WidgetMonitor.pdb
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\obj\Debug\net8.0-windows\WidgetMonitor.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\obj\Debug\net8.0-windows\WidgetMonitor.AssemblyInfoInputs.cache
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\obj\Debug\net8.0-windows\WidgetMonitor.AssemblyInfo.cs
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\obj\Debug\net8.0-windows\WidgetMonitor.csproj.CoreCompileInputs.cache
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\obj\Debug\net8.0-windows\WidgetMonitor.dll
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\obj\Debug\net8.0-windows\refint\WidgetMonitor.dll
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\obj\Debug\net8.0-windows\WidgetMonitor.pdb
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\obj\Debug\net8.0-windows\WidgetMonitor.genruntimeconfig.cache
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\WidgetMonitor\obj\Debug\net8.0-windows\ref\WidgetMonitor.dll
