@@ -228,7 +228,7 @@ namespace DesktopCalendar {
                 return;
             }
             _contentLoaded = true;
-            System.Uri resourceLocater = new System.Uri("/DesktopCalendar;V1.0.1.0;component/desktopwidget.xaml", System.UriKind.Relative);
+            System.Uri resourceLocater = new System.Uri("/DesktopCalendar;V1.0.2.0;component/desktopwidget.xaml", System.UriKind.Relative);
             
             #line 1 "..\..\..\..\DesktopWidget.xaml"
             System.Windows.Application.LoadComponent(this, resourceLocater);

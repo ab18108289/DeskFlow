@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -17,6 +18,9 @@ namespace DesktopCalendar
         private DesktopWidget? _desktopWidget;
         private MainWindow? _mainWindow;
         private HwndSource? _hwndSource;
+        
+        // 单实例互斥锁
+        private static Mutex? _mutex;
 
         // Win32 API 用于全局热键
         [DllImport("user32.dll")]
@@ -30,6 +34,19 @@ namespace DesktopCalendar
 
         protected override void OnStartup(StartupEventArgs e)
         {
+            // 检查是否已有实例在运行
+            const string mutexName = "DeskFlow_SingleInstance_Mutex";
+            _mutex = new Mutex(true, mutexName, out bool createdNew);
+            
+            if (!createdNew)
+            {
+                // 已有实例在运行，显示提示并退出
+                MessageBox.Show("DeskFlow 已在运行中！\n\n请查看任务栏右下角的托盘图标。", 
+                    "DeskFlow", MessageBoxButton.OK, MessageBoxImage.Information);
+                Shutdown();
+                return;
+            }
+            
             base.OnStartup(e);
             
             // 检查更新（从 GitHub 获取 update.xml）
@@ -189,6 +206,11 @@ namespace DesktopCalendar
             
             DataService.Instance.Save();
             _notifyIcon?.Dispose();
+            
+            // 释放互斥锁
+            _mutex?.ReleaseMutex();
+            _mutex?.Dispose();
+            
             base.OnExit(e);
         }
     }
