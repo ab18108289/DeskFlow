@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DesktopCalendar")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9d32c361edbaaf663cca36b69642204f9d7432f8")]
 [assembly: System.Reflection.AssemblyProductAttribute("DesktopCalendar")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DesktopCalendar")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

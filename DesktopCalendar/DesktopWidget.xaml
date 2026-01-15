@@ -274,70 +274,8 @@
                         <TextBlock Text="暂无待办" Foreground="#50FFFFFF" FontSize="13" HorizontalAlignment="Center"/>
                     </StackPanel>
 
-                    <!-- 底部：习惯打卡 + 统计 -->
+                    <!-- 底部：统计 -->
                     <StackPanel Grid.Row="3" Margin="0,10,0,0">
-                        <!-- 今日习惯打卡 -->
-                        <Border x:Name="HabitSection" Background="#10FFFFFF" CornerRadius="8" Padding="10,8" Margin="0,0,0,8">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                
-                                <!-- 标题 -->
-                                <Grid Grid.Row="0" Margin="0,0,0,6">
-                                    <StackPanel Orientation="Horizontal">
-                                        <TextBlock Text="🎯" Foreground="#90FFFFFF" FontSize="11" FontWeight="Medium"/>
-                                        <TextBlock x:Name="HabitDateLabel" Text="今日习惯" Foreground="#90FFFFFF" FontSize="11" FontWeight="Medium" Margin="4,0,0,0"/>
-                                        <TextBlock x:Name="HabitProgress" Text="" Foreground="#22C55E" FontSize="10" Margin="8,0,0,0" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                </Grid>
-                                
-                                <!-- 习惯列表（最多显示4个） -->
-                                <ItemsControl x:Name="WidgetHabitList" Grid.Row="1">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate>
-                                            <WrapPanel/>
-                                        </ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Border Width="48" Height="48" Margin="0,0,6,4" CornerRadius="8" Cursor="Hand"
-                                                    MouseLeftButtonDown="WidgetHabitCheck_Click" Tag="{Binding Id}"
-                                                    ToolTip="{Binding Name}">
-                                                <Border.Style>
-                                                    <Style TargetType="Border">
-                                                        <Setter Property="Background" Value="#15FFFFFF"/>
-                                                        <Style.Triggers>
-                                                            <DataTrigger Binding="{Binding IsCheckedToday}" Value="True">
-                                                                <Setter Property="Background" Value="#3022C55E"/>
-                                                            </DataTrigger>
-                                                        </Style.Triggers>
-                                                    </Style>
-                                                </Border.Style>
-                                                <Grid>
-                                                    <TextBlock Text="{Binding Icon}" FontSize="18" 
-                                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    <!-- 已打卡标记 -->
-                                                    <Border Width="14" Height="14" CornerRadius="7" 
-                                                            Background="#22C55E" HorizontalAlignment="Right" VerticalAlignment="Top"
-                                                            Margin="0,-2,-2,0"
-                                                            Visibility="{Binding IsCheckedToday, Converter={StaticResource BoolToVisibilityConverter}}">
-                                                        <TextBlock Text="✓" Foreground="White" FontSize="8" FontWeight="Bold"
-                                                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                    </Border>
-                                                </Grid>
-                                            </Border>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
-                                
-                                <!-- 空状态 -->
-                                <TextBlock x:Name="NoHabitsText" Grid.Row="1" Text="暂无习惯，在主界面添加" 
-                                           Foreground="#40FFFFFF" FontSize="10" Visibility="Collapsed"/>
-                            </Grid>
-                        </Border>
-                        
                         <!-- 统计 -->
                         <Border Background="#10FFFFFF" CornerRadius="8" Padding="12,10">
                             <Grid>

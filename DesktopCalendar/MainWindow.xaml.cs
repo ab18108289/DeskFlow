@@ -38,10 +38,7 @@ namespace DesktopCalendar
             // 监听习惯数据变化（与桌面小部件同步）
             DataService.Instance.HabitsChanged += (s, e) => Dispatcher.Invoke(() => 
             {
-                if (HabitPanel.Visibility == Visibility.Visible)
-                {
-                    RefreshHabitData();
-                }
+                // 习惯打卡功能已移除
             });
             
             // 监听分组数据变化
@@ -103,6 +100,12 @@ namespace DesktopCalendar
             brush.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString(startColor), 0));
             brush.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString(endColor), 1));
             MainBorder.Background = brush;
+            
+            // 同时更新其他面板的背景色
+            var panelBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(startColor));
+            ReviewPanel.Background = panelBrush;
+            ProjectDetailPanel.Background = panelBrush;
+            ProjectPanel.Background = panelBrush;
         }
 
         private void UpdateThemeBorders(object sender)
@@ -147,7 +150,7 @@ namespace DesktopCalendar
             {
                 // 隐藏所有其他面板
                 ReviewPanel.Visibility = Visibility.Collapsed;
-                HabitPanel.Visibility = Visibility.Collapsed;
+                // HabitPanel已移除
                 ProjectPanel.Visibility = Visibility.Collapsed;
                 ProjectDetailPanel.Visibility = Visibility.Collapsed;
                 
@@ -238,6 +241,9 @@ namespace DesktopCalendar
             UpdateNavCounts();
             UpdateViewTitle();
             RefreshTodayReviewCard();
+            
+            // 只有"今天"视图显示添加待办区域，其他视图隐藏
+            AddTodoSection.Visibility = _currentFilter == "Today" ? Visibility.Visible : Visibility.Collapsed;
         }
         
         private void RefreshTodayReviewCard()
@@ -752,7 +758,7 @@ namespace DesktopCalendar
         {
             // 取消导航按钮高亮
             SetActiveNavButton(null);
-            HabitPanel.Visibility = Visibility.Collapsed;
+            // HabitPanel已移除
             ProjectPanel.Visibility = Visibility.Collapsed;
             ProjectDetailPanel.Visibility = Visibility.Collapsed;
             
@@ -769,7 +775,19 @@ namespace DesktopCalendar
 
         private void ReviewPeriod_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button btn && btn.Tag is string period)
+            // 兼容旧版 Button 点击
+            if (sender is Button btn && btn.Tag is string period1)
+            {
+                _reviewPeriod = period1;
+                UpdateReviewPeriodButtons();
+                RefreshReviewData();
+            }
+        }
+
+        private void ReviewPeriod_Click(object sender, MouseButtonEventArgs e)
+        {
+            // 新版 Border Tab 点击
+            if (sender is Border border && border.Tag is string period)
             {
                 _reviewPeriod = period;
                 UpdateReviewPeriodButtons();
@@ -779,28 +797,51 @@ namespace DesktopCalendar
 
         private void UpdateReviewPeriodButtons()
         {
-            // 重置所有按钮
-            ReviewDay.Background = Brushes.Transparent;
-            ReviewDay.Foreground = new SolidColorBrush(Color.FromArgb(144, 255, 255, 255));
-            ReviewWeek.Background = Brushes.Transparent;
-            ReviewWeek.Foreground = new SolidColorBrush(Color.FromArgb(144, 255, 255, 255));
-            ReviewMonth.Background = Brushes.Transparent;
-            ReviewMonth.Foreground = new SolidColorBrush(Color.FromArgb(144, 255, 255, 255));
-            ReviewYear.Background = Brushes.Transparent;
-            ReviewYear.Foreground = new SolidColorBrush(Color.FromArgb(144, 255, 255, 255));
+            var inactiveColor = new SolidColorBrush(Color.FromArgb(96, 255, 255, 255)); // #60FFFFFF
+            var activeColor = Brushes.White;
+            var indicatorColor = new SolidColorBrush(Color.FromRgb(99, 102, 241)); // #6366F1
 
-            // 高亮当前选中
-            Button activeBtn = _reviewPeriod switch
+            // 重置所有 Tab
+            ReviewDay.Foreground = inactiveColor;
+            ReviewDay.FontWeight = FontWeights.Normal;
+            ReviewDayIndicator.Background = Brushes.Transparent;
+
+            ReviewWeek.Foreground = inactiveColor;
+            ReviewWeek.FontWeight = FontWeights.Normal;
+            ReviewWeekIndicator.Background = Brushes.Transparent;
+
+            ReviewMonth.Foreground = inactiveColor;
+            ReviewMonth.FontWeight = FontWeights.Normal;
+            ReviewMonthIndicator.Background = Brushes.Transparent;
+
+            ReviewYear.Foreground = inactiveColor;
+            ReviewYear.FontWeight = FontWeights.Normal;
+            ReviewYearIndicator.Background = Brushes.Transparent;
+
+            // 高亮当前选中的 Tab
+            switch (_reviewPeriod)
             {
-                "Day" => ReviewDay,
-                "Week" => ReviewWeek,
-                "Month" => ReviewMonth,
-                "Year" => ReviewYear,
-                _ => ReviewDay
-            };
-
-            activeBtn.Background = new SolidColorBrush(Color.FromRgb(99, 102, 241));
-            activeBtn.Foreground = Brushes.White;
+                case "Day":
+                    ReviewDay.Foreground = activeColor;
+                    ReviewDay.FontWeight = FontWeights.Medium;
+                    ReviewDayIndicator.Background = indicatorColor;
+                    break;
+                case "Week":
+                    ReviewWeek.Foreground = activeColor;
+                    ReviewWeek.FontWeight = FontWeights.Medium;
+                    ReviewWeekIndicator.Background = indicatorColor;
+                    break;
+                case "Month":
+                    ReviewMonth.Foreground = activeColor;
+                    ReviewMonth.FontWeight = FontWeights.Medium;
+                    ReviewMonthIndicator.Background = indicatorColor;
+                    break;
+                case "Year":
+                    ReviewYear.Foreground = activeColor;
+                    ReviewYear.FontWeight = FontWeights.Medium;
+                    ReviewYearIndicator.Background = indicatorColor;
+                    break;
+            }
         }
 
         private void RefreshReviewData()
@@ -896,92 +937,337 @@ namespace DesktopCalendar
             ReviewMediumBar.Width = (mediumCount / (double)maxPriority) * barMaxWidth;
             ReviewLowBar.Width = (lowCount / (double)maxPriority) * barMaxWidth;
 
-            // 已完成任务列表
-            var recentCompleted = completedTodos
-                .OrderByDescending(t => t.CompletedAt)
-                .Take(20)
-                .ToList();
-
-            ReviewCompletedList.ItemsSource = recentCompleted;
-            ReviewNoTasks.Visibility = recentCompleted.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            // 更新分类统计
+            UpdateCategoryStats(completedTodos);
             
             // 更新完成趋势图（最近7天）
-            UpdateTrendChart(todos, today);
+            UpdateTrendChart(todos, today, _reviewPeriod);
             
-            // 更新周对比
-            UpdateWeekComparison(todos, today);
+            // 更新对比（根据时间段）
+            UpdateComparison(todos, today, _reviewPeriod);
+            
+            // 更新效率洞察
+            UpdateEfficiencyInsights(completedTodos, periodTodos, today, _reviewPeriod);
             
             // 更新鼓励语
             UpdateEncourageText(completedTodos.Count, periodTodos.Count);
         }
         
-        private void UpdateTrendChart(List<TodoItem> todos, DateTime today)
+        private void UpdateTrendChart(List<TodoItem> todos, DateTime today, string period)
         {
             Border[] bars = { TrendBar0, TrendBar1, TrendBar2, TrendBar3, TrendBar4, TrendBar5, TrendBar6 };
             TextBlock[] labels = { TrendLabel0, TrendLabel1, TrendLabel2, TrendLabel3, TrendLabel4, TrendLabel5, TrendLabel6 };
+            TextBlock[] countLabels = { TrendCount0, TrendCount1, TrendCount2, TrendCount3, TrendCount4, TrendCount5, TrendCount6 };
             
             int[] counts = new int[7];
+            string[] labelTexts = new string[7];
             int maxCount = 1;
             
-            for (int i = 0; i < 7; i++)
+            // 根据不同的时间段设置标题和数据
+            switch (period)
             {
-                var date = today.AddDays(i - 6);
-                counts[i] = todos.Count(t => t.CompletedAt?.Date == date && t.IsCompleted);
-                maxCount = Math.Max(maxCount, counts[i]);
-            }
-            
-            string[] dayNames = { "日", "一", "二", "三", "四", "五", "六" };
-            
-            for (int i = 0; i < 7; i++)
-            {
-                var date = today.AddDays(i - 6);
-                double height = (counts[i] / (double)maxCount) * 80;
-                bars[i].Height = Math.Max(height, counts[i] > 0 ? 8 : 0);
+                case "Day":
+                    ReviewTrendTitle.Text = "最近7天";
+                    for (int i = 0; i < 7; i++)
+                    {
+                        var date = today.AddDays(i - 6);
+                        counts[i] = todos.Count(t => t.CompletedAt?.Date == date && t.IsCompleted);
+                        labelTexts[i] = date.ToString("d日");
+                    }
+                    break;
+                    
+                case "Week":
+                    ReviewTrendTitle.Text = "本周趋势";
+                    // 计算本周一的日期
+                    int daysFromMonday = (7 + (int)today.DayOfWeek - 1) % 7;
+                    var weekMonday = today.AddDays(-daysFromMonday);
+                    string[] weekDayNames = { "一", "二", "三", "四", "五", "六", "日" };
+                    for (int i = 0; i < 7; i++)
+                    {
+                        var date = weekMonday.AddDays(i);
+                        counts[i] = todos.Count(t => t.CompletedAt?.Date == date && t.IsCompleted);
+                        labelTexts[i] = weekDayNames[i];
+                    }
+                    break;
+                    
+                case "Month":
+                    ReviewTrendTitle.Text = "本月趋势";
+                    // 只显示4周（合理的月度划分）
+                    var mStart = new DateTime(today.Year, today.Month, 1);
+                    string[] weekLabels = { "第1周", "第2周", "第3周", "第4周" };
+                    for (int i = 0; i < 7; i++)
+                    {
+                        if (i < 4)
+                        {
+                            var weekStart = mStart.AddDays(i * 7);
+                            var weekEnd = weekStart.AddDays(6);
+                            var monthEnd = new DateTime(today.Year, today.Month, DateTime.DaysInMonth(today.Year, today.Month));
+                            if (weekEnd > monthEnd) weekEnd = monthEnd;
+                            if (weekEnd > today) weekEnd = today;
+                            
+                            if (weekStart > today)
+                                counts[i] = 0;
+                            else
+                                counts[i] = todos.Count(t => t.CompletedAt?.Date >= weekStart && t.CompletedAt?.Date <= weekEnd && t.IsCompleted);
+                            labelTexts[i] = weekLabels[i];
+                        }
+                        else
+                        {
+                            counts[i] = -1; // 标记为隐藏
+                            labelTexts[i] = "";
+                        }
+                    }
+                    break;
                 
-                if (i < 6)
-                {
-                    labels[i].Text = dayNames[(int)date.DayOfWeek];
-                }
+                case "Year":
+                    ReviewTrendTitle.Text = "全年趋势";
+                    // 只显示4个季度（合理的年度划分）
+                    string[] quarterLabels = { "Q1", "Q2", "Q3", "Q4" };
+                    for (int i = 0; i < 7; i++)
+                    {
+                        if (i < 4)
+                        {
+                            var qStart = new DateTime(today.Year, i * 3 + 1, 1);
+                            var qEnd = qStart.AddMonths(3).AddDays(-1);
+                            if (qEnd > today) qEnd = today;
+                            
+                            if (qStart > today)
+                                counts[i] = 0;
+                            else
+                                counts[i] = todos.Count(t => t.CompletedAt?.Date >= qStart && t.CompletedAt?.Date <= qEnd && t.IsCompleted);
+                            labelTexts[i] = quarterLabels[i];
+                        }
+                        else
+                        {
+                            counts[i] = -1; // 标记为隐藏
+                            labelTexts[i] = "";
+                        }
+                    }
+                    break;
+                    
+                default:
+                    ReviewTrendTitle.Text = "趋势";
+                    for (int i = 0; i < 7; i++)
+                    {
+                        var date = today.AddDays(i - 6);
+                        counts[i] = todos.Count(t => t.CompletedAt?.Date == date && t.IsCompleted);
+                        labelTexts[i] = date.ToString("d日");
+                    }
+                    break;
             }
-        }
-        
-        private void UpdateWeekComparison(List<TodoItem> todos, DateTime today)
-        {
-            // 本周（周一到今天）
-            int thisDiff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
-            var thisWeekStart = today.AddDays(-thisDiff);
-            var thisWeekCount = todos.Count(t => t.CompletedAt?.Date >= thisWeekStart && t.CompletedAt?.Date <= today && t.IsCompleted);
             
-            // 上周（同期对比）
-            var lastWeekStart = thisWeekStart.AddDays(-7);
-            var lastWeekEnd = thisWeekStart.AddDays(-1);
-            var lastWeekCount = todos.Count(t => t.CompletedAt?.Date >= lastWeekStart && t.CompletedAt?.Date <= lastWeekEnd && t.IsCompleted);
-            
-            ThisWeekCount.Text = thisWeekCount.ToString();
-            LastWeekCount.Text = lastWeekCount.ToString();
-            
-            // 计算变化
-            if (lastWeekCount > 0)
+            // 计算最大值
+            for (int i = 0; i < 7; i++)
             {
-                int change = ((thisWeekCount - lastWeekCount) * 100) / lastWeekCount;
-                if (change >= 0)
+                if (counts[i] > 0)
+                    maxCount = Math.Max(maxCount, counts[i]);
+            }
+            
+            // 更新柱状图
+            // 获取列容器
+            StackPanel[] columns = { TrendColumn0, TrendColumn1, TrendColumn2, TrendColumn3, TrendColumn4, TrendColumn5, TrendColumn6 };
+            
+            int visibleCount = 0;
+            for (int i = 0; i < 7; i++)
+            {
+                if (counts[i] == -1)
                 {
-                    WeekCompareText.Text = $"+{change}%";
-                    WeekCompareText.Foreground = new SolidColorBrush(Color.FromRgb(34, 197, 94));
-                    WeekCompareIcon.Text = "↑";
+                    // 隐藏整个列
+                    columns[i].Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    WeekCompareText.Text = $"{change}%";
-                    WeekCompareText.Foreground = new SolidColorBrush(Color.FromRgb(239, 68, 68));
-                    WeekCompareIcon.Text = "↓";
+                    // 显示这个列
+                    columns[i].Visibility = Visibility.Visible;
+                    visibleCount++;
+                    
+                    double height = (counts[i] / (double)maxCount) * 80;
+                    bars[i].Height = Math.Max(height, counts[i] > 0 ? 8 : 4);
+                    labels[i].Text = labelTexts[i];
+                    countLabels[i].Text = counts[i] > 0 ? counts[i].ToString() : "";
+                }
+            }
+            
+            // 动态设置 UniformGrid 的列数
+            TrendChartGrid.Columns = visibleCount;
+        }
+        
+        private void UpdateComparison(List<TodoItem> todos, DateTime today, string period)
+        {
+            int currentCount = 0;
+            int previousCount = 0;
+            string label = "较上周";
+            
+            switch (period)
+            {
+                case "Day":
+                    label = "较昨日";
+                    currentCount = todos.Count(t => t.CompletedAt?.Date == today && t.IsCompleted);
+                    previousCount = todos.Count(t => t.CompletedAt?.Date == today.AddDays(-1) && t.IsCompleted);
+                    break;
+                    
+                case "Week":
+                    label = "较上周";
+                    int thisDiff = (7 + (today.DayOfWeek - DayOfWeek.Monday)) % 7;
+                    var thisWeekStart = today.AddDays(-thisDiff);
+                    currentCount = todos.Count(t => t.CompletedAt?.Date >= thisWeekStart && t.CompletedAt?.Date <= today && t.IsCompleted);
+                    var lastWeekStart = thisWeekStart.AddDays(-7);
+                    var lastWeekEnd = thisWeekStart.AddDays(-1);
+                    previousCount = todos.Count(t => t.CompletedAt?.Date >= lastWeekStart && t.CompletedAt?.Date <= lastWeekEnd && t.IsCompleted);
+                    break;
+                    
+                case "Month":
+                    label = "较上月";
+                    var thisMonthStart = new DateTime(today.Year, today.Month, 1);
+                    currentCount = todos.Count(t => t.CompletedAt?.Date >= thisMonthStart && t.CompletedAt?.Date <= today && t.IsCompleted);
+                    var lastMonthStart = thisMonthStart.AddMonths(-1);
+                    var lastMonthEnd = thisMonthStart.AddDays(-1);
+                    previousCount = todos.Count(t => t.CompletedAt?.Date >= lastMonthStart && t.CompletedAt?.Date <= lastMonthEnd && t.IsCompleted);
+                    break;
+                    
+                case "Year":
+                    label = "较去年";
+                    var thisYearStart = new DateTime(today.Year, 1, 1);
+                    currentCount = todos.Count(t => t.CompletedAt?.Date >= thisYearStart && t.CompletedAt?.Date <= today && t.IsCompleted);
+                    var lastYearStart = thisYearStart.AddYears(-1);
+                    var lastYearEnd = thisYearStart.AddDays(-1);
+                    previousCount = todos.Count(t => t.CompletedAt?.Date >= lastYearStart && t.CompletedAt?.Date <= lastYearEnd && t.IsCompleted);
+                    break;
+            }
+            
+            ReviewCompareLabel.Text = label;
+            
+            // 计算变化
+            if (previousCount > 0)
+            {
+                int change = currentCount - previousCount;
+                if (change >= 0)
+                {
+                    ReviewCompareValue.Text = $"+{change}";
+                    ReviewCompareValue.Foreground = new SolidColorBrush(Color.FromRgb(34, 197, 94));
+                }
+                else
+                {
+                    ReviewCompareValue.Text = change.ToString();
+                    ReviewCompareValue.Foreground = new SolidColorBrush(Color.FromRgb(239, 68, 68));
                 }
             }
             else
             {
-                WeekCompareText.Text = thisWeekCount > 0 ? "+∞" : "—";
-                WeekCompareText.Foreground = new SolidColorBrush(Color.FromRgb(34, 197, 94));
-                WeekCompareIcon.Text = "→";
+                ReviewCompareValue.Text = currentCount > 0 ? $"+{currentCount}" : "0";
+                ReviewCompareValue.Foreground = new SolidColorBrush(Color.FromRgb(34, 197, 94));
+            }
+        }
+        
+        private void UpdateEfficiencyInsights(List<TodoItem> completedTodos, List<TodoItem> periodTodos, DateTime today, string period)
+        {
+            // 计算效率最高的日期
+            if (completedTodos.Count > 0)
+            {
+                var bestDay = completedTodos
+                    .Where(t => t.CompletedAt.HasValue)
+                    .GroupBy(t => t.CompletedAt!.Value.DayOfWeek)
+                    .OrderByDescending(g => g.Count())
+                    .FirstOrDefault();
+                    
+                if (bestDay != null)
+                {
+                    string[] dayNames = { "周日", "周一", "周二", "周三", "周四", "周五", "周六" };
+                    ReviewBestDay.Text = $"{dayNames[(int)bestDay.Key]} ({bestDay.Count()}项)";
+                }
+                else
+                {
+                    ReviewBestDay.Text = "暂无数据";
+                }
+            }
+            else
+            {
+                ReviewBestDay.Text = "暂无数据";
+            }
+            
+            // 计算日均完成
+            int dayCount = period switch
+            {
+                "Day" => 1,
+                "Week" => Math.Max(1, (int)(today.DayOfWeek == DayOfWeek.Sunday ? 7 : (int)today.DayOfWeek)),
+                "Month" => today.Day,
+                "Year" => today.DayOfYear,
+                _ => 1
+            };
+            
+            double avgDaily = completedTodos.Count / (double)dayCount;
+            ReviewAvgDaily.Text = $"{avgDaily:F1} 项";
+        }
+        
+        private void UpdateCategoryStats(List<TodoItem> completedTodos)
+        {
+            ReviewCategoryStats.Children.Clear();
+            
+            // 按分类统计完成数（将GroupId转换为显示名称）
+            var categoryStats = completedTodos
+                .GroupBy(t => string.IsNullOrEmpty(t.GroupId) ? "未分类" : t.GroupId)
+                .Select(g => {
+                    var groupName = g.Key == "未分类" ? "未分类" : DataService.Instance.GetGroupName(g.Key);
+                    return new { Name = groupName, Count = g.Count() };
+                })
+                .OrderByDescending(x => x.Count)
+                .Take(5)
+                .ToList();
+            
+            if (categoryStats.Count == 0)
+            {
+                ReviewNoCategoryStats.Visibility = Visibility.Visible;
+                return;
+            }
+            
+            ReviewNoCategoryStats.Visibility = Visibility.Collapsed;
+            var maxCount = categoryStats.Max(x => x.Count);
+            
+            string[] colors = { "#3B82F6", "#8B5CF6", "#22C55E", "#F59E0B", "#EC4899" };
+            int colorIndex = 0;
+            
+            foreach (var stat in categoryStats)
+            {
+                var color = colors[colorIndex++ % colors.Length];
+                var percentage = maxCount > 0 ? (double)stat.Count / completedTodos.Count * 100 : 0;
+                
+                var grid = new Grid { Margin = new Thickness(0, 0, 0, 12) };
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(100) });
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(50) });
+                
+                var nameText = new TextBlock
+                {
+                    Text = stat.Name,
+                    Foreground = new SolidColorBrush(Color.FromArgb(180, 255, 255, 255)),
+                    FontSize = 12,
+                    TextTrimming = TextTrimming.CharacterEllipsis
+                };
+                Grid.SetColumn(nameText, 0);
+                grid.Children.Add(nameText);
+                
+                var barBorder = new Border
+                {
+                    Background = (SolidColorBrush)new BrushConverter().ConvertFrom(color)!,
+                    CornerRadius = new CornerRadius(3),
+                    Height = 10,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    Width = Math.Max(10, percentage * 1.5)
+                };
+                Grid.SetColumn(barBorder, 1);
+                grid.Children.Add(barBorder);
+                
+                var percentText = new TextBlock
+                {
+                    Text = $"{percentage:F0}%",
+                    Foreground = new SolidColorBrush(Color.FromArgb(180, 255, 255, 255)),
+                    FontSize = 11,
+                    HorizontalAlignment = HorizontalAlignment.Right
+                };
+                Grid.SetColumn(percentText, 2);
+                grid.Children.Add(percentText);
+                
+                ReviewCategoryStats.Children.Add(grid);
             }
         }
         
@@ -1064,298 +1350,6 @@ namespace DesktopCalendar
 
         #endregion
 
-        #region 习惯打卡
-
-        private string _selectedHabitIcon = "💊";
-        private string _selectedHabitColor = "#3B82F6";
-
-        private void NavHabit_Click(object sender, RoutedEventArgs e)
-        {
-            // 取消导航按钮高亮
-            SetActiveNavButton(null);
-            ReviewPanel.Visibility = Visibility.Collapsed;
-            ProjectPanel.Visibility = Visibility.Collapsed;
-            ProjectDetailPanel.Visibility = Visibility.Collapsed;
-            
-            HabitPanel.Visibility = Visibility.Visible;
-            RefreshHabitData();
-        }
-
-        private void CloseHabit_Click(object sender, RoutedEventArgs e)
-        {
-            HabitPanel.Visibility = Visibility.Collapsed;
-        }
-
-        private void RefreshHabitData()
-        {
-            var habits = DataService.Instance.Habits.Where(h => h.IsActive).ToList();
-            var today = DateTime.Today;
-
-            // 更新每个习惯的今日打卡状态
-            foreach (var habit in habits)
-            {
-                habit.IsCheckedToday = DataService.Instance.IsHabitChecked(habit.Id, today);
-            }
-
-            // 今日打卡列表
-            var todayHabits = habits.Where(h => h.IsTargetDay(today)).ToList();
-            TodayHabitList.ItemsSource = todayHabits;
-
-            // 统计
-            var todayDone = todayHabits.Count(h => h.IsCheckedToday);
-            var todayTotal = todayHabits.Count;
-            HabitTodayDone.Text = todayDone.ToString();
-            HabitTodayTotal.Text = todayTotal.ToString();
-
-            // 最长连续天数
-            var maxStreak = habits.Any() ? habits.Max(h => h.LongestStreak) : 0;
-            HabitMaxStreak.Text = maxStreak.ToString();
-
-            // 本周完成率
-            var weekRate = CalculateWeekHabitRate(habits);
-            HabitWeekRate.Text = $"{weekRate:F0}%";
-
-            // 空状态
-            HabitEmptyState.Visibility = habits.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-
-            // 周视图
-            RefreshWeekHabitView(habits);
-
-            // 更新侧边栏显示
-            if (todayTotal > 0)
-            {
-                NavHabitProgress.Text = $"{todayDone}/{todayTotal}";
-            }
-            else
-            {
-                NavHabitProgress.Text = "";
-            }
-        }
-
-        private double CalculateWeekHabitRate(List<HabitItem> habits)
-        {
-            if (habits.Count == 0) return 0;
-
-            var today = DateTime.Today;
-            int diff = (7 + (int)today.DayOfWeek - (int)DayOfWeek.Monday) % 7;
-            var startOfWeek = today.AddDays(-diff);
-
-            int totalTarget = 0;
-            int totalChecked = 0;
-
-            foreach (var habit in habits)
-            {
-                for (int i = 0; i < 7; i++)
-                {
-                    var date = startOfWeek.AddDays(i);
-                    if (date > today) break;
-                    if (habit.IsTargetDay(date))
-                    {
-                        totalTarget++;
-                        if (DataService.Instance.IsHabitChecked(habit.Id, date))
-                        {
-                            totalChecked++;
-                        }
-                    }
-                }
-            }
-
-            return totalTarget > 0 ? (double)totalChecked / totalTarget * 100 : 0;
-        }
-
-        private void RefreshWeekHabitView(List<HabitItem> habits)
-        {
-            WeekHabitView.Children.Clear();
-
-            var today = DateTime.Today;
-            int diff = (7 + (int)today.DayOfWeek - (int)DayOfWeek.Monday) % 7;
-            var startOfWeek = today.AddDays(-diff);
-
-            // 星期标题行
-            var headerGrid = new Grid { Margin = new Thickness(0, 0, 0, 12) };
-            headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(80) });
-            for (int i = 0; i < 7; i++)
-            {
-                headerGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            }
-
-            string[] weekdays = { "一", "二", "三", "四", "五", "六", "日" };
-            for (int i = 0; i < 7; i++)
-            {
-                var date = startOfWeek.AddDays(i);
-                var isToday = date == today;
-                var dayText = new TextBlock
-                {
-                    Text = isToday ? "今" : weekdays[i],
-                    FontSize = 11,
-                    Foreground = isToday ? new SolidColorBrush(Color.FromRgb(59, 130, 246)) : new SolidColorBrush(Color.FromArgb(120, 255, 255, 255)),
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    FontWeight = isToday ? FontWeights.Bold : FontWeights.Normal
-                };
-                Grid.SetColumn(dayText, i + 1);
-                headerGrid.Children.Add(dayText);
-            }
-            WeekHabitView.Children.Add(headerGrid);
-
-            // 每个习惯一行
-            foreach (var habit in habits)
-            {
-                var rowBorder = new Border
-                {
-                    Background = new SolidColorBrush(Color.FromArgb(12, 255, 255, 255)),
-                    CornerRadius = new CornerRadius(8),
-                    Padding = new Thickness(12, 10, 12, 10),
-                    Margin = new Thickness(0, 0, 0, 8)
-                };
-
-                var rowGrid = new Grid();
-                rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(80) });
-                for (int i = 0; i < 7; i++)
-                {
-                    rowGrid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                }
-
-                // 习惯名
-                var nameText = new TextBlock
-                {
-                    Text = $"{habit.Icon} {habit.Name}",
-                    Foreground = Brushes.White,
-                    FontSize = 12,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    TextTrimming = TextTrimming.CharacterEllipsis
-                };
-                Grid.SetColumn(nameText, 0);
-                rowGrid.Children.Add(nameText);
-
-                // 每天的打卡状态
-                for (int i = 0; i < 7; i++)
-                {
-                    var date = startOfWeek.AddDays(i);
-                    var isChecked = DataService.Instance.IsHabitChecked(habit.Id, date);
-                    var isTargetDay = habit.IsTargetDay(date);
-                    var isFuture = date > today;
-
-                    var statusText = new TextBlock
-                    {
-                        FontSize = 14,
-                        HorizontalAlignment = HorizontalAlignment.Center,
-                        VerticalAlignment = VerticalAlignment.Center
-                    };
-
-                    if (isFuture)
-                    {
-                        statusText.Text = "·";
-                        statusText.Foreground = new SolidColorBrush(Color.FromArgb(40, 255, 255, 255));
-                    }
-                    else if (!isTargetDay)
-                    {
-                        statusText.Text = "-";
-                        statusText.Foreground = new SolidColorBrush(Color.FromArgb(40, 255, 255, 255));
-                    }
-                    else if (isChecked)
-                    {
-                        statusText.Text = "✓";
-                        statusText.Foreground = new SolidColorBrush(Color.FromRgb(34, 197, 94));
-                    }
-                    else
-                    {
-                        statusText.Text = "✗";
-                        statusText.Foreground = new SolidColorBrush(Color.FromRgb(239, 68, 68));
-                    }
-
-                    Grid.SetColumn(statusText, i + 1);
-                    rowGrid.Children.Add(statusText);
-                }
-
-                rowBorder.Child = rowGrid;
-                WeekHabitView.Children.Add(rowBorder);
-            }
-        }
-
-        private void ToggleHabitCheck_Click(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is Border border && border.Tag is string habitId)
-            {
-                DataService.Instance.ToggleHabitCheck(habitId, DateTime.Today);
-                RefreshHabitData();
-            }
-        }
-
-        private void AddHabit_Click(object sender, RoutedEventArgs e)
-        {
-            _selectedHabitIcon = "💊";
-            _selectedHabitColor = "#3B82F6";
-            HabitNameBox.Clear();
-            UpdateHabitIconSelection();
-            UpdateHabitColorSelection();
-            AddHabitPopup.Visibility = Visibility.Visible;
-            HabitNameBox.Focus();
-        }
-
-        private void CloseHabitPopup_Click(object sender, RoutedEventArgs e)
-        {
-            AddHabitPopup.Visibility = Visibility.Collapsed;
-        }
-
-        private void HabitIcon_Select(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is Border border && border.Tag is string icon)
-            {
-                _selectedHabitIcon = icon;
-                UpdateHabitIconSelection();
-            }
-        }
-
-        private void UpdateHabitIconSelection()
-        {
-            var parent = Icon1.Parent as WrapPanel;
-            if (parent == null) return;
-
-            foreach (Border border in parent.Children.OfType<Border>())
-            {
-                border.Background = border.Tag?.ToString() == _selectedHabitIcon
-                    ? new SolidColorBrush(Color.FromRgb(59, 130, 246))
-                    : new SolidColorBrush(Color.FromArgb(32, 255, 255, 255));
-            }
-        }
-
-        private void HabitColor_Select(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is Border border && border.Tag is string color)
-            {
-                _selectedHabitColor = color;
-                UpdateHabitColorSelection();
-            }
-        }
-
-        private void UpdateHabitColorSelection()
-        {
-            Border[] colorBorders = { Color1, Color2, Color3, Color4, Color5, Color6 };
-            foreach (var border in colorBorders)
-            {
-                border.BorderBrush = border.Tag?.ToString() == _selectedHabitColor
-                    ? (SolidColorBrush)new BrushConverter().ConvertFrom(border.Tag.ToString()!)!
-                    : Brushes.Transparent;
-                border.BorderThickness = new Thickness(border.Tag?.ToString() == _selectedHabitColor ? 3 : 0);
-            }
-        }
-
-        private void SaveHabit_Click(object sender, RoutedEventArgs e)
-        {
-            var name = HabitNameBox.Text.Trim();
-            if (string.IsNullOrEmpty(name))
-            {
-                MessageBox.Show("请输入习惯名称", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
-                return;
-            }
-
-            DataService.Instance.AddHabit(name, _selectedHabitIcon, _selectedHabitColor);
-            AddHabitPopup.Visibility = Visibility.Collapsed;
-            RefreshHabitData();
-        }
-
-        #endregion
-
         #region 分组管理
 
         private void RefreshGroupNav()
@@ -1404,7 +1398,7 @@ namespace DesktopCalendar
                 
                 // 隐藏所有其他面板
                 ReviewPanel.Visibility = Visibility.Collapsed;
-                HabitPanel.Visibility = Visibility.Collapsed;
+                // HabitPanel已移除
                 ProjectPanel.Visibility = Visibility.Collapsed;
                 ProjectDetailPanel.Visibility = Visibility.Collapsed;
                 
@@ -1524,7 +1518,7 @@ namespace DesktopCalendar
             // 取消导航按钮高亮
             SetActiveNavButton(null);
             ReviewPanel.Visibility = Visibility.Collapsed;
-            HabitPanel.Visibility = Visibility.Collapsed;
+            // HabitPanel已移除
             ProjectDetailPanel.Visibility = Visibility.Collapsed;
             
             ProjectPanel.Visibility = Visibility.Visible;
@@ -1538,7 +1532,7 @@ namespace DesktopCalendar
             {
                 SetActiveNavButton(null);
                 ReviewPanel.Visibility = Visibility.Collapsed;
-                HabitPanel.Visibility = Visibility.Collapsed;
+                // HabitPanel已移除
                 ProjectPanel.Visibility = Visibility.Collapsed;
                 
                 OpenProjectDetail(projectId);
@@ -1753,6 +1747,15 @@ namespace DesktopCalendar
             RefreshProjectList();
         }
 
+        private void ProjectMore_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.ContextMenu != null)
+            {
+                btn.ContextMenu.PlacementTarget = btn;
+                btn.ContextMenu.IsOpen = true;
+            }
+        }
+
         private void ProjectTaskInput_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
@@ -1811,7 +1814,17 @@ namespace DesktopCalendar
             }
         }
 
+        private void DeleteProject_Click(object sender, MouseButtonEventArgs e)
+        {
+            DeleteProjectCore();
+        }
+
         private void DeleteProject_Click(object sender, RoutedEventArgs e)
+        {
+            DeleteProjectCore();
+        }
+
+        private void DeleteProjectCore()
         {
             if (_currentProjectId == null) return;
 
@@ -1859,6 +1872,56 @@ namespace DesktopCalendar
         private void CloseSupportAuthorPopup_Click(object sender, RoutedEventArgs e)
         {
             SupportAuthorPopup.Visibility = Visibility.Collapsed;
+        }
+
+        #endregion
+
+        #region 选择现有待办
+
+        private void SelectExistingTodo_Click(object sender, RoutedEventArgs e)
+        {
+            if (_currentProjectId == null) return;
+
+            var project = DataService.Instance.GetProject(_currentProjectId);
+            if (project == null || string.IsNullOrEmpty(project.LinkedGroupId)) return;
+
+            // 获取所有不属于当前分类的待办（非子任务）
+            var availableTodos = DataService.Instance.Todos
+                .Where(t => !t.IsSubTask && t.GroupId != project.LinkedGroupId)
+                .OrderByDescending(t => t.CreatedAt)
+                .ToList();
+
+            SelectableTodoList.ItemsSource = availableTodos;
+            NoSelectableTodosText.Visibility = availableTodos.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            SelectExistingTodoPopup.Visibility = Visibility.Visible;
+        }
+
+        private void CloseSelectTodoPopup_Click(object sender, RoutedEventArgs e)
+        {
+            SelectExistingTodoPopup.Visibility = Visibility.Collapsed;
+        }
+
+        private void SelectTodoItem_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.Tag is string todoId && _currentProjectId != null)
+            {
+                var project = DataService.Instance.GetProject(_currentProjectId);
+                if (project == null || string.IsNullOrEmpty(project.LinkedGroupId)) return;
+
+                var todo = DataService.Instance.GetTodo(todoId);
+                if (todo != null)
+                {
+                    // 将待办添加到当前分类（通过更新GroupId）
+                    todo.GroupId = project.LinkedGroupId;
+                    todo.UpdatedAt = DateTime.Now;
+                    DataService.Instance.Save();
+
+                    // 关闭弹窗并刷新
+                    SelectExistingTodoPopup.Visibility = Visibility.Collapsed;
+                    RefreshProjectDetail();
+                    RefreshFilteredTodos();
+                }
+            }
         }
 
         #endregion

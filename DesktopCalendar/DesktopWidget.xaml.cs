@@ -38,8 +38,7 @@ namespace DesktopCalendar
             // 监听数据变化
             DataService.Instance.Todos.CollectionChanged += (s, e) => Dispatcher.Invoke(RefreshAll);
             
-            // 监听习惯数据变化（与主界面同步）
-            DataService.Instance.HabitsChanged += (s, e) => Dispatcher.Invoke(RefreshHabits);
+            // 习惯打卡功能已移除
             
             // 初始化时钟
             InitializeClock();
@@ -127,59 +126,8 @@ namespace DesktopCalendar
         {
             RefreshTodoList();
             RefreshStats();
-            RefreshHabits();
+            // 习惯打卡功能已移除
             RenderCalendar();
-        }
-        
-        private void RefreshHabits()
-        {
-            var habits = DataService.Instance.Habits.Where(h => h.IsActive).ToList();
-            
-            // 使用选中的日期，如果没有选中则用今天
-            var targetDate = _filterDate ?? DateTime.Today;
-            var isToday = targetDate.Date == DateTime.Today;
-            
-            // 统一显示"当日习惯"
-            HabitDateLabel.Text = "当日习惯";
-            
-            // 更新每个习惯的打卡状态（针对选中日期）
-            foreach (var habit in habits)
-            {
-                habit.IsCheckedToday = DataService.Instance.IsHabitChecked(habit.Id, targetDate);
-            }
-            
-            // 选中日期需打卡的习惯（最多显示4个）
-            var targetHabits = habits.Where(h => h.IsTargetDay(targetDate)).Take(4).ToList();
-            WidgetHabitList.ItemsSource = targetHabits;
-            
-            // 统计
-            var allTargetHabits = habits.Where(h => h.IsTargetDay(targetDate)).ToList();
-            var checkedCount = allTargetHabits.Count(h => h.IsCheckedToday);
-            var totalCount = allTargetHabits.Count;
-            
-            if (totalCount > 0)
-            {
-                HabitProgress.Text = $"{checkedCount}/{totalCount}";
-                HabitSection.Visibility = Visibility.Visible;
-                NoHabitsText.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                HabitProgress.Text = "";
-                NoHabitsText.Visibility = habits.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
-            }
-        }
-        
-        private void WidgetHabitCheck_Click(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is Border border && border.Tag is string habitId)
-            {
-                // 使用选中的日期进行打卡，如果没有选中则用今天
-                var targetDate = _filterDate ?? DateTime.Today;
-                DataService.Instance.ToggleHabitCheck(habitId, targetDate);
-                RefreshHabits();
-                e.Handled = true;
-            }
         }
 
         private void RefreshTodoList()
@@ -610,7 +558,7 @@ namespace DesktopCalendar
             {
                 _filterDate = date;
                 ShowWeekTodos();
-                RefreshHabits(); // 刷新习惯显示对应日期
+                // 习惯打卡功能已移除
                 RenderCalendar();
                 e.Handled = true;
             };
@@ -754,7 +702,7 @@ namespace DesktopCalendar
             {
                 _filterDate = date;
                 RefreshTodoList();
-                RefreshHabits(); // 刷新习惯显示对应日期
+                // 习惯打卡功能已移除
                 RenderCalendar(); // 重新渲染以更新选中状态
                 e.Handled = true;
             };

@@ -99,18 +99,19 @@
                     <!-- 顶部标题 -->
                     <Grid Grid.Row="0" Margin="18,18,18,24">
                         <StackPanel Orientation="Horizontal">
-                            <Border Width="36" Height="36" CornerRadius="10">
+                            <Border Width="36" Height="36" CornerRadius="8">
                                 <Border.Background>
-                                    <LinearGradientBrush EndPoint="1,1">
-                                        <GradientStop Color="#6366F1" Offset="0"/>
-                                        <GradientStop Color="#8B5CF6" Offset="1"/>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#8B5CF6" Offset="0"/>
+                                        <GradientStop Color="#3B82F6" Offset="1"/>
                                     </LinearGradientBrush>
                                 </Border.Background>
-                                <TextBlock Text="📅" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                <TextBlock Text="D" FontSize="20" FontWeight="Bold" FontFamily="Segoe UI" 
+                                           Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </Border>
                             <StackPanel Margin="12,0,0,0" VerticalAlignment="Center">
-                                <TextBlock Text="桌面日历" Foreground="White" FontSize="15" FontWeight="SemiBold"/>
-                                <TextBlock Text="Todo Manager" Foreground="#50FFFFFF" FontSize="10"/>
+                                <TextBlock Text="DeskFlow" Foreground="White" FontSize="16" FontWeight="Bold" FontFamily="Segoe UI"/>
+                                <TextBlock Text="效率工作台" Foreground="#50FFFFFF" FontSize="10"/>
                             </StackPanel>
                         </StackPanel>
                     </Grid>
@@ -246,32 +247,7 @@
                             
                             <Separator Background="#10FFFFFF" Margin="4,16"/>
                             
-                            <!-- 习惯打卡（第二个） -->
-                            <TextBlock Text="习惯" Foreground="#45FFFFFF" FontSize="10" FontWeight="Medium" Margin="8,0,0,8"/>
-                            
-                            <Button x:Name="NavHabit" Tag="Habit" Click="NavHabit_Click" Style="{StaticResource NavButton}">
-                                <Grid>
-                                    <StackPanel Orientation="Horizontal">
-                                        <Border Width="18" Height="18" CornerRadius="5" Margin="0,0,10,0">
-                                            <Border.Background>
-                                                <LinearGradientBrush EndPoint="1,1">
-                                                    <GradientStop Color="#22C55E" Offset="0"/>
-                                                    <GradientStop Color="#16A34A" Offset="1"/>
-                                                </LinearGradientBrush>
-                                            </Border.Background>
-                                            <TextBlock Text="🎯" FontSize="10" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                        <TextBlock Text="习惯打卡" VerticalAlignment="Center"/>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                                        <TextBlock x:Name="NavHabitProgress" Text="" Foreground="#22C55E" FontSize="11"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Button>
-                            
-                            <Separator Background="#10FFFFFF" Margin="4,16"/>
-                            
-                            <!-- 复盘入口（第三个） -->
+                            <!-- 复盘入口 -->
                             <TextBlock Text="复盘" Foreground="#45FFFFFF" FontSize="10" FontWeight="Medium" Margin="8,0,0,8"/>
                             
                             <Button x:Name="NavReview" Tag="Review" Click="NavReview_Click" Style="{StaticResource NavButton}">
@@ -334,47 +310,48 @@
                                 </Border>
                             </StackPanel>
                             
-                            <Separator Background="#10FFFFFF" Margin="4,16"/>
-                            
-                            <!-- 支持作者 -->
-                            <Border Background="#15FFFFFF" CornerRadius="10" Padding="12,10" Cursor="Hand"
-                                    MouseLeftButtonDown="SupportAuthor_Click">
-                                <Border.Style>
-                                    <Style TargetType="Border">
-                                        <Style.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="#25FFFFFF"/>
-                                            </Trigger>
-                                        </Style.Triggers>
-                                    </Style>
-                                </Border.Style>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Text="☕" FontSize="14" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                                    <TextBlock Text="支持作者" Foreground="#90FFFFFF" FontSize="12" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Border>
                         </StackPanel>
                     </ScrollViewer>
 
-                    <!-- 底部统计 -->
-                    <Border Grid.Row="2" Margin="10,0,10,10" CornerRadius="12" Padding="16,14">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#15FFFFFF" Offset="0"/>
-                                <GradientStop Color="#08FFFFFF" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Border.Background>
-                        <StackPanel>
-                            <!-- 完成率 -->
-                            <Grid Margin="0,0,0,10">
-                                <TextBlock Text="今日进度" Foreground="#70FFFFFF" FontSize="11"/>
-                                <TextBlock x:Name="CompletionRate" Text="0%" Foreground="#22C55E" FontSize="11" FontWeight="Bold" HorizontalAlignment="Right"/>
-                            </Grid>
-                            <Border Background="#15FFFFFF" CornerRadius="4" Height="8">
-                                <Border x:Name="ProgressBar" Background="#22C55E" CornerRadius="4" HorizontalAlignment="Left" Width="0"/>
-                            </Border>
-                        </StackPanel>
-                    </Border>
+                    <!-- 底部区域：进度 + 支持作者 -->
+                    <StackPanel Grid.Row="2" Margin="10,0,10,10">
+                        <!-- 今日进度 -->
+                        <Border CornerRadius="10" Padding="14,12" Margin="0,0,0,8">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#15FFFFFF" Offset="0"/>
+                                    <GradientStop Color="#08FFFFFF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <StackPanel>
+                                <Grid Margin="0,0,0,8">
+                                    <TextBlock Text="今日进度" Foreground="#70FFFFFF" FontSize="11"/>
+                                    <TextBlock x:Name="CompletionRate" Text="0%" Foreground="#22C55E" FontSize="11" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                </Grid>
+                                <Border Background="#15FFFFFF" CornerRadius="4" Height="6">
+                                    <Border x:Name="ProgressBar" Background="#22C55E" CornerRadius="4" HorizontalAlignment="Left" Width="0"/>
+                                </Border>
+                            </StackPanel>
+                        </Border>
+                        
+                        <!-- 支持作者 -->
+                        <Border Background="#10FFFFFF" CornerRadius="10" Padding="12,10" Cursor="Hand"
+                                MouseLeftButtonDown="SupportAuthor_Click">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#20FFFFFF"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <TextBlock Text="☕" FontSize="13" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="支持作者" Foreground="#80FFFFFF" FontSize="11" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
                 </Grid>
             </Border>
 
@@ -438,7 +415,7 @@
                 </Border>
 
                 <!-- 快捷添加 -->
-                <Border Grid.Row="2" CornerRadius="14" Padding="18,16" Margin="0,0,0,20"
+                <Border x:Name="AddTodoSection" Grid.Row="2" CornerRadius="14" Padding="18,16" Margin="0,0,0,20"
                         BorderBrush="#15FFFFFF" BorderThickness="1">
                     <Border.Background>
                         <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
@@ -753,694 +730,289 @@
                 </StackPanel>
             </Grid>
             
-            <!-- ========== 复盘面板 ========== -->
-            <Border x:Name="ReviewPanel" Grid.Column="1" Visibility="Collapsed" Background="#F8101018">
-                <Grid Margin="24,20">
+            <!-- ========== 数据复盘面板 ========== -->
+            <Border x:Name="ReviewPanel" Grid.Column="1" Visibility="Collapsed" Background="#FF0D0D12">
+                <Grid Margin="48,0,48,32">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <!-- 标题 -->
-                    <Grid Grid.Row="0" Margin="0,0,0,24">
-                        <StackPanel>
-                            <TextBlock x:Name="ReviewTitle" Text="📊 数据统计" Foreground="White" FontSize="28" FontWeight="Bold"/>
-                            <TextBlock x:Name="ReviewSubtitle" Text="查看您的任务完成趋势和效率分析" Foreground="#50FFFFFF" FontSize="13" Margin="0,6,0,0"/>
-                        </StackPanel>
-                        <Button Content="×" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,70,0"
-                                Style="{StaticResource IconButton}" FontSize="20" Click="CloseReview_Click"/>
-                    </Grid>
-                    
-                    <!-- 时间段切换 -->
-                    <Border Grid.Row="1" Background="#12FFFFFF" CornerRadius="12" Padding="6" Margin="0,0,0,24">
+                    <!-- 顶部导航区 - 参考 Linear/Notion 风格 -->
+                    <Border Grid.Row="0" Margin="0,0,0,28" Padding="0,28,0,20" 
+                            BorderBrush="#15FFFFFF" BorderThickness="0,0,0,1">
                         <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Button x:Name="ReviewDay" Grid.Column="0" Content="日复盘" Click="ReviewPeriod_Click" Tag="Day"
-                                    Background="#6366F1" Foreground="White" BorderThickness="0" Padding="16,12" Cursor="Hand">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                            <Button x:Name="ReviewWeek" Grid.Column="1" Content="周复盘" Click="ReviewPeriod_Click" Tag="Week"
-                                    Background="Transparent" Foreground="#90FFFFFF" BorderThickness="0" Padding="16,12" Cursor="Hand">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Bd" Property="Background" Value="#15FFFFFF"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                            <Button x:Name="ReviewMonth" Grid.Column="2" Content="月复盘" Click="ReviewPeriod_Click" Tag="Month"
-                                    Background="Transparent" Foreground="#90FFFFFF" BorderThickness="0" Padding="16,12" Cursor="Hand">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Bd" Property="Background" Value="#15FFFFFF"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                            <Button x:Name="ReviewYear" Grid.Column="3" Content="年复盘" Click="ReviewPeriod_Click" Tag="Year"
-                                    Background="Transparent" Foreground="#90FFFFFF" BorderThickness="0" Padding="16,12" Cursor="Hand">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center"/>
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="Bd" Property="Background" Value="#15FFFFFF"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                        </Grid>
-                    </Border>
-                    
-                    <!-- 复盘内容区 -->
-                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="380"/>
-                            </Grid.ColumnDefinitions>
+                            <!-- 标题区 -->
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock x:Name="ReviewTitle" Text="数据统计" Foreground="White" 
+                                           FontSize="22" FontWeight="SemiBold" FontFamily="Microsoft YaHei UI"/>
+                                <TextBlock x:Name="ReviewSubtitle" Text="" Foreground="#45FFFFFF" FontSize="11" Margin="0,3,0,0"/>
+                            </StackPanel>
                             
-                            <!-- 左侧：统计数据 -->
-                            <StackPanel Grid.Column="0" Margin="0,0,20,0">
-                                <!-- 统计卡片 -->
-                                <Grid Margin="0,0,0,20">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    
-                                    <!-- 总任务 -->
-                                    <Border Grid.Column="0" CornerRadius="12" Margin="0,0,8,0" Padding="16">
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <GradientStop Color="#3B82F6" Offset="0"/>
-                                                <GradientStop Color="#1D4ED8" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </Border.Background>
-                                        <StackPanel>
-                                            <TextBlock Text="📋" FontSize="20"/>
-                                            <TextBlock x:Name="ReviewTotalCount" Text="0" Foreground="White" FontSize="26" FontWeight="Bold" Margin="0,6,0,0"/>
-                                            <TextBlock Text="总任务" Foreground="#C0FFFFFF" FontSize="11"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <!-- 已完成 -->
-                                    <Border Grid.Column="1" CornerRadius="12" Margin="4,0" Padding="16">
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <GradientStop Color="#22C55E" Offset="0"/>
-                                                <GradientStop Color="#16A34A" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </Border.Background>
-                                        <StackPanel>
-                                            <TextBlock Text="✅" FontSize="20"/>
-                                            <TextBlock x:Name="ReviewCompletedCount" Text="0" Foreground="White" FontSize="26" FontWeight="Bold" Margin="0,6,0,0"/>
-                                            <TextBlock Text="已完成" Foreground="#C0FFFFFF" FontSize="11"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <!-- 完成率 -->
-                                    <Border Grid.Column="2" CornerRadius="12" Margin="4,0" Padding="16">
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <GradientStop Color="#8B5CF6" Offset="0"/>
-                                                <GradientStop Color="#6D28D9" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </Border.Background>
-                                        <StackPanel>
-                                            <TextBlock Text="📈" FontSize="20"/>
-                                            <TextBlock x:Name="ReviewCompletionRate" Text="0%" Foreground="White" FontSize="26" FontWeight="Bold" Margin="0,6,0,0"/>
-                                            <TextBlock Text="完成率" Foreground="#C0FFFFFF" FontSize="11"/>
-                                        </StackPanel>
-                                    </Border>
-                                    
-                                    <!-- 逾期数 -->
-                                    <Border Grid.Column="3" CornerRadius="12" Margin="8,0,0,0" Padding="16">
-                                        <Border.Background>
-                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                <GradientStop Color="#EF4444" Offset="0"/>
-                                                <GradientStop Color="#DC2626" Offset="1"/>
-                                            </LinearGradientBrush>
-                                        </Border.Background>
-                                        <StackPanel>
-                                            <TextBlock Text="⚠️" FontSize="20"/>
-                                            <TextBlock x:Name="ReviewOverdueCount" Text="0" Foreground="White" FontSize="26" FontWeight="Bold" Margin="0,6,0,0"/>
-                                            <TextBlock Text="逾期" Foreground="#C0FFFFFF" FontSize="11"/>
-                                        </StackPanel>
-                                    </Border>
-                                </Grid>
-                                
-                                <!-- 分组统计（动态） -->
-                                <Border x:Name="ReviewGroupSection" Background="#10FFFFFF" CornerRadius="14" Padding="20" Margin="0,0,0,16" Visibility="Collapsed">
+                            <!-- Tab 切换 - 下划线风格 -->
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,50,0">
+                                <Border x:Name="ReviewDayTab" Padding="16,8" Cursor="Hand" Background="Transparent"
+                                        MouseLeftButtonDown="ReviewPeriod_Click" Tag="Day">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#08FFFFFF"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <StackPanel>
-                                        <TextBlock Text="📂 分组完成情况" Foreground="White" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,14"/>
-                                        <ItemsControl x:Name="ReviewGroupList">
-                                            <ItemsControl.ItemsPanel>
-                                                <ItemsPanelTemplate>
-                                                    <UniformGrid Rows="1"/>
-                                                </ItemsPanelTemplate>
-                                            </ItemsControl.ItemsPanel>
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <StackPanel HorizontalAlignment="Center" Margin="8,0">
-                                                        <Border Width="44" Height="44" CornerRadius="22" Margin="0,0,0,8">
-                                                            <Border.Background>
-                                                                <SolidColorBrush Color="{Binding Color}" Opacity="0.3"/>
-                                                            </Border.Background>
-                                                            <TextBlock Text="{Binding Icon}" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                        <TextBlock Text="{Binding Stats}" Foreground="White" FontSize="13" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                                        <TextBlock Text="{Binding Name}" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" MaxWidth="60" TextTrimming="CharacterEllipsis"/>
-                                                    </StackPanel>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
+                                        <TextBlock x:Name="ReviewDay" Text="今日" Foreground="White" FontSize="13" FontWeight="Medium" HorizontalAlignment="Center"/>
+                                        <Border x:Name="ReviewDayIndicator" Height="2" Background="#6366F1" CornerRadius="1" Margin="0,6,0,0"/>
                                     </StackPanel>
                                 </Border>
-                                
-                                <!-- 优先级统计 -->
-                                <Border Background="#10FFFFFF" CornerRadius="14" Padding="20" Margin="0,0,0,16">
+                                <Border x:Name="ReviewWeekTab" Padding="16,8" Cursor="Hand" Background="Transparent"
+                                        MouseLeftButtonDown="ReviewPeriod_Click" Tag="Week" Margin="8,0,0,0">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#08FFFFFF"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <StackPanel>
-                                        <TextBlock Text="🎯 优先级分布" Foreground="White" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,14"/>
-                                        
-                                        <Grid Margin="0,0,0,10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="60"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="40"/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Ellipse Width="8" Height="8" Fill="#EF4444" Margin="0,0,8,0"/>
-                                                <TextBlock Text="紧急" Foreground="#90FFFFFF" FontSize="12"/>
-                                            </StackPanel>
-                                            <Border Grid.Column="1" Background="#20FFFFFF" CornerRadius="3" Height="8">
-                                                <Border x:Name="ReviewHighBar" Background="#EF4444" CornerRadius="3" HorizontalAlignment="Left" Width="0"/>
-                                            </Border>
-                                            <TextBlock x:Name="ReviewHighCount" Grid.Column="2" Text="0" Foreground="White" FontSize="12" HorizontalAlignment="Right"/>
-                                        </Grid>
-                                        
-                                        <Grid Margin="0,0,0,10">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="60"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="40"/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Ellipse Width="8" Height="8" Fill="#F59E0B" Margin="0,0,8,0"/>
-                                                <TextBlock Text="重要" Foreground="#90FFFFFF" FontSize="12"/>
-                                            </StackPanel>
-                                            <Border Grid.Column="1" Background="#20FFFFFF" CornerRadius="3" Height="8">
-                                                <Border x:Name="ReviewMediumBar" Background="#F59E0B" CornerRadius="3" HorizontalAlignment="Left" Width="0"/>
-                                            </Border>
-                                            <TextBlock x:Name="ReviewMediumCount" Grid.Column="2" Text="0" Foreground="White" FontSize="12" HorizontalAlignment="Right"/>
-                                        </Grid>
-                                        
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="60"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="40"/>
-                                            </Grid.ColumnDefinitions>
-                                            <StackPanel Orientation="Horizontal">
-                                                <Ellipse Width="8" Height="8" Fill="#22C55E" Margin="0,0,8,0"/>
-                                                <TextBlock Text="普通" Foreground="#90FFFFFF" FontSize="12"/>
-                                            </StackPanel>
-                                            <Border Grid.Column="1" Background="#20FFFFFF" CornerRadius="3" Height="8">
-                                                <Border x:Name="ReviewLowBar" Background="#22C55E" CornerRadius="3" HorizontalAlignment="Left" Width="0"/>
-                                            </Border>
-                                            <TextBlock x:Name="ReviewLowCount" Grid.Column="2" Text="0" Foreground="White" FontSize="12" HorizontalAlignment="Right"/>
-                                        </Grid>
+                                        <TextBlock x:Name="ReviewWeek" Text="本周" Foreground="#60FFFFFF" FontSize="13" HorizontalAlignment="Center"/>
+                                        <Border x:Name="ReviewWeekIndicator" Height="2" Background="Transparent" CornerRadius="1" Margin="0,6,0,0"/>
                                     </StackPanel>
                                 </Border>
-                                
-                                <!-- 已完成任务列表 -->
-                                <Border Background="#10FFFFFF" CornerRadius="14" Padding="20">
+                                <Border x:Name="ReviewMonthTab" Padding="16,8" Cursor="Hand" Background="Transparent"
+                                        MouseLeftButtonDown="ReviewPeriod_Click" Tag="Month" Margin="8,0,0,0">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#08FFFFFF"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
                                     <StackPanel>
-                                        <TextBlock Text="✅ 已完成任务" Foreground="White" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,14"/>
-                                        <ItemsControl x:Name="ReviewCompletedList" MaxHeight="200">
-                                            <ItemsControl.ItemTemplate>
-                                                <DataTemplate>
-                                                    <Border Background="#08FFFFFF" CornerRadius="6" Padding="12,10" Margin="0,0,0,6">
-                                                        <Grid>
-                                                            <Grid.ColumnDefinitions>
-                                                                <ColumnDefinition Width="Auto"/>
-                                                                <ColumnDefinition Width="*"/>
-                                                            </Grid.ColumnDefinitions>
-                                                            <TextBlock Text="✓" Foreground="#22C55E" FontWeight="Bold" Margin="0,0,10,0" VerticalAlignment="Center"/>
-                                                            <TextBlock Grid.Column="1" Text="{Binding Title}" Foreground="#C0FFFFFF" FontSize="12" 
-                                                                       TextDecorations="Strikethrough" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
-                                                        </Grid>
-                                                    </Border>
-                                                </DataTemplate>
-                                            </ItemsControl.ItemTemplate>
-                                        </ItemsControl>
-                                        <TextBlock x:Name="ReviewNoTasks" Text="暂无已完成任务" Foreground="#40FFFFFF" FontSize="12" 
-                                                   HorizontalAlignment="Center" Margin="0,16,0,16" Visibility="Collapsed"/>
+                                        <TextBlock x:Name="ReviewMonth" Text="本月" Foreground="#60FFFFFF" FontSize="13" HorizontalAlignment="Center"/>
+                                        <Border x:Name="ReviewMonthIndicator" Height="2" Background="Transparent" CornerRadius="1" Margin="0,6,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                                <Border x:Name="ReviewYearTab" Padding="16,8" Cursor="Hand" Background="Transparent"
+                                        MouseLeftButtonDown="ReviewPeriod_Click" Tag="Year" Margin="8,0,0,0">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="#08FFFFFF"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <StackPanel>
+                                        <TextBlock x:Name="ReviewYear" Text="全年" Foreground="#60FFFFFF" FontSize="13" HorizontalAlignment="Center"/>
+                                        <Border x:Name="ReviewYearIndicator" Height="2" Background="Transparent" CornerRadius="1" Margin="0,6,0,0"/>
                                     </StackPanel>
                                 </Border>
                             </StackPanel>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- 主内容区 -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Hidden">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
                             
-                            <!-- 右侧：趋势与分析 -->
-                            <StackPanel Grid.Column="1">
-                                <!-- 完成趋势图 -->
-                                <Border Background="#10FFFFFF" CornerRadius="14" Padding="20" Margin="0,0,0,16">
+                            <!-- 第一行：四个统计卡片 -->
+                            <Grid Grid.Row="0" Margin="0,0,0,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- 已完成 -->
+                                <Border Grid.Column="0" CornerRadius="16" Margin="0,0,8,0" Padding="20" Background="#15FFFFFF">
                                     <StackPanel>
-                                        <TextBlock Text="📈 完成趋势（最近7天）" Foreground="White" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                                        
-                                        <!-- 趋势柱状图 -->
-                                        <Grid Height="120">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            
-                                            <StackPanel Grid.Column="0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                                <Border x:Name="TrendBar0" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
-                                                <TextBlock x:Name="TrendLabel0" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                                <Border x:Name="TrendBar1" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
-                                                <TextBlock x:Name="TrendLabel1" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="2" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                                <Border x:Name="TrendBar2" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
-                                                <TextBlock x:Name="TrendLabel2" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="3" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                                <Border x:Name="TrendBar3" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
-                                                <TextBlock x:Name="TrendLabel3" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="4" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                                <Border x:Name="TrendBar4" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
-                                                <TextBlock x:Name="TrendLabel4" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="5" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                                <Border x:Name="TrendBar5" Width="28" Background="#6366F1" CornerRadius="4,4,0,0" Height="0"/>
-                                                <TextBlock x:Name="TrendLabel5" Text="" Foreground="#60FFFFFF" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0"/>
-                                            </StackPanel>
-                                            <StackPanel Grid.Column="6" VerticalAlignment="Bottom" HorizontalAlignment="Center">
-                                                <Border x:Name="TrendBar6" Width="28" Background="#8B5CF6" CornerRadius="4,4,0,0" Height="0"/>
-                                                <TextBlock x:Name="TrendLabel6" Text="今天" Foreground="#8B5CF6" FontSize="10" HorizontalAlignment="Center" Margin="0,6,0,0" FontWeight="Bold"/>
-                                            </StackPanel>
-                                        </Grid>
+                                        <TextBlock Text="已完成" Foreground="#70FFFFFF" FontSize="12"/>
+                                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                            <TextBlock x:Name="ReviewCompletedCount" Text="0" Foreground="White" FontSize="36" FontWeight="Bold"/>
+                                            <TextBlock Text="项" Foreground="#50FFFFFF" FontSize="14" VerticalAlignment="Bottom" Margin="4,0,0,6"/>
+                                        </StackPanel>
                                     </StackPanel>
                                 </Border>
                                 
-                                <!-- 周对比 -->
-                                <Border Background="#10FFFFFF" CornerRadius="14" Padding="20" Margin="0,0,0,16">
+                                <!-- 完成率 -->
+                                <Border Grid.Column="1" CornerRadius="16" Margin="4,0" Padding="20" Background="#15FFFFFF">
+                                    <StackPanel>
+                                        <TextBlock Text="完成率" Foreground="#70FFFFFF" FontSize="12"/>
+                                        <TextBlock x:Name="ReviewCompletionRate" Text="0%" Foreground="#22C55E" FontSize="36" FontWeight="Bold" Margin="0,8,0,0"/>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <!-- 连续天数（渐变橙色背景） -->
+                                <Border Grid.Column="2" CornerRadius="16" Margin="4,0" Padding="20">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#F97316" Offset="0"/>
+                                            <GradientStop Color="#EA580C" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
                                     <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
-                                        
-                                        <StackPanel Grid.Column="0" HorizontalAlignment="Center">
-                                            <TextBlock Text="上周" Foreground="#60FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="LastWeekCount" Text="0" Foreground="White" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="完成" Foreground="#60FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                        
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="20,0">
-                                            <TextBlock x:Name="WeekCompareIcon" Text="→" Foreground="#60FFFFFF" FontSize="20" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="WeekCompareText" Text="+0%" Foreground="#22C55E" FontSize="12" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                        </StackPanel>
-                                        
-                                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
-                                            <TextBlock Text="本周" Foreground="#60FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
-                                            <TextBlock x:Name="ThisWeekCount" Text="0" Foreground="White" FontSize="28" FontWeight="Bold" HorizontalAlignment="Center"/>
-                                            <TextBlock Text="完成" Foreground="#60FFFFFF" FontSize="11" HorizontalAlignment="Center"/>
+                                        <StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <TextBlock Text="🔥 连续" Foreground="#DDFFFFFF" FontSize="12"/>
+                                                <TextBlock x:Name="ReviewBestStreak" Text="最佳 0" Foreground="#99FFFFFF" FontSize="11" Margin="10,0,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                                <TextBlock x:Name="ReviewStreakCount" Text="0" Foreground="White" FontSize="36" FontWeight="Bold"/>
+                                                <TextBlock Text="天" Foreground="#DDFFFFFF" FontSize="14" VerticalAlignment="Bottom" Margin="4,0,0,6"/>
+                                            </StackPanel>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
                                 
-                                <!-- 鼓励语 -->
-                                <Border CornerRadius="14" Padding="20">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                            <GradientStop Color="#22C55E" Offset="0"/>
-                                            <GradientStop Color="#16A34A" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
+                                <!-- 较上周/较昨日 -->
+                                <Border Grid.Column="3" CornerRadius="16" Margin="8,0,0,0" Padding="20" Background="#15FFFFFF">
                                     <StackPanel>
-                                        <TextBlock Text="💪" FontSize="24" HorizontalAlignment="Center"/>
-                                        <TextBlock x:Name="EncourageText" Text="继续保持，你做得很棒！" Foreground="White" FontSize="14" 
-                                                   FontWeight="Medium" HorizontalAlignment="Center" Margin="0,8,0,0" TextWrapping="Wrap" TextAlignment="Center"/>
+                                        <TextBlock x:Name="ReviewCompareLabel" Text="较上周" Foreground="#70FFFFFF" FontSize="12"/>
+                                        <TextBlock x:Name="ReviewCompareValue" Text="+0" Foreground="#22C55E" FontSize="36" FontWeight="Bold" Margin="0,8,0,0"/>
                                     </StackPanel>
                                 </Border>
-                            </StackPanel>
+                            </Grid>
+                            
+                            <!-- 第二行：趋势图 + 鼓励文字 -->
+                            <Border Grid.Row="1" CornerRadius="16" Padding="24" Margin="0,0,0,20" Background="#10FFFFFF">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock x:Name="ReviewTrendTitle" Text="本周趋势" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,20"/>
+                                        
+                                        <!-- 柱状图 - 使用 UniformGrid 自动均匀分布 -->
+                                        <UniformGrid x:Name="TrendChartGrid" Rows="1" Height="140">
+                                            <StackPanel x:Name="TrendColumn0" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <TextBlock x:Name="TrendCount0" Text="" Foreground="#70FFFFFF" FontSize="11" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                                                <Border x:Name="TrendBar0" Width="48" CornerRadius="6,6,0,0" Height="4" Background="#3B82F6"/>
+                                                <TextBlock x:Name="TrendLabel0" Text="一" Foreground="#50FFFFFF" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel x:Name="TrendColumn1" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <TextBlock x:Name="TrendCount1" Text="" Foreground="#70FFFFFF" FontSize="11" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                                                <Border x:Name="TrendBar1" Width="48" CornerRadius="6,6,0,0" Height="4" Background="#3B82F6"/>
+                                                <TextBlock x:Name="TrendLabel1" Text="二" Foreground="#50FFFFFF" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel x:Name="TrendColumn2" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <TextBlock x:Name="TrendCount2" Text="" Foreground="#70FFFFFF" FontSize="11" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                                                <Border x:Name="TrendBar2" Width="48" CornerRadius="6,6,0,0" Height="4" Background="#8B5CF6"/>
+                                                <TextBlock x:Name="TrendLabel2" Text="三" Foreground="#8B5CF6" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel x:Name="TrendColumn3" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <TextBlock x:Name="TrendCount3" Text="" Foreground="#70FFFFFF" FontSize="11" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                                                <Border x:Name="TrendBar3" Width="48" CornerRadius="6,6,0,0" Height="4" Background="#3B82F6"/>
+                                                <TextBlock x:Name="TrendLabel3" Text="四" Foreground="#50FFFFFF" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel x:Name="TrendColumn4" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <TextBlock x:Name="TrendCount4" Text="" Foreground="#70FFFFFF" FontSize="11" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                                                <Border x:Name="TrendBar4" Width="48" CornerRadius="6,6,0,0" Height="4" Background="#3B82F6"/>
+                                                <TextBlock x:Name="TrendLabel4" Text="五" Foreground="#50FFFFFF" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel x:Name="TrendColumn5" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <TextBlock x:Name="TrendCount5" Text="" Foreground="#70FFFFFF" FontSize="11" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                                                <Border x:Name="TrendBar5" Width="48" CornerRadius="6,6,0,0" Height="4" Background="#3B82F6"/>
+                                                <TextBlock x:Name="TrendLabel5" Text="六" Foreground="#50FFFFFF" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                            </StackPanel>
+                                            <StackPanel x:Name="TrendColumn6" VerticalAlignment="Bottom" HorizontalAlignment="Center">
+                                                <TextBlock x:Name="TrendCount6" Text="" Foreground="#70FFFFFF" FontSize="11" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                                                <Border x:Name="TrendBar6" Width="48" CornerRadius="6,6,0,0" Height="4" Background="#3B82F6"/>
+                                                <TextBlock x:Name="TrendLabel6" Text="日" Foreground="#50FFFFFF" FontSize="12" HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                            </StackPanel>
+                                        </UniformGrid>
+                                    </StackPanel>
+                                    
+                                    <!-- 鼓励文字 -->
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="30,0,0,0" MinWidth="180">
+                                        <TextBlock x:Name="EncourageText" Text="非常高效！" Foreground="#22C55E" FontSize="15" FontWeight="SemiBold" 
+                                                   TextWrapping="Wrap" TextAlignment="Right"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                            
+                            <!-- 第三行：效率洞察 + 分类占比 -->
+                            <Grid Grid.Row="2">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                
+                                <!-- 效率洞察 -->
+                                <Border Grid.Column="0" CornerRadius="16" Padding="24" Margin="0,0,10,0" Background="#10FFFFFF">
+                                    <StackPanel>
+                                        <TextBlock Text="效率洞察" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,20"/>
+                                        
+                                        <Grid Margin="0,0,0,12">
+                                            <TextBlock Text="效率最高" Foreground="#80FFFFFF" FontSize="13"/>
+                                            <TextBlock x:Name="ReviewBestDay" Text="周二 (18项)" Foreground="White" FontSize="13" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                        <Grid Margin="0,0,0,12">
+                                            <TextBlock Text="日均完成" Foreground="#80FFFFFF" FontSize="13"/>
+                                            <TextBlock x:Name="ReviewAvgDaily" Text="5.6 项" Foreground="White" FontSize="13" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                        <Grid Margin="0,0,0,12">
+                                            <TextBlock Text="总逾期" Foreground="#EF4444" FontSize="13"/>
+                                            <TextBlock x:Name="ReviewOverdueCount" Text="3 项" Foreground="#EF4444" FontSize="13" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                        <Grid>
+                                            <TextBlock Text="已顺延" Foreground="#F97316" FontSize="13"/>
+                                            <TextBlock x:Name="ReviewPostponedCount" Text="10 项" Foreground="#F97316" FontSize="13" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+                                
+                                <!-- 分类完成占比 -->
+                                <Border Grid.Column="1" CornerRadius="16" Padding="24" Margin="10,0,0,0" Background="#10FFFFFF">
+                                    <StackPanel>
+                                        <TextBlock Text="分类完成占比" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,20"/>
+                                        
+                                        <StackPanel x:Name="ReviewCategoryStats">
+                                            <!-- 动态生成分类统计条形图 -->
+                                        </StackPanel>
+                                        
+                                        <TextBlock x:Name="ReviewNoCategoryStats" Text="暂无分类数据" Foreground="#40FFFFFF" FontSize="12" 
+                                                   HorizontalAlignment="Center" Margin="0,20,0,0" Visibility="Collapsed"/>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
                         </Grid>
                     </ScrollViewer>
-                </Grid>
-            </Border>
-            
-            <!-- ========== 习惯打卡面板 ========== -->
-            <Border x:Name="HabitPanel" Grid.Column="1" Visibility="Collapsed" Background="#F8101018">
-                <Grid Margin="24,20">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
                     
-                    <!-- 标题 -->
-                    <Grid Grid.Row="0" Margin="0,0,0,24">
+                    <!-- 隐藏的兼容元素 -->
+                    <Border Visibility="Collapsed">
                         <StackPanel>
-                            <TextBlock Text="🎯 习惯打卡" Foreground="White" FontSize="28" FontWeight="Bold"/>
-                            <TextBlock Text="每日坚持，养成好习惯" Foreground="#50FFFFFF" FontSize="13" Margin="0,6,0,0"/>
+                            <TextBlock x:Name="ReviewTotalCount"/>
+                            <Border x:Name="ReviewGroupSection"/>
+                            <ItemsControl x:Name="ReviewGroupList"/>
+                            <Border x:Name="ReviewHighBar"/>
+                            <Border x:Name="ReviewMediumBar"/>
+                            <Border x:Name="ReviewLowBar"/>
+                            <TextBlock x:Name="ReviewHighCount"/>
+                            <TextBlock x:Name="ReviewMediumCount"/>
+                            <TextBlock x:Name="ReviewLowCount"/>
+                            <TextBlock x:Name="LastWeekCount"/>
+                            <TextBlock x:Name="ThisWeekCount"/>
+                            <TextBlock x:Name="WeekCompareIcon"/>
+                            <TextBlock x:Name="WeekCompareText"/>
                         </StackPanel>
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,0,70,0">
-                            <Button Content="＋ 添加习惯" Background="#22C55E" Foreground="White"
-                                    Padding="16,10" BorderThickness="0" Cursor="Hand" Click="AddHabit_Click" Margin="0,0,10,0">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                            <Button Content="×" Style="{StaticResource IconButton}" FontSize="20" Click="CloseHabit_Click"/>
-                        </StackPanel>
-                    </Grid>
-                    
-                    <!-- 今日统计 -->
-                    <Grid Grid.Row="1" Margin="0,0,0,24">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <!-- 今日完成 -->
-                        <Border Grid.Column="0" CornerRadius="14" Margin="0,0,8,0" Padding="20">
-                            <Border.Background>
-                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="#22C55E" Offset="0"/>
-                                    <GradientStop Color="#16A34A" Offset="1"/>
-                                </LinearGradientBrush>
-                            </Border.Background>
-                            <StackPanel>
-                                <TextBlock Text="✅" FontSize="24"/>
-                                <StackPanel Orientation="Horizontal" Margin="0,10,0,4">
-                                    <TextBlock x:Name="HabitTodayDone" Text="0" Foreground="White" FontSize="32" FontWeight="Bold"/>
-                                    <TextBlock Text=" / " Foreground="#80FFFFFF" FontSize="20" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
-                                    <TextBlock x:Name="HabitTodayTotal" Text="0" Foreground="#80FFFFFF" FontSize="20" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
-                                </StackPanel>
-                                <TextBlock Text="今日打卡" Foreground="#C0FFFFFF" FontSize="12"/>
-                            </StackPanel>
-                        </Border>
-                        
-                        <!-- 连续天数 -->
-                        <Border Grid.Column="1" CornerRadius="14" Margin="4,0" Padding="20" Background="#15FFFFFF">
-                            <StackPanel>
-                                <TextBlock Text="🔥" FontSize="24"/>
-                                <TextBlock x:Name="HabitMaxStreak" Text="0" Foreground="White" FontSize="32" FontWeight="Bold" Margin="0,10,0,4"/>
-                                <TextBlock Text="最长连续天数" Foreground="#70FFFFFF" FontSize="12"/>
-                            </StackPanel>
-                        </Border>
-                        
-                        <!-- 本周完成率 -->
-                        <Border Grid.Column="2" CornerRadius="14" Margin="8,0,0,0" Padding="20" Background="#15FFFFFF">
-                            <StackPanel>
-                                <TextBlock Text="📈" FontSize="24"/>
-                                <TextBlock x:Name="HabitWeekRate" Text="0%" Foreground="White" FontSize="32" FontWeight="Bold" Margin="0,10,0,4"/>
-                                <TextBlock Text="本周完成率" Foreground="#70FFFFFF" FontSize="12"/>
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                    
-                    <!-- 习惯列表 -->
-                    <Grid Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="320"/>
-                        </Grid.ColumnDefinitions>
-                        
-                        <!-- 今日打卡 -->
-                        <Border Grid.Column="0" Background="#10FFFFFF" CornerRadius="14" Padding="20" Margin="0,0,16,0">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                
-                                <TextBlock Grid.Row="0" Text="📅 今日习惯" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                                
-                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                                    <ItemsControl x:Name="TodayHabitList">
-                                        <ItemsControl.ItemTemplate>
-                                            <DataTemplate>
-                                                <Border Background="#08FFFFFF" CornerRadius="12" Padding="16,14" Margin="0,0,0,10"
-                                                        BorderBrush="#10FFFFFF" BorderThickness="1">
-                                                    <Grid>
-                                                        <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition Width="*"/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                        </Grid.ColumnDefinitions>
-                                                        
-                                                        <!-- 图标 -->
-                                                        <Border Grid.Column="0" Width="44" Height="44" CornerRadius="22" Margin="0,0,14,0"
-                                                                Background="{Binding Color, Converter={StaticResource HabitColorConverter}}">
-                                                            <TextBlock Text="{Binding Icon}" FontSize="22" 
-                                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                        
-                                                        <!-- 信息 -->
-                                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                                            <TextBlock Text="{Binding Name}" Foreground="White" FontSize="15" FontWeight="Medium"/>
-                                                            <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
-                                                                <TextBlock Text="🔥 " Foreground="#F97316" FontSize="11"/>
-                                                                <TextBlock Text="{Binding CurrentStreak}" Foreground="#F97316" FontSize="11"/>
-                                                                <TextBlock Text=" 天连续" Foreground="#60FFFFFF" FontSize="11"/>
-                                                                <TextBlock Text="  ·  " Foreground="#30FFFFFF" FontSize="11"/>
-                                                                <TextBlock Text="最长 " Foreground="#50FFFFFF" FontSize="11"/>
-                                                                <TextBlock Text="{Binding LongestStreak}" Foreground="#50FFFFFF" FontSize="11"/>
-                                                                <TextBlock Text=" 天" Foreground="#50FFFFFF" FontSize="11"/>
-                                                            </StackPanel>
-                                                        </StackPanel>
-                                                        
-                                                        <!-- 打卡按钮 -->
-                                                        <Border Grid.Column="2" Width="50" Height="50" CornerRadius="25" Cursor="Hand"
-                                                                MouseLeftButtonDown="ToggleHabitCheck_Click" Tag="{Binding Id}"
-                                                                x:Name="CheckBorder">
-                                                            <Border.Style>
-                                                                <Style TargetType="Border">
-                                                                    <Setter Property="Background" Value="#20FFFFFF"/>
-                                                                    <Setter Property="BorderBrush" Value="#30FFFFFF"/>
-                                                                    <Setter Property="BorderThickness" Value="2"/>
-                                                                    <Style.Triggers>
-                                                                        <DataTrigger Binding="{Binding IsCheckedToday}" Value="True">
-                                                                            <Setter Property="Background" Value="#22C55E"/>
-                                                                            <Setter Property="BorderBrush" Value="#22C55E"/>
-                                                                        </DataTrigger>
-                                                                    </Style.Triggers>
-                                                                </Style>
-                                                            </Border.Style>
-                                                            <TextBlock FontSize="22" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                                                <TextBlock.Style>
-                                                                    <Style TargetType="TextBlock">
-                                                                        <Setter Property="Text" Value="○"/>
-                                                                        <Setter Property="Foreground" Value="#50FFFFFF"/>
-                                                                        <Style.Triggers>
-                                                                            <DataTrigger Binding="{Binding IsCheckedToday}" Value="True">
-                                                                                <Setter Property="Text" Value="✓"/>
-                                                                                <Setter Property="Foreground" Value="White"/>
-                                                                            </DataTrigger>
-                                                                        </Style.Triggers>
-                                                                    </Style>
-                                                                </TextBlock.Style>
-                                                            </TextBlock>
-                                                        </Border>
-                                                    </Grid>
-                                                </Border>
-                                            </DataTemplate>
-                                        </ItemsControl.ItemTemplate>
-                                    </ItemsControl>
-                                </ScrollViewer>
-                                
-                                <!-- 空状态 -->
-                                <StackPanel x:Name="HabitEmptyState" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center"
-                                            Visibility="Collapsed">
-                                    <TextBlock Text="🎯" FontSize="48" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-                                    <TextBlock Text="还没有习惯" Foreground="#60FFFFFF" FontSize="16" HorizontalAlignment="Center"/>
-                                    <TextBlock Text="点击右上角「添加习惯」开始吧！" Foreground="#35FFFFFF" FontSize="12" 
-                                               HorizontalAlignment="Center" Margin="0,8,0,0"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                        
-                        <!-- 右侧：周视图 + 管理 -->
-                        <Border Grid.Column="1" Background="#10FFFFFF" CornerRadius="14" Padding="20">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                </Grid.RowDefinitions>
-                                
-                                <TextBlock Grid.Row="0" Text="📆 本周打卡" Foreground="White" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,16"/>
-                                
-                                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
-                                    <StackPanel x:Name="WeekHabitView">
-                                        <!-- 周视图动态生成 -->
-                                    </StackPanel>
-                                </ScrollViewer>
-                            </Grid>
-                        </Border>
-                    </Grid>
+                    </Border>
                 </Grid>
-            </Border>
-            
-            <!-- ========== 添加习惯弹窗 ========== -->
-            <Border x:Name="AddHabitPopup" Grid.ColumnSpan="2" Visibility="Collapsed" Background="#E0080810">
-                <Border CornerRadius="16" Width="400" VerticalAlignment="Center" HorizontalAlignment="Center"
-                        Padding="28" BorderBrush="#20FFFFFF" BorderThickness="1">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                            <GradientStop Color="#1A1A24" Offset="0"/>
-                            <GradientStop Color="#12121A" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
-                    <StackPanel>
-                        <Grid Margin="0,0,0,24">
-                            <TextBlock Text="添加新习惯" Foreground="White" FontSize="20" FontWeight="SemiBold"/>
-                            <Button Content="×" HorizontalAlignment="Right" Style="{StaticResource IconButton}" 
-                                    FontSize="22" Click="CloseHabitPopup_Click"/>
-                        </Grid>
-                        
-                        <!-- 习惯名称 -->
-                        <TextBlock Text="习惯名称" Foreground="#70FFFFFF" FontSize="12" Margin="0,0,0,8"/>
-                        <Border Background="#12FFFFFF" CornerRadius="10" Padding="14,12" Margin="0,0,0,18"
-                                BorderBrush="#15FFFFFF" BorderThickness="1">
-                            <TextBox x:Name="HabitNameBox" Background="Transparent" BorderThickness="0"
-                                     Foreground="White" FontSize="14" CaretBrush="White"/>
-                        </Border>
-                        
-                        <!-- 选择图标 -->
-                        <TextBlock Text="选择图标" Foreground="#70FFFFFF" FontSize="12" Margin="0,0,0,8"/>
-                        <WrapPanel Margin="0,0,0,18">
-                            <Border x:Name="Icon1" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
-                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="💊">
-                                <TextBlock Text="💊" FontSize="20"/>
-                            </Border>
-                            <Border x:Name="Icon2" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
-                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="💧">
-                                <TextBlock Text="💧" FontSize="20"/>
-                            </Border>
-                            <Border x:Name="Icon3" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
-                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="🏃">
-                                <TextBlock Text="🏃" FontSize="20"/>
-                            </Border>
-                            <Border x:Name="Icon4" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
-                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="📖">
-                                <TextBlock Text="📖" FontSize="20"/>
-                            </Border>
-                            <Border x:Name="Icon5" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
-                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="🧘">
-                                <TextBlock Text="🧘" FontSize="20"/>
-                            </Border>
-                            <Border x:Name="Icon6" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
-                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="😴">
-                                <TextBlock Text="😴" FontSize="20"/>
-                            </Border>
-                            <Border x:Name="Icon7" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,8,8" 
-                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="🎸">
-                                <TextBlock Text="🎸" FontSize="20"/>
-                            </Border>
-                            <Border x:Name="Icon8" Background="#20FFFFFF" CornerRadius="8" Padding="10" Margin="0,0,0,8" 
-                                    Cursor="Hand" MouseLeftButtonDown="HabitIcon_Select" Tag="✍️">
-                                <TextBlock Text="✍️" FontSize="20"/>
-                            </Border>
-                        </WrapPanel>
-                        
-                        <!-- 选择颜色 -->
-                        <TextBlock Text="选择颜色" Foreground="#70FFFFFF" FontSize="12" Margin="0,0,0,8"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,24">
-                            <Border x:Name="Color1" Width="32" Height="32" CornerRadius="16" Background="#3B82F6" 
-                                    Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#3B82F6"
-                                    BorderThickness="3" BorderBrush="#3B82F6"/>
-                            <Border x:Name="Color2" Width="32" Height="32" CornerRadius="16" Background="#22C55E" 
-                                    Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#22C55E"/>
-                            <Border x:Name="Color3" Width="32" Height="32" CornerRadius="16" Background="#F97316" 
-                                    Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#F97316"/>
-                            <Border x:Name="Color4" Width="32" Height="32" CornerRadius="16" Background="#8B5CF6" 
-                                    Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#8B5CF6"/>
-                            <Border x:Name="Color5" Width="32" Height="32" CornerRadius="16" Background="#EF4444" 
-                                    Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#EF4444"/>
-                            <Border x:Name="Color6" Width="32" Height="32" CornerRadius="16" Background="#EC4899" 
-                                    Cursor="Hand" MouseLeftButtonDown="HabitColor_Select" Tag="#EC4899"/>
-                        </StackPanel>
-                        
-                        <!-- 按钮 -->
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Content="取消" Background="#20FFFFFF" Foreground="#B0FFFFFF"
-                                    Padding="0,14" Margin="0,0,8,0" BorderThickness="0" Cursor="Hand" Click="CloseHabitPopup_Click">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                            <Button Grid.Column="1" Content="添加" Foreground="White"
-                                    Padding="0,14" Margin="8,0,0,0" BorderThickness="0" Cursor="Hand" Click="SaveHabit_Click">
-                                <Button.Background>
-                                    <LinearGradientBrush EndPoint="1,0">
-                                        <GradientStop Color="#22C55E" Offset="0"/>
-                                        <GradientStop Color="#16A34A" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Button.Background>
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
-                                            <ContentPresenter HorizontalAlignment="Center"/>
-                                        </Border>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
-                        </Grid>
-                    </StackPanel>
-                </Border>
             </Border>
             
             <!-- ========== 项目管理面板 ========== -->
@@ -1558,17 +1130,53 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     
-                    <!-- 返回 + 标题 -->
+                    <!-- 返回 + 标题 + 删除按钮 -->
                     <Grid Grid.Row="0" Margin="0,0,0,20">
-                        <StackPanel Orientation="Horizontal">
-                            <Button Content="← 返回" Style="{StaticResource IconButton}" 
-                                    Click="BackToProjectList_Click" Foreground="#80FFFFFF" FontSize="13"/>
-                            <TextBlock x:Name="ProjectDetailIcon" Text="📁" FontSize="28" Margin="16,0,12,0" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="ProjectDetailName" Text="分类名称" FontSize="24" FontWeight="Bold" 
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- 左侧：返回 + 图标 + 标题 -->
+                        <StackPanel Grid.Column="0" Orientation="Horizontal">
+                            <Button Content="←" Style="{StaticResource IconButton}" 
+                                    Click="BackToProjectList_Click" Foreground="#60FFFFFF" FontSize="18" Padding="8,6"
+                                    ToolTip="返回分类列表"/>
+                            <!-- 图标容器 -->
+                            <Border Width="40" Height="40" CornerRadius="10" Margin="12,0,10,0" VerticalAlignment="Center">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                        <GradientStop Color="#8B5CF6" Offset="0"/>
+                                        <GradientStop Color="#6366F1" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <TextBlock x:Name="ProjectDetailIcon" Text="📁" FontSize="20" 
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <!-- 标题 -->
+                            <TextBlock x:Name="ProjectDetailName" Text="分类名称" FontSize="22" FontWeight="SemiBold" 
                                        Foreground="White" VerticalAlignment="Center"/>
                         </StackPanel>
-                        <Button Content="🗑️" Style="{StaticResource IconButton}" HorizontalAlignment="Right" Margin="0,0,70,0"
-                                Click="DeleteProject_Click" ToolTip="删除分类" Foreground="#EF4444"/>
+                        
+                        <!-- 右侧：删除按钮 -->
+                        <Border Grid.Column="1" VerticalAlignment="Center" Margin="0,0,80,0"
+                                CornerRadius="8" Padding="12,8" Cursor="Hand"
+                                Background="#25EF4444" MouseLeftButtonDown="DeleteProject_Click"
+                                ToolTip="删除此分类">
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#40EF4444"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="🗑" FontSize="14" VerticalAlignment="Center" Foreground="#FF6B6B"/>
+                                <TextBlock Text="删除" Foreground="#FF6B6B" FontSize="13" FontWeight="Medium" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
                     </Grid>
                     
                     <!-- 统计卡片 -->
@@ -1676,7 +1284,25 @@
                                 <RowDefinition Height="*"/>
                             </Grid.RowDefinitions>
                             
-                            <TextBlock Grid.Row="0" Text="📝 分类任务" FontSize="16" FontWeight="SemiBold" Foreground="White" Margin="0,0,0,12"/>
+                            <Grid Grid.Row="0" Margin="0,0,0,12">
+                                <TextBlock Text="📝 分类任务" FontSize="16" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center"/>
+                                <Button Content="+ 选择现有待办" HorizontalAlignment="Right" Padding="12,6" Cursor="Hand"
+                                        Click="SelectExistingTodo_Click" Background="#306366F1" Foreground="#C0FFFFFF" 
+                                        BorderThickness="0" FontSize="12">
+                                    <Button.Template>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="Bd" Property="Background" Value="#506366F1"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Button.Template>
+                                </Button>
+                            </Grid>
                             
                             <!-- 添加任务输入框 -->
                             <Border Grid.Row="1" Background="#10FFFFFF" CornerRadius="8" Padding="4" Margin="0,0,0,12">
@@ -1816,6 +1442,95 @@
                             </Button>
                         </StackPanel>
                     </StackPanel>
+                </Border>
+            </Border>
+            
+            <!-- ========== 选择现有待办弹窗 ========== -->
+            <Border x:Name="SelectExistingTodoPopup" Grid.ColumnSpan="2" Visibility="Collapsed">
+                <Border.Background>
+                    <SolidColorBrush Color="#000000" Opacity="0.85"/>
+                </Border.Background>
+                <Border CornerRadius="16" Width="500" MaxHeight="600" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Padding="28" BorderBrush="#30FFFFFF" BorderThickness="1" Background="#FF1A1A22">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        
+                        <!-- 标题 -->
+                        <Grid Grid.Row="0" Margin="0,0,0,20">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📋" FontSize="20" Margin="0,0,10,0"/>
+                                <TextBlock Text="选择现有待办" FontSize="18" FontWeight="Bold" Foreground="White" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <Button Content="×" HorizontalAlignment="Right" Style="{StaticResource IconButton}" 
+                                    FontSize="22" Click="CloseSelectTodoPopup_Click"/>
+                        </Grid>
+                        
+                        <!-- 提示 -->
+                        <TextBlock Grid.Row="1" Text="选择要添加到此分类的待办任务（已完成或进行中）" 
+                                   Foreground="#60FFFFFF" FontSize="12" Margin="0,0,0,16"/>
+                        
+                        <!-- 待办列表 -->
+                        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" MaxHeight="400">
+                            <ItemsControl x:Name="SelectableTodoList">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Background="#10FFFFFF" CornerRadius="10" Padding="14,12" Margin="0,0,0,8" 
+                                                Cursor="Hand" Tag="{Binding Id}" MouseLeftButtonDown="SelectTodoItem_Click">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Style.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter Property="Background" Value="#20FFFFFF"/>
+                                                        </Trigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                
+                                                <!-- 完成状态图标 -->
+                                                <Border Grid.Column="0" Width="24" Height="24" CornerRadius="12" Margin="0,0,12,0"
+                                                        BorderBrush="#8B5CF6"
+                                                        Background="{Binding IsCompleted, Converter={StaticResource CompletedToBackgroundConverter}}"
+                                                        BorderThickness="2">
+                                                    <TextBlock Text="✓" Foreground="White" FontSize="11" FontWeight="Bold"
+                                                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                               Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVisibilityConverter}}"/>
+                                                </Border>
+                                                
+                                                <!-- 任务信息 -->
+                                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding Title}" FontSize="14" Foreground="White" 
+                                                               TextTrimming="CharacterEllipsis"/>
+                                                    <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                                        <TextBlock Text="{Binding DueDateDisplay}" FontSize="11" Foreground="#50FFFFFF"
+                                                                   Visibility="{Binding DueDate, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                
+                                                <!-- 优先级标记 -->
+                                                <Border Grid.Column="2" Width="10" Height="10" CornerRadius="5" VerticalAlignment="Center"
+                                                        Background="{Binding Priority, Converter={StaticResource PriorityToColorConverter}}"/>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                        
+                        <!-- 无待办提示 -->
+                        <TextBlock x:Name="NoSelectableTodosText" Grid.Row="2" Text="没有可添加的待办任务" 
+                                   Foreground="#40FFFFFF" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   Visibility="Collapsed"/>
+                    </Grid>
                 </Border>
             </Border>
             
