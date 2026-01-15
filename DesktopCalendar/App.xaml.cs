@@ -69,7 +69,7 @@ namespace DesktopCalendar
             _notifyIcon = new TaskbarIcon
             {
                 Icon = CreateCalendarIcon(),
-                ToolTipText = "桌面日历 - 双击打开主界面",
+                ToolTipText = "DeskFlow - 双击打开主界面",
                 Visibility = Visibility.Visible
             };
 
@@ -95,7 +95,7 @@ namespace DesktopCalendar
             _notifyIcon.TrayMouseDoubleClick += (s, e) => ShowMainWindow();
         }
 
-        // 动态生成一个日历图标
+        // 动态生成 DeskFlow 品牌图标（紫蓝渐变 + D字母）
         private System.Drawing.Icon CreateCalendarIcon()
         {
             int size = 32;
@@ -106,23 +106,32 @@ namespace DesktopCalendar
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias;
             
-            // 背景圆角矩形 - 蓝色
-            using var bgBrush = new SolidBrush(System.Drawing.Color.FromArgb(59, 130, 246));
-            g.FillRectangle(bgBrush, 2, 2, size - 4, size - 4);
+            // 紫蓝渐变背景
+            using var gradientBrush = new System.Drawing.Drawing2D.LinearGradientBrush(
+                new System.Drawing.Rectangle(0, 0, size, size),
+                System.Drawing.Color.FromArgb(139, 92, 246),  // 紫色 #8B5CF6
+                System.Drawing.Color.FromArgb(59, 130, 246),  // 蓝色 #3B82F6
+                System.Drawing.Drawing2D.LinearGradientMode.ForwardDiagonal);
             
-            // 顶部红色条
-            using var topBrush = new SolidBrush(System.Drawing.Color.FromArgb(239, 68, 68));
-            g.FillRectangle(topBrush, 2, 2, size - 4, 8);
+            // 圆角矩形背景
+            var rect = new System.Drawing.Rectangle(2, 2, size - 4, size - 4);
+            using var path = new System.Drawing.Drawing2D.GraphicsPath();
+            int radius = 6;
+            path.AddArc(rect.X, rect.Y, radius * 2, radius * 2, 180, 90);
+            path.AddArc(rect.Right - radius * 2, rect.Y, radius * 2, radius * 2, 270, 90);
+            path.AddArc(rect.Right - radius * 2, rect.Bottom - radius * 2, radius * 2, radius * 2, 0, 90);
+            path.AddArc(rect.X, rect.Bottom - radius * 2, radius * 2, radius * 2, 90, 90);
+            path.CloseFigure();
+            g.FillPath(gradientBrush, path);
             
-            // 日期数字（当前日期）
-            string dayText = DateTime.Now.Day.ToString();
-            using var font = new Font("Arial", 14, System.Drawing.FontStyle.Bold);
+            // D 字母
+            using var font = new Font("Segoe UI", 16, System.Drawing.FontStyle.Bold);
             using var textBrush = new SolidBrush(System.Drawing.Color.White);
             
-            var textSize = g.MeasureString(dayText, font);
-            float x = (size - textSize.Width) / 2;
-            float y = 10 + (size - 10 - textSize.Height) / 2;
-            g.DrawString(dayText, font, textBrush, x, y);
+            var textSize = g.MeasureString("D", font);
+            float x = (size - textSize.Width) / 2 + 1;
+            float y = (size - textSize.Height) / 2;
+            g.DrawString("D", font, textBrush, x, y);
 
             // 转换为Icon
             IntPtr hIcon = bitmap.GetHicon();

@@ -26,5 +26,3 @@ C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\obj\Debug\net8
 C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\obj\Debug\net8.0-windows\DesktopCalendar.pdb
 C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\obj\Debug\net8.0-windows\DesktopCalendar.genruntimeconfig.cache
 C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\obj\Debug\net8.0-windows\ref\DesktopCalendar.dll
-C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\obj\Debug\net8.0-windows\UpdateWindow.baml
-C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\obj\Debug\net8.0-windows\UpdateWindow.g.cs

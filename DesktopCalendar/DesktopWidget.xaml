@@ -1,7 +1,7 @@
 <Window x:Class="DesktopCalendar.DesktopWidget"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="桌面日历"
+        Title="DeskFlow"
         Width="920" Height="560"
         WindowStyle="None"
         AllowsTransparency="True"
@@ -119,7 +119,7 @@
 
     <Border x:Name="WidgetBorder" CornerRadius="0" BorderBrush="Transparent" BorderThickness="0">
         <Border.Background>
-            <SolidColorBrush Color="#000000" Opacity="0.55"/>
+            <SolidColorBrush Color="#000000" Opacity="0.45"/>
         </Border.Background>
         <Border.ContextMenu>
             <ContextMenu>
@@ -382,35 +382,37 @@
                             <TextBlock x:Name="CurrentWeekday" Text="星期一" Foreground="#60FFFFFF" FontSize="12"/>
                         </StackPanel>
                     </StackPanel>
-                    <Border HorizontalAlignment="Right" VerticalAlignment="Center" CornerRadius="16" 
-                            Cursor="Hand" MouseLeftButtonDown="OpenMainWindow_Click" Padding="14,6">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                <GradientStop Color="#206366F1" Offset="0"/>
-                                <GradientStop Color="#208B5CF6" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Border.Background>
-                        <Border.Style>
-                            <Style TargetType="Border">
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="True">
-                                        <Setter Property="Background">
-                                            <Setter.Value>
-                                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                    <GradientStop Color="#406366F1" Offset="0"/>
-                                                    <GradientStop Color="#408B5CF6" Offset="1"/>
-                                                </LinearGradientBrush>
-                                            </Setter.Value>
-                                        </Setter>
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Border.Style>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="📋" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                            <TextBlock Text="主界面" Foreground="#B0FFFFFF" FontSize="12" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock Text="按 ` 隐藏" Foreground="#50FFFFFF" FontSize="11" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                        <Border CornerRadius="16" Cursor="Hand" MouseLeftButtonDown="OpenMainWindow_Click" Padding="14,6">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                    <GradientStop Color="#306366F1" Offset="0"/>
+                                    <GradientStop Color="#308B5CF6" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background">
+                                                <Setter.Value>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                        <GradientStop Color="#506366F1" Offset="0"/>
+                                                        <GradientStop Color="#508B5CF6" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Setter.Value>
+                                            </Setter>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="📋" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="主界面" Foreground="#D0FFFFFF" FontSize="12" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
                 </Grid>
 
                 <!-- 日历头部 -->

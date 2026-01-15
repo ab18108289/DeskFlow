@@ -1848,5 +1848,19 @@ namespace DesktopCalendar
         }
 
         #endregion
+
+        #region 支持作者
+
+        private void SupportAuthor_Click(object sender, MouseButtonEventArgs e)
+        {
+            SupportAuthorPopup.Visibility = Visibility.Visible;
+        }
+
+        private void CloseSupportAuthorPopup_Click(object sender, RoutedEventArgs e)
+        {
+            SupportAuthorPopup.Visibility = Visibility.Collapsed;
+        }
+
+        #endregion
     }
 }
