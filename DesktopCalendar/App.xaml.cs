@@ -49,11 +49,9 @@ namespace DesktopCalendar
             
             base.OnStartup(e);
             
-            // 检查更新（从 GitHub 获取 update.xml）
+            // 检查更新（从 GitHub 获取 update.xml）- 使用自定义界面
+            AutoUpdater.CheckForUpdateEvent += OnCheckForUpdate;
             AutoUpdater.Start("https://raw.githubusercontent.com/ab18108289/DeskFlow/main/update.xml");
-            AutoUpdater.ShowSkipButton = true;           // 显示"跳过此版本"按钮
-            AutoUpdater.ShowRemindLaterButton = true;    // 显示"稍后提醒"按钮
-            AutoUpdater.RunUpdateAsAdmin = false;        // 不需要管理员权限
             
             _ = DataService.Instance;
 
@@ -192,6 +190,36 @@ namespace DesktopCalendar
             _desktopWidget?.Close();
             _mainWindow?.Close();
             Shutdown();
+        }
+
+        private void OnCheckForUpdate(UpdateInfoEventArgs args)
+        {
+            if (args.Error == null)
+            {
+                if (args.IsUpdateAvailable)
+                {
+                    // 检查是否跳过了此版本
+                    try
+                    {
+                        var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(@"Software\DeskFlow");
+                        var skipVersion = key?.GetValue("SkipVersion")?.ToString();
+                        key?.Close();
+                        
+                        if (skipVersion == args.CurrentVersion.ToString())
+                        {
+                            return; // 用户选择跳过此版本
+                        }
+                    }
+                    catch { }
+                    
+                    // 显示自定义更新对话框
+                    Dispatcher.Invoke(() =>
+                    {
+                        var dialog = new UpdateDialog(args);
+                        dialog.ShowDialog();
+                    });
+                }
+            }
         }
 
         protected override void OnExit(ExitEventArgs e)

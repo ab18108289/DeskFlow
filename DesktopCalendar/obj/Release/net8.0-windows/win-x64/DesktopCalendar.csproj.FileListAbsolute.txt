@@ -512,3 +512,5 @@ C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\bin\Release\ne
 C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\bin\Release\net8.0-windows\win-x64\zh\AutoUpdater.NET.resources.dll
 C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\bin\Release\net8.0-windows\win-x64\WebView2Loader.dll
 C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\obj\Release\net8.0-windows\win-x64\DesktopCalendar.sourcelink.json
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\obj\Release\net8.0-windows\win-x64\UpdateDialog.baml
+C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\obj\Release\net8.0-windows\win-x64\UpdateDialog.g.cs

@@ -1,0 +1,181 @@
+<Window x:Class="DesktopCalendar.UpdateDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="发现新版本" 
+        Width="420" Height="280"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize">
+    
+    <Border CornerRadius="12" Background="#1E1E2E">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="20" ShadowDepth="0" Opacity="0.5" Color="Black"/>
+        </Border.Effect>
+        
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            
+            <!-- 标题栏 -->
+            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,16">
+                <!-- 图标 -->
+                <Border Width="40" Height="40" CornerRadius="8" Margin="0,0,12,0">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#8B5CF6" Offset="0"/>
+                            <GradientStop Color="#3B82F6" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <TextBlock Text="D" FontSize="22" FontWeight="Bold" Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="🎉 发现新版本！" FontSize="18" FontWeight="SemiBold" Foreground="White"/>
+                    <TextBlock x:Name="VersionText" Text="v1.0.3 可用" FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                </StackPanel>
+                
+                <!-- 关闭按钮 -->
+                <Button Content="✕" 
+                        HorizontalAlignment="Right" VerticalAlignment="Top"
+                        Width="28" Height="28" 
+                        Background="Transparent" Foreground="#64748B"
+                        BorderThickness="0" Cursor="Hand"
+                        Click="Close_Click"
+                        Margin="80,0,0,0">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#374151"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </StackPanel>
+            
+            <!-- 更新说明 -->
+            <Border Grid.Row="1" Background="#262639" CornerRadius="8" Padding="12" Margin="0,0,0,16">
+                <StackPanel>
+                    <TextBlock Text="更新内容" FontSize="12" Foreground="#94A3B8" Margin="0,0,0,8"/>
+                    <TextBlock x:Name="ChangelogText" 
+                               Text="• 修复重复开启软件的问题&#x0a;• 优化 exe 图标显示&#x0a;• 添加自动更新功能" 
+                               FontSize="13" Foreground="#E2E8F0" 
+                               TextWrapping="Wrap" LineHeight="22"/>
+                </StackPanel>
+            </Border>
+            
+            <!-- 当前版本提示 -->
+            <TextBlock Grid.Row="2" x:Name="CurrentVersionText"
+                       Text="当前版本: v1.0.1" 
+                       FontSize="12" Foreground="#64748B" 
+                       VerticalAlignment="Bottom" Margin="0,0,0,16"/>
+            
+            <!-- 按钮区域 -->
+            <Grid Grid.Row="3">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <!-- 跳过此版本 -->
+                <Button Grid.Column="0" Content="跳过此版本" 
+                        Background="Transparent" Foreground="#94A3B8"
+                        BorderThickness="0" Cursor="Hand"
+                        HorizontalAlignment="Left"
+                        Click="Skip_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <TextBlock Text="{TemplateBinding Content}" 
+                                                   Foreground="{TemplateBinding Foreground}"
+                                                   TextDecorations="Underline"/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Foreground" Value="#CBD5E1"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <!-- 稍后提醒 -->
+                <Button Grid.Column="1" Content="稍后提醒" 
+                        Width="90" Height="36"
+                        Background="#374151" Foreground="White"
+                        BorderThickness="0" Cursor="Hand"
+                        Margin="0,0,10,0"
+                        Click="RemindLater_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#4B5563"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <!-- 立即更新 -->
+                <Button Grid.Column="2" Content="✨ 立即更新" 
+                        Width="110" Height="36"
+                        Foreground="White"
+                        BorderThickness="0" Cursor="Hand"
+                        Click="Update_Click">
+                    <Button.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#8B5CF6" Offset="0"/>
+                            <GradientStop Color="#3B82F6" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Button.Background>
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="8">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </Button.Style>
+                </Button>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>
+
