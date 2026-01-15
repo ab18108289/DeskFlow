@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Hardcodet.Wpf.TaskbarNotification;
 using DesktopCalendar.Services;
+using AutoUpdaterDotNET;
 
 namespace DesktopCalendar
 {
@@ -30,6 +31,13 @@ namespace DesktopCalendar
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+            
+            // 检查更新（从 GitHub 获取 update.xml）
+            AutoUpdater.Start("https://raw.githubusercontent.com/ab18108289/DeskFlow/main/update.xml");
+            AutoUpdater.ShowSkipButton = true;           // 显示"跳过此版本"按钮
+            AutoUpdater.ShowRemindLaterButton = true;    // 显示"稍后提醒"按钮
+            AutoUpdater.RunUpdateAsAdmin = false;        // 不需要管理员权限
+            
             _ = DataService.Instance;
 
             _desktopWidget = new DesktopWidget();

@@ -10,13 +10,14 @@
 using System;
 using System.Reflection;
 
-[assembly: System.Reflection.AssemblyCompanyAttribute("DesktopCalendar")]
+[assembly: System.Reflection.AssemblyCompanyAttribute("DeskFlow")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9d32c361edbaaf663cca36b69642204f9d7432f8")]
-[assembly: System.Reflection.AssemblyProductAttribute("DesktopCalendar")]
+[assembly: System.Reflection.AssemblyDescriptionAttribute("简洁高效的桌面待办工具")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.1.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.1+e7fc67a807c198e3408aa37a3cefb8df3844af88")]
+[assembly: System.Reflection.AssemblyProductAttribute("DeskFlow")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DesktopCalendar")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.0.1.0")]
 [assembly: System.Runtime.Versioning.TargetPlatformAttribute("Windows7.0")]
 [assembly: System.Runtime.Versioning.SupportedOSPlatformAttribute("Windows7.0")]
 
