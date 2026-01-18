@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <item>
-<version>1.0.5</version>
-  <url>https://github.com/ab18108289/DeskFlow/releases/download/v1.0.5/DeskFlow_Setup_v1.0.5.exe</url>
-  <changelog>https://github.com/ab18108289/DeskFlow/releases/tag/v1.0.5</changelog>
+<version>1.0.6</version>
+  <url>https://github.com/ab18108289/DeskFlow/releases/download/v1.0.6/DeskFlow_Setup_v1.0.6.exe</url>
+  <changelog>https://github.com/ab18108289/DeskFlow/releases/tag/v1.0.6</changelog>
     <mandatory>false</mandatory>
 </item>
 

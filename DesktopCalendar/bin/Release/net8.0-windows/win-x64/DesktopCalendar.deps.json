@@ -7,7 +7,7 @@
   "targets": {
     ".NETCoreApp,Version=v8.0": {},
     ".NETCoreApp,Version=v8.0/win-x64": {
-      "DesktopCalendar/1.0.5": {
+      "DesktopCalendar/1.0.6": {
         "dependencies": {
           "Autoupdater.NET.Official": "1.9.2",
           "Hardcodet.NotifyIcon.Wpf": "1.1.0",
@@ -133,7 +133,7 @@
     }
   },
   "libraries": {
-    "DesktopCalendar/1.0.5": {
+    "DesktopCalendar/1.0.6": {
       "type": "project",
       "serviceable": false,
       "sha512": ""

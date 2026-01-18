@@ -862,8 +862,29 @@ namespace DesktopCalendar
                 PopupTitle.Text = $"添加 {_selectedDate.Value:M月d日} 待办";
             }
             
+            // 临时允许窗口激活，以便输入框可以获取焦点
+            EnableActivation();
+            
             AddTodoPopup.Visibility = Visibility.Visible;
             TodoInput.Focus();
+            Keyboard.Focus(TodoInput);
+        }
+        
+        private void EnableActivation()
+        {
+            var hwnd = new WindowInteropHelper(this).Handle;
+            int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+            // 移除 WS_EX_NOACTIVATE 标志
+            SetWindowLong(hwnd, GWL_EXSTYLE, exStyle & ~WS_EX_NOACTIVATE);
+        }
+        
+        private void DisableActivation()
+        {
+            var hwnd = new WindowInteropHelper(this).Handle;
+            int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+            // 添加 WS_EX_NOACTIVATE 标志
+            SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_NOACTIVATE);
+            SendToBack();
         }
 
         private void ClosePopup_Click(object sender, RoutedEventArgs e)
@@ -872,6 +893,9 @@ namespace DesktopCalendar
             TodoInput.Clear();
             _selectedPriority = Priority.Low;
             UpdatePriorityButtons();
+            
+            // 恢复不可激活状态
+            DisableActivation();
         }
 
         private void Priority_Click(object sender, MouseButtonEventArgs e)
@@ -923,8 +947,140 @@ namespace DesktopCalendar
             TodoInput.Clear();
             _selectedPriority = Priority.Low;
             UpdatePriorityButtons();
+            
+            // 恢复不可激活状态
+            DisableActivation();
         }
 
+        #endregion
+
+        #region 编辑待办弹窗
+        
+        private string? _editingTodoId;
+        private Priority _editPriority = Priority.Low;
+        
+        private void EditTodo_MouseClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is Border border && border.Tag is string id)
+            {
+                OpenEditPopup(id);
+                e.Handled = true;
+            }
+        }
+        
+        private void TodoContent_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is StackPanel panel && panel.Tag is string id)
+            {
+                OpenEditPopup(id);
+                e.Handled = true;
+            }
+        }
+        
+        private void EditTodo_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string id)
+            {
+                OpenEditPopup(id);
+            }
+        }
+        
+        private void OpenEditPopup(string id)
+        {
+            var todo = DataService.Instance.Todos.FirstOrDefault(t => t.Id == id);
+            if (todo != null)
+            {
+                _editingTodoId = id;
+                _editPriority = todo.Priority;
+                EditTodoInput.Text = todo.Title;
+                UpdateEditPriorityButtons();
+                
+                // 临时允许窗口激活
+                EnableActivation();
+                
+                EditTodoPopup.Visibility = Visibility.Visible;
+                EditTodoInput.Focus();
+                Keyboard.Focus(EditTodoInput);
+            }
+        }
+        
+        private void CloseEditPopup_Click(object sender, RoutedEventArgs e)
+        {
+            EditTodoPopup.Visibility = Visibility.Collapsed;
+            EditTodoInput.Clear();
+            _editingTodoId = null;
+            _editPriority = Priority.Low;
+            UpdateEditPriorityButtons();
+            DisableActivation();
+        }
+        
+        private void EditPriority_Click(object sender, MouseButtonEventArgs e)
+        {
+            var border = sender as Border;
+            if (border?.Tag is string priorityStr && Enum.TryParse<Priority>(priorityStr, out var priority))
+            {
+                _editPriority = priority;
+                UpdateEditPriorityButtons();
+            }
+        }
+        
+        private void UpdateEditPriorityButtons()
+        {
+            // 重置所有按钮
+            EditHighPriorityBtn.Background = Brushes.Transparent;
+            EditMediumPriorityBtn.Background = Brushes.Transparent;
+            EditLowPriorityBtn.Background = Brushes.Transparent;
+            
+            // 设置选中状态
+            switch (_editPriority)
+            {
+                case Priority.High:
+                    EditHighPriorityBtn.Background = new SolidColorBrush(Color.FromArgb(40, 239, 68, 68));
+                    break;
+                case Priority.Medium:
+                    EditMediumPriorityBtn.Background = new SolidColorBrush(Color.FromArgb(40, 249, 115, 22));
+                    break;
+                case Priority.Low:
+                    // 已经有渐变背景
+                    break;
+            }
+        }
+        
+        private void EditTodoInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+                SaveEditTodo();
+            else if (e.Key == Key.Escape)
+                CloseEditPopup_Click(sender, e);
+        }
+        
+        private void SaveEditTodo_Click(object sender, RoutedEventArgs e) => SaveEditTodo();
+        
+        private void SaveEditTodo()
+        {
+            if (_editingTodoId == null) return;
+            
+            var title = EditTodoInput.Text.Trim();
+            if (!string.IsNullOrEmpty(title))
+            {
+                var todo = DataService.Instance.Todos.FirstOrDefault(t => t.Id == _editingTodoId);
+                if (todo != null)
+                {
+                    todo.Title = title;
+                    todo.Priority = _editPriority;
+                    DataService.Instance.Save();
+                    RefreshAll();
+                }
+            }
+            
+            EditTodoPopup.Visibility = Visibility.Collapsed;
+            EditTodoInput.Clear();
+            _editingTodoId = null;
+            _editPriority = Priority.Low;
+            UpdateEditPriorityButtons();
+            DisableActivation();
+        }
+        
         #endregion
 
         private void OpenSettings_Click(object sender, RoutedEventArgs e)

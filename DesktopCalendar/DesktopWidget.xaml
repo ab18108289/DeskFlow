@@ -210,8 +210,9 @@
                                                    Visibility="{Binding IsCompleted, Converter={StaticResource BoolToVisibilityConverter}}"/>
                                     </Border>
                                     
-                                    <!-- 待办内容 -->
-                                    <StackPanel Grid.Column="1">
+                                    <!-- 待办内容（点击编辑） -->
+                                    <StackPanel Grid.Column="1" Cursor="Hand" Background="Transparent"
+                                                MouseLeftButtonDown="TodoContent_Click" Tag="{Binding Id}">
                                         <TextBlock Text="{Binding Title}" FontSize="13" TextWrapping="Wrap"
                                                    Foreground="{Binding IsCompleted, Converter={StaticResource CompletedToForegroundConverter}}"
                                                    TextDecorations="{Binding IsCompleted, Converter={StaticResource CompletedToStrikethroughConverter}}"/>
@@ -244,7 +245,7 @@
                                     
                                     <!-- 删除按钮 -->
                                     <Button Grid.Column="2" Content="×" Style="{StaticResource WidgetButton}" 
-                                            FontSize="14" Foreground="#50FFFFFF" Padding="4,2"
+                                            FontSize="14" Foreground="#60FFFFFF" Padding="4,2" VerticalAlignment="Top"
                                             Click="DeleteTodo_Click" Tag="{Binding Id}" ToolTip="删除"/>
                                 </Grid>
                             </DataTemplate>
@@ -457,6 +458,85 @@
                         <!-- 添加按钮 -->
                         <Button Content="添加待办" Foreground="White" BorderThickness="0" Padding="0,14" FontSize="14" FontWeight="Medium"
                                 Cursor="Hand" Click="SubmitTodo_Click">
+                            <Button.Background>
+                                <LinearGradientBrush EndPoint="1,0">
+                                    <GradientStop Color="#6366F1" Offset="0"/>
+                                    <GradientStop Color="#8B5CF6" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Button.Background>
+                            <Button.Template>
+                                <ControlTemplate TargetType="Button">
+                                    <Border Background="{TemplateBinding Background}" CornerRadius="10" Padding="{TemplateBinding Padding}">
+                                        <ContentPresenter HorizontalAlignment="Center"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Opacity" Value="0.9"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Button.Template>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Border>
+            
+            <!-- ========== 编辑待办弹窗 ========== -->
+            <Border x:Name="EditTodoPopup" Grid.ColumnSpan="2" Visibility="Collapsed" Background="#E0080810">
+                <Border CornerRadius="14" Width="360" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Padding="24" BorderBrush="#25FFFFFF" BorderThickness="1">
+                    <Border.Background>
+                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                            <GradientStop Color="#F8181822" Offset="0"/>
+                            <GradientStop Color="#F8101018" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <StackPanel>
+                        <Grid Margin="0,0,0,18">
+                            <TextBlock Text="编辑待办" Foreground="White" FontSize="18" FontWeight="SemiBold"/>
+                            <Button Content="×" HorizontalAlignment="Right" Style="{StaticResource WidgetButton}" FontSize="20" Click="CloseEditPopup_Click"/>
+                        </Grid>
+                        
+                        <!-- 输入框 -->
+                        <Border Background="#15FFFFFF" CornerRadius="10" Padding="14,12" Margin="0,0,0,16" BorderBrush="#15FFFFFF" BorderThickness="1">
+                            <TextBox x:Name="EditTodoInput" Background="Transparent" BorderThickness="0"
+                                     Foreground="White" FontSize="14" CaretBrush="White" KeyDown="EditTodoInput_KeyDown"/>
+                        </Border>
+                        
+                        <!-- 优先级选择 -->
+                        <TextBlock Text="优先级" Foreground="#60FFFFFF" FontSize="11" Margin="0,0,0,8"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,18">
+                            <Border x:Name="EditHighPriorityBtn" Background="Transparent" BorderBrush="#EF4444" BorderThickness="1.5" 
+                                    CornerRadius="8" Padding="16,8" Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="EditPriority_Click" Tag="High">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="#EF4444" Margin="0,0,6,0"/>
+                                    <TextBlock Text="紧急" Foreground="#EF4444" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
+                            <Border x:Name="EditMediumPriorityBtn" Background="Transparent" BorderBrush="#F97316" BorderThickness="1.5" 
+                                    CornerRadius="8" Padding="16,8" Margin="0,0,10,0" Cursor="Hand" MouseLeftButtonDown="EditPriority_Click" Tag="Medium">
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="#F97316" Margin="0,0,6,0"/>
+                                    <TextBlock Text="重要" Foreground="#F97316" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
+                            <Border x:Name="EditLowPriorityBtn" CornerRadius="8" Padding="16,8" Cursor="Hand" MouseLeftButtonDown="EditPriority_Click" Tag="Low">
+                                <Border.Background>
+                                    <LinearGradientBrush EndPoint="1,0">
+                                        <GradientStop Color="#22C55E" Offset="0"/>
+                                        <GradientStop Color="#16A34A" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                                <StackPanel Orientation="Horizontal">
+                                    <Ellipse Width="8" Height="8" Fill="White" Margin="0,0,6,0"/>
+                                    <TextBlock Text="普通" Foreground="White" FontSize="12"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                        
+                        <!-- 保存按钮 -->
+                        <Button Content="保存修改" Foreground="White" BorderThickness="0" Padding="0,14" FontSize="14" FontWeight="Medium"
+                                Cursor="Hand" Click="SaveEditTodo_Click">
                             <Button.Background>
                                 <LinearGradientBrush EndPoint="1,0">
                                     <GradientStop Color="#6366F1" Offset="0"/>
