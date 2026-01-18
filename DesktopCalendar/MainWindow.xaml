@@ -334,6 +334,41 @@
                             </StackPanel>
                         </Border>
                         
+                        <!-- 云同步状态 -->
+                        <Border x:Name="CloudSyncSection" CornerRadius="10" Padding="12,10" Margin="0,0,0,8" Cursor="Hand"
+                                MouseLeftButtonDown="CloudSync_Click">
+                            <Border.Background>
+                                <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                    <GradientStop Color="#15FFFFFF" Offset="0"/>
+                                    <GradientStop Color="#10FFFFFF" Offset="1"/>
+                                </LinearGradientBrush>
+                            </Border.Background>
+                            <Border.Style>
+                                <Style TargetType="Border">
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#20FFFFFF"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock x:Name="CloudIcon" Text="☁️" FontSize="16" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock x:Name="CloudStatusText" Text="点击登录同步数据" Foreground="#80FFFFFF" FontSize="11"/>
+                                    <TextBlock x:Name="CloudUserEmail" Text="" Foreground="#50FFFFFF" FontSize="9" 
+                                               Visibility="Collapsed" TextTrimming="CharacterEllipsis"/>
+                                </StackPanel>
+                                <TextBlock x:Name="SyncStatusIcon" Grid.Column="2" Text="→" Foreground="#50FFFFFF" 
+                                           FontSize="12" VerticalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        
                         <!-- 支持作者 -->
                         <Border Background="#10FFFFFF" CornerRadius="10" Padding="12,10" Cursor="Hand"
                                 MouseLeftButtonDown="SupportAuthor_Click">
@@ -2004,8 +2039,7 @@
                             <!-- 微信收款码 -->
                             <StackPanel Grid.Column="0" HorizontalAlignment="Center">
                                 <Border Width="160" Height="160" Background="#15FFFFFF" CornerRadius="8" Margin="0,0,0,12">
-                                    <TextBlock Text="微信收款码" Foreground="#50FFFFFF" FontSize="12" 
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Image Source="Assets/wechat_pay.png" Stretch="Uniform" Margin="8"/>
                                 </Border>
                                 <TextBlock Text="微信支付" Foreground="#90FFFFFF" FontSize="13" HorizontalAlignment="Center"/>
                             </StackPanel>
@@ -2013,14 +2047,13 @@
                             <!-- 支付宝收款码 -->
                             <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                                 <Border Width="160" Height="160" Background="#15FFFFFF" CornerRadius="8" Margin="0,0,0,12">
-                                    <TextBlock Text="支付宝收款码" Foreground="#50FFFFFF" FontSize="12" 
-                                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <Image Source="Assets/alipay.png" Stretch="Uniform" Margin="8"/>
                                 </Border>
                                 <TextBlock Text="支付宝支付" Foreground="#90FFFFFF" FontSize="13" HorizontalAlignment="Center"/>
                             </StackPanel>
                         </Grid>
 
-                        <TextBlock Text="将收款码图片放入 Assets 文件夹即可显示" Foreground="#40FFFFFF" FontSize="11" 
+                        <TextBlock Text="扫码支持，金额随意 ❤️" Foreground="#60FFFFFF" FontSize="12" 
                                    HorizontalAlignment="Center" Margin="0,24,0,0"/>
 
                         <Button Content="关闭" Padding="24,10" Margin="0,24,0,0" Cursor="Hand"

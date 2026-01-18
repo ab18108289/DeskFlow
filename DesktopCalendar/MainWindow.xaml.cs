@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -51,6 +52,7 @@ namespace DesktopCalendar
             RefreshProjectNavList();
             UpdateViewTitle();
             UpdatePriorityButtons();
+            InitializeCloudSync();
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -106,6 +108,10 @@ namespace DesktopCalendar
             ReviewPanel.Background = panelBrush;
             ProjectDetailPanel.Background = panelBrush;
             ProjectPanel.Background = panelBrush;
+            
+            // 更新全局主题颜色
+            App.ThemeStartColor = startColor;
+            App.ThemeEndColor = endColor;
         }
 
         private void UpdateThemeBorders(object sender)
@@ -1872,6 +1878,82 @@ namespace DesktopCalendar
         private void CloseSupportAuthorPopup_Click(object sender, RoutedEventArgs e)
         {
             SupportAuthorPopup.Visibility = Visibility.Collapsed;
+        }
+
+        #endregion
+
+        #region 云同步
+
+        private void InitializeCloudSync()
+        {
+            // 监听云服务状态变化
+            CloudService.Instance.AuthStateChanged += (s, e) => Dispatcher.Invoke(UpdateCloudSyncUI);
+            CloudService.Instance.SyncStatusChanged += (s, status) => Dispatcher.Invoke(() => 
+            {
+                CloudStatusText.Text = status;
+            });
+            
+            // 初始化 UI
+            UpdateCloudSyncUI();
+        }
+
+        private void UpdateCloudSyncUI()
+        {
+            if (CloudService.Instance.IsLoggedIn)
+            {
+                CloudIcon.Text = "✅";
+                CloudStatusText.Text = "已登录";
+                CloudUserEmail.Text = CloudService.Instance.UserEmail ?? "";
+                CloudUserEmail.Visibility = Visibility.Visible;
+                SyncStatusIcon.Text = "🔄";
+            }
+            else
+            {
+                CloudIcon.Text = "☁️";
+                CloudStatusText.Text = "点击登录同步数据";
+                CloudUserEmail.Visibility = Visibility.Collapsed;
+                SyncStatusIcon.Text = "→";
+            }
+        }
+
+        private async void CloudSync_Click(object sender, MouseButtonEventArgs e)
+        {
+            if (CloudService.Instance.IsLoggedIn)
+            {
+                // 已登录，打开个人中心
+                var profileWindow = new UserProfileWindow();
+                profileWindow.Owner = this;
+                profileWindow.ShowDialog();
+                
+                if (profileWindow.NeedRefresh)
+                {
+                    RefreshAll();
+                }
+                UpdateCloudSyncUI();
+            }
+            else
+            {
+                // 未登录，打开登录窗口
+                var loginWindow = new LoginWindow();
+                loginWindow.Owner = this;
+                var dialogResult = loginWindow.ShowDialog();
+
+                if (dialogResult == true && loginWindow.IsLoggedIn)
+                {
+                    UpdateCloudSyncUI();
+                    
+                    // 登录成功后静默执行智能同步
+                    CloudStatusText.Text = "同步中...";
+                    var (success, _, _) = await CloudService.Instance.SmartSyncAsync();
+                    
+                    if (success)
+                    {
+                        RefreshAll();
+                    }
+                    
+                    UpdateCloudSyncUI();
+                }
+            }
         }
 
         #endregion

@@ -1,0 +1,388 @@
+<Window x:Class="DesktopCalendar.UserProfileWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="个人中心"
+        Width="360" Height="420"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        WindowStartupLocation="CenterOwner"
+        ShowInTaskbar="False"
+        ResizeMode="NoResize">
+
+    <Window.Resources>
+        <Style x:Key="MenuItemStyle" TargetType="Border">
+            <Setter Property="Background" Value="#10FFFFFF"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#25FFFFFF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="DangerItemStyle" TargetType="Border">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#15FF4757"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <!-- 主容器 -->
+    <Border x:Name="MainBorder" CornerRadius="16">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="40" ShadowDepth="0" Opacity="0.6" Color="#000000"/>
+        </Border.Effect>
+        
+        <Grid>
+            <!-- 背景装饰 -->
+            <Ellipse Width="200" Height="200" Margin="-100,-100,0,0" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop x:Name="Glow1" Color="#206366F1" Offset="0"/>
+                        <GradientStop Color="#00000000" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            <Ellipse Width="150" Height="150" Margin="0,0,-80,-80" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <Ellipse.Fill>
+                    <RadialGradientBrush>
+                        <GradientStop x:Name="Glow2" Color="#15A855F7" Offset="0"/>
+                        <GradientStop Color="#00000000" Offset="1"/>
+                    </RadialGradientBrush>
+                </Ellipse.Fill>
+            </Ellipse>
+            
+            <!-- 主页面 -->
+            <Grid x:Name="MainPanel">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                
+                <!-- 顶部关闭按钮 -->
+                <Button Grid.Row="0" Content="✕" HorizontalAlignment="Right" VerticalAlignment="Top" 
+                        Margin="0,16,16,0" Width="28" Height="28" FontSize="12"
+                        Click="Close_Click">
+                    <Button.Style>
+                        <Style TargetType="Button">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="#50FFFFFF"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Cursor" Value="Hand"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border Background="{TemplateBinding Background}" CornerRadius="14">
+                                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Style.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Background" Value="#20FFFFFF"/>
+                                    <Setter Property="Foreground" Value="#FFFFFF"/>
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
+                
+                <!-- 用户信息区域 -->
+                <StackPanel Grid.Row="0" Margin="32,32,32,24">
+                    <!-- 头像 -->
+                    <Border x:Name="AvatarBorder" Width="72" Height="72" CornerRadius="36" HorizontalAlignment="Center">
+                        <TextBlock x:Name="UserAvatar" Text="U" FontSize="28" FontWeight="SemiBold" 
+                                   Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    
+                    <!-- 邮箱 -->
+                    <TextBlock x:Name="UserEmail" Text="user@example.com" 
+                               Foreground="#E8E8ED" FontSize="15" FontWeight="Medium"
+                               HorizontalAlignment="Center" Margin="0,16,0,0"
+                               TextTrimming="CharacterEllipsis" MaxWidth="280"/>
+                    
+                    <!-- 状态标签 -->
+                    <Border Background="#1522C55E" CornerRadius="12" Padding="12,5" 
+                            HorizontalAlignment="Center" Margin="0,10,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Ellipse Width="6" Height="6" Fill="#22C55E" VerticalAlignment="Center"/>
+                            <TextBlock Text="已连接" Foreground="#22C55E" FontSize="12" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+                
+                <!-- 菜单区域 -->
+                <StackPanel Grid.Row="1" Margin="16,0,16,0">
+                    <!-- 修改密码 -->
+                    <Border Style="{StaticResource MenuItemStyle}" CornerRadius="12" Padding="16,14"
+                            MouseLeftButtonDown="ChangePassword_Click">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <Border x:Name="Icon1Bg" Width="36" Height="36" CornerRadius="10">
+                                    <Path Data="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"
+                                          x:Name="Icon1" Fill="#6366F1" Width="18" Height="18" Stretch="Uniform"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="修改密码" Foreground="#E8E8ED" FontSize="14"/>
+                                    <TextBlock Text="通过邮箱验证码修改" Foreground="#6B7280" FontSize="11" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <Path Data="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+                                  Fill="#4B5563" Width="14" Height="14" Stretch="Uniform"
+                                  HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                    
+                    <!-- 本地备份 -->
+                    <Border Style="{StaticResource MenuItemStyle}" CornerRadius="12" Padding="16,14" Margin="0,8,0,0"
+                            MouseLeftButtonDown="Backup_Click">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal">
+                                <Border Width="36" Height="36" CornerRadius="10" Background="#1A22C55E">
+                                    <Path Data="M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3M19,19H5V5H16.17L19,7.83V19M12,12C10.34,12 9,13.34 9,15S10.34,18 12,18S15,16.66 15,15S13.66,12 12,12M6,6H15V10H6V6Z"
+                                          Fill="#22C55E" Width="18" Height="18" Stretch="Uniform"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Border>
+                                <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock Text="本地备份" Foreground="#E8E8ED" FontSize="14"/>
+                                    <TextBlock Text="导出数据到本地" Foreground="#6B7280" FontSize="11" Margin="0,2,0,0"/>
+                                </StackPanel>
+                            </StackPanel>
+                            <Path Data="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+                                  Fill="#4B5563" Width="14" Height="14" Stretch="Uniform"
+                                  HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+                
+                <!-- 底部退出登录 -->
+                <StackPanel Grid.Row="2" Margin="16,0,16,24">
+                    <Border Height="1" Background="#30FFFFFF" Margin="8,0,8,16"/>
+                    
+                    <Border Style="{StaticResource DangerItemStyle}" CornerRadius="12" Padding="16,12"
+                            MouseLeftButtonDown="Logout_Click">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <Path Data="M16,17V14H9V10H16V7L21,12L16,17M14,2A2,2 0 0,1 16,4V6H14V4H5V20H14V18H16V20A2,2 0 0,1 14,22H5A2,2 0 0,1 3,20V4A2,2 0 0,1 5,2H14Z"
+                                  Fill="#EF4444" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
+                            <TextBlock Text="退出登录" Foreground="#EF4444" FontSize="13" FontWeight="Medium" 
+                                       Margin="8,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
+            </Grid>
+            
+            <!-- 修改密码页面 - Step 1 -->
+            <Grid x:Name="PasswordStep1" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- 顶部导航 -->
+                <Border Grid.Row="0" Padding="20,20,20,0">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Background="#15FFFFFF" CornerRadius="8" Padding="10,6" Cursor="Hand"
+                                    MouseLeftButtonDown="BackToMain_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"
+                                          Fill="#9CA3AF" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                                    <TextBlock Text="返回" Foreground="#9CA3AF" FontSize="12" Margin="6,0,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                        <Button Content="✕" HorizontalAlignment="Right" Width="28" Height="28" FontSize="12"
+                                Click="Close_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="#50FFFFFF"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="14">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#20FFFFFF"/>
+                                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+                </Border>
+                
+                <!-- 内容 -->
+                <StackPanel Grid.Row="1" Margin="28,24,28,28">
+                    <TextBlock Text="修改密码" Foreground="#FFFFFF" FontSize="20" FontWeight="SemiBold"/>
+                    <TextBlock Text="为保护账户安全，需要验证您的身份" Foreground="#6B7280" FontSize="13" Margin="0,8,0,0"/>
+                    
+                    <Border Background="#10FFFFFF" CornerRadius="10" Padding="14" Margin="0,24,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <Path Data="M12,15C12.81,15 13.5,14.7 14.11,14.11C14.7,13.5 15,12.81 15,12C15,11.19 14.7,10.5 14.11,9.89C13.5,9.3 12.81,9 12,9C11.19,9 10.5,9.3 9.89,9.89C9.3,10.5 9,11.19 9,12C9,12.81 9.3,13.5 9.89,14.11C10.5,14.7 11.19,15 12,15M12,2C14.75,2 17.1,3 19.05,4.95C21,6.9 22,9.25 22,12V13.45C22,14.45 21.65,15.3 21,16C20.3,16.67 19.5,17 18.5,17C17.3,17 16.31,16.5 15.56,15.5C14.56,16.5 13.38,17 12,17C10.63,17 9.45,16.5 8.46,15.54C7.5,14.55 7,13.38 7,12C7,10.63 7.5,9.45 8.46,8.46C9.45,7.5 10.63,7 12,7C13.38,7 14.55,7.5 15.54,8.46C16.5,9.45 17,10.63 17,12V13.45C17,13.86 17.16,14.22 17.46,14.53C17.76,14.84 18.12,15 18.5,15C18.9,15 19.26,14.84 19.56,14.53C19.86,14.22 20,13.86 20,13.45V12C20,9.81 19.23,7.93 17.65,6.35C16.07,4.77 14.19,4 12,4C9.81,4 7.93,4.77 6.35,6.35C4.77,7.93 4,9.81 4,12C4,14.19 4.77,16.07 6.35,17.65C7.93,19.23 9.81,20 12,20H17V22H12C9.25,22 6.9,21 4.95,19.05C3,17.1 2,14.75 2,12C2,9.25 3,6.9 4.95,4.95C6.9,3 9.25,2 12,2Z"
+                                  Fill="#6B7280" Width="16" Height="16" Stretch="Uniform" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="EmailDisplay" Text="user@example.com" Foreground="#9CA3AF" FontSize="13" 
+                                       Margin="10,0,0,0" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Border>
+                    
+                    <TextBlock x:Name="Step1Status" Text="" FontSize="12" Margin="0,16,0,0" TextWrapping="Wrap"/>
+                    
+                    <Button x:Name="SendCodeBtn" Content="发送验证码" Margin="0,20,0,0" Height="44" FontSize="14" 
+                            Cursor="Hand" Click="SendCode_Click">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Foreground" Value="White"/>
+                                <Setter Property="FontWeight" Value="Medium"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border x:Name="bg" CornerRadius="10" Background="{TemplateBinding Tag}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="bg" Property="Opacity" Value="0.9"/>
+                                                </Trigger>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter TargetName="bg" Property="Opacity" Value="0.5"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Grid>
+            
+            <!-- 修改密码页面 - Step 2 -->
+            <Grid x:Name="PasswordStep2" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                
+                <!-- 顶部导航 -->
+                <Border Grid.Row="0" Padding="20,20,20,0">
+                    <Grid>
+                        <StackPanel Orientation="Horizontal">
+                            <Border Background="#15FFFFFF" CornerRadius="8" Padding="10,6" Cursor="Hand"
+                                    MouseLeftButtonDown="BackToStep1_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <Path Data="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"
+                                          Fill="#9CA3AF" Width="14" Height="14" Stretch="Uniform" VerticalAlignment="Center"/>
+                                    <TextBlock Text="返回" Foreground="#9CA3AF" FontSize="12" Margin="6,0,0,0"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                        <Button Content="✕" HorizontalAlignment="Right" Width="28" Height="28" FontSize="12"
+                                Click="Close_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="#50FFFFFF"/>
+                                    <Setter Property="BorderThickness" Value="0"/>
+                                    <Setter Property="Cursor" Value="Hand"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border Background="{TemplateBinding Background}" CornerRadius="14">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter Property="Background" Value="#20FFFFFF"/>
+                                            <Setter Property="Foreground" Value="#FFFFFF"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </Grid>
+                </Border>
+                
+                <!-- 内容 -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="28,16,28,28">
+                        <TextBlock Text="设置新密码" Foreground="#FFFFFF" FontSize="20" FontWeight="SemiBold"/>
+                        
+                        <!-- 验证码 -->
+                        <TextBlock Text="验证码" Foreground="#9CA3AF" FontSize="12" Margin="0,20,0,8"/>
+                        <Border Background="#10FFFFFF" CornerRadius="10" Height="44">
+                            <TextBox x:Name="VerifyCodeBox" Background="Transparent" Foreground="White" 
+                                     BorderThickness="0" FontSize="16" MaxLength="6" TextAlignment="Center"
+                                     VerticalContentAlignment="Center" Padding="14,0"
+                                     FontFamily="Consolas" FontWeight="Medium"/>
+                        </Border>
+                        
+                        <!-- 新密码 -->
+                        <TextBlock Text="新密码" Foreground="#9CA3AF" FontSize="12" Margin="0,16,0,8"/>
+                        <Border Background="#10FFFFFF" CornerRadius="10" Height="44">
+                            <PasswordBox x:Name="NewPasswordBox" Background="Transparent" Foreground="White" 
+                                         BorderThickness="0" FontSize="14" PasswordChar="●" CaretBrush="White"
+                                         VerticalContentAlignment="Center" Padding="14,0"/>
+                        </Border>
+                        
+                        <!-- 确认密码 -->
+                        <TextBlock Text="确认密码" Foreground="#9CA3AF" FontSize="12" Margin="0,16,0,8"/>
+                        <Border Background="#10FFFFFF" CornerRadius="10" Height="44">
+                            <PasswordBox x:Name="ConfirmPasswordBox" Background="Transparent" Foreground="White" 
+                                         BorderThickness="0" FontSize="14" PasswordChar="●" CaretBrush="White"
+                                         VerticalContentAlignment="Center" Padding="14,0"/>
+                        </Border>
+                        
+                        <TextBlock x:Name="Step2Status" Text="" FontSize="12" Margin="0,12,0,0" TextWrapping="Wrap"/>
+                        
+                        <Button x:Name="ConfirmBtn" Content="确认修改" Margin="0,20,0,0" Height="44" FontSize="14" 
+                                Cursor="Hand" Click="ConfirmPassword_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="Foreground" Value="White"/>
+                                    <Setter Property="FontWeight" Value="Medium"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="bg" CornerRadius="10" Background="{TemplateBinding Tag}">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="bg" Property="Opacity" Value="0.9"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter TargetName="bg" Property="Opacity" Value="0.5"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

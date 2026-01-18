@@ -322,11 +322,12 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                         <TextBlock Text="按 ` 隐藏" Foreground="#50FFFFFF" FontSize="11" VerticalAlignment="Center" Margin="0,0,12,0"/>
-                        <Border CornerRadius="16" Cursor="Hand" MouseLeftButtonDown="OpenMainWindow_Click" Padding="14,6">
+                        <Border CornerRadius="16" Cursor="Hand" MouseLeftButtonDown="OpenMainWindow_Click" Padding="14,8"
+                                BorderBrush="#606366F1" BorderThickness="1">
                             <Border.Background>
                                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                    <GradientStop Color="#306366F1" Offset="0"/>
-                                    <GradientStop Color="#308B5CF6" Offset="1"/>
+                                    <GradientStop Color="#806366F1" Offset="0"/>
+                                    <GradientStop Color="#808B5CF6" Offset="1"/>
                                 </LinearGradientBrush>
                             </Border.Background>
                             <Border.Style>
@@ -336,8 +337,8 @@
                                             <Setter Property="Background">
                                                 <Setter.Value>
                                                     <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                                        <GradientStop Color="#506366F1" Offset="0"/>
-                                                        <GradientStop Color="#508B5CF6" Offset="1"/>
+                                                        <GradientStop Color="#A06366F1" Offset="0"/>
+                                                        <GradientStop Color="#A08B5CF6" Offset="1"/>
                                                     </LinearGradientBrush>
                                                 </Setter.Value>
                                             </Setter>
@@ -346,8 +347,8 @@
                                 </Style>
                             </Border.Style>
                             <StackPanel Orientation="Horizontal">
-                                <TextBlock Text="📋" FontSize="12" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                <TextBlock Text="主界面" Foreground="#D0FFFFFF" FontSize="12" VerticalAlignment="Center"/>
+                                <TextBlock Text="🏠" FontSize="14" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                                <TextBlock Text="主界面" Foreground="White" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Border>
                     </StackPanel>

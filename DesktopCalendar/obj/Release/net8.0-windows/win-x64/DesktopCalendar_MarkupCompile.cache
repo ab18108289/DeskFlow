@@ -1,5 +1,5 @@
 ﻿DesktopCalendar
-1.0.3.0
+1.0.4.0
 
 winexe
 C#
@@ -10,11 +10,11 @@ none
 false
 TRACE;RELEASE;NET;NET8_0;NETCOREAPP
 C:\Users\Administrator\Desktop\DesktopCalendarWPF\DesktopCalendar\App.xaml
-3565046306
+5-82642409
 
-101403067489
+131806671744
 213-1200976023
-DesktopWidget.xaml;MainWindow.xaml;UpdateDialog.xaml;
+DesktopWidget.xaml;LoginWindow.xaml;MainWindow.xaml;UpdateDialog.xaml;UserProfileWindow.xaml;
 
 False
 

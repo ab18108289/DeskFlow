@@ -21,6 +21,11 @@ namespace DesktopCalendar
         
         // 单实例互斥锁
         private static Mutex? _mutex;
+        
+        // 全局主题颜色（默认深色主题）
+        public static string ThemeStartColor { get; set; } = "#0D0D12";
+        public static string ThemeEndColor { get; set; } = "#1A1A24";
+        public static string ThemeAccentColor { get; set; } = "#6B7B8A";
 
         // Win32 API 用于全局热键
         [DllImport("user32.dll")]
@@ -32,7 +37,7 @@ namespace DesktopCalendar
         private const int HOTKEY_ID = 9000;
         private const uint VK_OEM_3 = 0xC0; // ` 键 (反引号/波浪号键)
 
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(StartupEventArgs e)
         {
             // 检查是否已有实例在运行
             const string mutexName = "DeskFlow_SingleInstance_Mutex";
@@ -48,6 +53,9 @@ namespace DesktopCalendar
             }
             
             base.OnStartup(e);
+            
+            // 初始化云服务
+            await CloudService.Instance.InitializeAsync();
             
             // 检查更新（从 GitHub 获取 update.xml）- 使用自定义界面
             AutoUpdater.CheckForUpdateEvent += OnCheckForUpdate;

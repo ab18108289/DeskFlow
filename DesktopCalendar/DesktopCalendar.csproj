@@ -12,9 +12,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     
     <!-- 版本信息 -->
-    <Version>1.0.3</Version>
-    <AssemblyVersion>1.0.3.0</AssemblyVersion>
-    <FileVersion>1.0.3.0</FileVersion>
+    <Version>1.0.4</Version>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
     <Product>DeskFlow</Product>
     <Company>DeskFlow</Company>
     <Description>简洁高效的桌面待办工具</Description>
@@ -27,6 +27,11 @@
     <PackageReference Include="Autoupdater.NET.Official" Version="1.9.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Hardcodet.NotifyIcon.Wpf" Version="1.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\wechat_pay.png" />
+    <Resource Include="Assets\alipay.png" />
   </ItemGroup>
 
 </Project>

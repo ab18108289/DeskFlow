@@ -1,8 +1,8 @@
 ; DeskFlow - Inno Setup 安装脚本
-; 版本: 1.0.3
+; 版本: 1.0.4
 
 #define MyAppName "DeskFlow"
-#define MyAppVersion "1.0.3"
+#define MyAppVersion "1.0.4"
 #define MyAppPublisher "DeskFlow"
 #define MyAppURL "https://github.com/ab18108289/DeskFlow"
 #define MyAppExeName "DesktopCalendar.exe"

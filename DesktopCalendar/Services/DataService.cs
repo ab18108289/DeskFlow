@@ -24,6 +24,7 @@ namespace DesktopCalendar.Services
         private readonly string _habitRecordsPath;
         private readonly string _groupsPath;
         private readonly string _projectsPath;
+        private readonly string _backupFolder;
         
         public ObservableCollection<TodoItem> Todos { get; private set; }
         public ObservableCollection<ReviewNote> Reviews { get; private set; }
@@ -46,6 +47,8 @@ namespace DesktopCalendar.Services
             _habitRecordsPath = Path.Combine(appFolder, "habit_records.json");
             _groupsPath = Path.Combine(appFolder, "groups.json");
             _projectsPath = Path.Combine(appFolder, "projects.json");
+            _backupFolder = Path.Combine(appFolder, "backups");
+            Directory.CreateDirectory(_backupFolder);
             
             Todos = new ObservableCollection<TodoItem>();
             Reviews = new ObservableCollection<ReviewNote>();
@@ -103,6 +106,115 @@ namespace DesktopCalendar.Services
             {
                 System.Diagnostics.Debug.WriteLine($"Save error: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// 创建完整备份（在云端同步前调用）
+        /// </summary>
+        public string CreateFullBackup()
+        {
+            try
+            {
+                var timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                var backupDir = Path.Combine(_backupFolder, timestamp);
+                Directory.CreateDirectory(backupDir);
+
+                // 备份所有数据文件
+                if (File.Exists(_dataPath))
+                    File.Copy(_dataPath, Path.Combine(backupDir, "todos.json"), true);
+                if (File.Exists(_groupsPath))
+                    File.Copy(_groupsPath, Path.Combine(backupDir, "groups.json"), true);
+                if (File.Exists(_projectsPath))
+                    File.Copy(_projectsPath, Path.Combine(backupDir, "projects.json"), true);
+                if (File.Exists(_reviewPath))
+                    File.Copy(_reviewPath, Path.Combine(backupDir, "reviews.json"), true);
+
+                // 只保留最近 10 个备份
+                CleanOldBackups(10);
+
+                return backupDir;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Backup error: {ex.Message}");
+                return "";
+            }
+        }
+
+        /// <summary>
+        /// 从备份恢复数据
+        /// </summary>
+        public bool RestoreFromBackup(string backupDir)
+        {
+            try
+            {
+                if (!Directory.Exists(backupDir)) return false;
+
+                var todosBackup = Path.Combine(backupDir, "todos.json");
+                var groupsBackup = Path.Combine(backupDir, "groups.json");
+                var projectsBackup = Path.Combine(backupDir, "projects.json");
+                var reviewsBackup = Path.Combine(backupDir, "reviews.json");
+
+                if (File.Exists(todosBackup))
+                    File.Copy(todosBackup, _dataPath, true);
+                if (File.Exists(groupsBackup))
+                    File.Copy(groupsBackup, _groupsPath, true);
+                if (File.Exists(projectsBackup))
+                    File.Copy(projectsBackup, _projectsPath, true);
+                if (File.Exists(reviewsBackup))
+                    File.Copy(reviewsBackup, _reviewPath, true);
+
+                // 重新加载数据
+                Load();
+                LoadGroups();
+                LoadProjects();
+                LoadReviews();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Restore error: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 获取所有备份列表
+        /// </summary>
+        public List<string> GetBackupList()
+        {
+            try
+            {
+                if (!Directory.Exists(_backupFolder)) return new List<string>();
+                return Directory.GetDirectories(_backupFolder)
+                    .OrderByDescending(d => d)
+                    .ToList();
+            }
+            catch
+            {
+                return new List<string>();
+            }
+        }
+
+        /// <summary>
+        /// 清理旧备份
+        /// </summary>
+        private void CleanOldBackups(int keepCount)
+        {
+            try
+            {
+                var backups = Directory.GetDirectories(_backupFolder)
+                    .OrderByDescending(d => d)
+                    .Skip(keepCount)
+                    .ToList();
+
+                foreach (var backup in backups)
+                {
+                    Directory.Delete(backup, true);
+                }
+            }
+            catch { }
         }
 
         public void AddTodo(string title, Priority priority = Priority.Low, DateTime? dueDate = null, string? groupId = null)
