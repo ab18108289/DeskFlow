@@ -140,14 +140,14 @@
             </ContextMenu>
         </Border.ContextMenu>
         
-        <Grid>
+        <Grid x:Name="MainGrid">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="260"/>
-                <ColumnDefinition Width="*"/>
+                <ColumnDefinition x:Name="LeftColumn" Width="*" MinWidth="260" MaxWidth="360"/>
+                <ColumnDefinition x:Name="RightColumn" Width="2*"/>
             </Grid.ColumnDefinitions>
 
             <!-- ========== 左侧：待办清单 ========== -->
-            <Border Grid.Column="0" BorderBrush="#15FFFFFF" BorderThickness="0,0,1,0">
+            <Border x:Name="LeftPanel" Grid.Column="0" BorderBrush="#15FFFFFF" BorderThickness="0,0,1,0" MinWidth="260">
                 <Grid Margin="18,16">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -167,6 +167,11 @@
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                             <Button Content="全部" Style="{StaticResource WidgetButton}" FontSize="11" Click="ShowAllTodos_Click" ToolTip="显示全部待办"/>
                             <Button Content="＋" Style="{StaticResource WidgetButton}" FontSize="16" Click="AddTodo_Click" ToolTip="添加待办"/>
+                            <!-- 收起/展开日历按钮 -->
+                            <Border x:Name="ToggleCalendarBtn" Background="#20FFFFFF" CornerRadius="6" Padding="6,4" Margin="6,0,0,0" 
+                                    Cursor="Hand" MouseLeftButtonDown="ToggleCalendar_Click" ToolTip="展开/收起日历">
+                                <TextBlock x:Name="ToggleCalendarIcon" Text="📅" FontSize="12"/>
+                            </Border>
                         </StackPanel>
                     </Grid>
                     
@@ -303,7 +308,7 @@
             </Border>
 
             <!-- ========== 右侧：月历 ========== -->
-            <Grid Grid.Column="1" Margin="18,16">
+            <Grid x:Name="RightPanel" Grid.Column="1" Margin="18,16">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -382,7 +387,7 @@
                 </Grid>
 
                 <!-- 星期行 -->
-                <UniformGrid Grid.Row="2" Columns="7" Margin="0,0,0,6">
+                <UniformGrid x:Name="WeekdayRow" Grid.Row="2" Columns="7" Margin="0,0,0,6">
                     <TextBlock Text="一" Foreground="#60FFFFFF" FontSize="12" HorizontalAlignment="Center" FontWeight="Medium"/>
                     <TextBlock Text="二" Foreground="#60FFFFFF" FontSize="12" HorizontalAlignment="Center" FontWeight="Medium"/>
                     <TextBlock Text="三" Foreground="#60FFFFFF" FontSize="12" HorizontalAlignment="Center" FontWeight="Medium"/>

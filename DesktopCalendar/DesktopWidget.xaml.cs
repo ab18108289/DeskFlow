@@ -116,12 +116,33 @@ namespace DesktopCalendar
             SendToBack();
         }
         
-        // 鼠标点击后保持在底层
+        // 鼠标点击后保持在底层（排除输入框等交互元素）
         protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
         {
             base.OnPreviewMouseDown(e);
+            
+            // 如果点击的是输入框，不要SendToBack，否则会影响输入
+            var source = e.OriginalSource as DependencyObject;
+            if (source != null && IsInputElement(source))
+            {
+                return;
+            }
+            
             // 延迟执行，确保其他窗口不被遮挡
             Dispatcher.BeginInvoke(new Action(SendToBack), System.Windows.Threading.DispatcherPriority.Background);
+        }
+        
+        private bool IsInputElement(DependencyObject element)
+        {
+            while (element != null)
+            {
+                if (element is TextBox || element is PasswordBox)
+                {
+                    return true;
+                }
+                element = VisualTreeHelper.GetParent(element);
+            }
+            return false;
         }
         
         private void SendToBack()
@@ -914,6 +935,42 @@ namespace DesktopCalendar
         private void OpenMainWindow_Click(object sender, MouseButtonEventArgs e)
         {
             ((App)Application.Current).ShowMainWindow();
+            e.Handled = true;
+        }
+        
+        private bool _isCalendarCollapsed = false;
+        
+        private void ToggleCalendar_Click(object sender, MouseButtonEventArgs e)
+        {
+            _isCalendarCollapsed = !_isCalendarCollapsed;
+            
+            if (_isCalendarCollapsed)
+            {
+                // 收起右侧日历区域
+                RightPanel.Visibility = Visibility.Collapsed;
+                RightColumn.Width = new GridLength(0);
+                LeftColumn.MaxWidth = double.PositiveInfinity;
+                LeftPanel.BorderThickness = new Thickness(0);
+                ToggleCalendarIcon.Text = "📆";
+                ToggleCalendarBtn.ToolTip = "展开日历";
+                
+                // 调整窗口宽度
+                this.Width = 400;
+            }
+            else
+            {
+                // 展开右侧日历区域
+                RightPanel.Visibility = Visibility.Visible;
+                RightColumn.Width = new GridLength(2, GridUnitType.Star);
+                LeftColumn.MaxWidth = 360;
+                LeftPanel.BorderThickness = new Thickness(0, 0, 1, 0);
+                ToggleCalendarIcon.Text = "📅";
+                ToggleCalendarBtn.ToolTip = "收起日历";
+                
+                // 恢复窗口宽度
+                this.Width = 920;
+            }
+            
             e.Handled = true;
         }
         
