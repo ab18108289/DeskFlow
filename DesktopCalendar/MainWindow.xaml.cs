@@ -654,7 +654,13 @@ namespace DesktopCalendar
             }
 
             EditPopup.Visibility = Visibility.Visible;
-            EditTitleBox.Focus();
+            
+            // 延迟聚焦，确保弹窗渲染完成后再聚焦
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                EditTitleBox.Focus();
+                Keyboard.Focus(EditTitleBox);
+            }), System.Windows.Threading.DispatcherPriority.Loaded);
         }
 
         private void EditPriority_Select(object sender, MouseButtonEventArgs e)

@@ -866,8 +866,13 @@ namespace DesktopCalendar
             EnableActivation();
             
             AddTodoPopup.Visibility = Visibility.Visible;
-            TodoInput.Focus();
-            Keyboard.Focus(TodoInput);
+            
+            // 延迟聚焦，确保弹窗渲染完成后再聚焦
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                TodoInput.Focus();
+                Keyboard.Focus(TodoInput);
+            }), System.Windows.Threading.DispatcherPriority.Loaded);
         }
         
         private void EnableActivation()
@@ -999,8 +1004,13 @@ namespace DesktopCalendar
                 EnableActivation();
                 
                 EditTodoPopup.Visibility = Visibility.Visible;
-                EditTodoInput.Focus();
-                Keyboard.Focus(EditTodoInput);
+                
+                // 延迟聚焦，确保弹窗渲染完成后再聚焦
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    EditTodoInput.Focus();
+                    Keyboard.Focus(EditTodoInput);
+                }), System.Windows.Threading.DispatcherPriority.Loaded);
             }
         }
         

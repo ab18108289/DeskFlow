@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="DeskFlow - 优雅的桌面日历与待办事项管理工具，让你的工作更有条理">
+    <meta name="keywords" content="DeskFlow, 桌面日历, 待办事项, 时间管理, Windows, 效率工具">
+    <meta name="author" content="DeskFlow Team">
+    <title>DeskFlow - 优雅的桌面效率工具</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <span class="logo-icon">📅</span>
+                <span class="logo-text">DeskFlow</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="#features">功能</a></li>
+                <li><a href="#screenshots">截图</a></li>
+                <li><a href="#download">下载</a></li>
+                <li><a href="#changelog">更新</a></li>
+                <li><a href="https://github.com/ab18108289/DeskFlow" target="_blank" class="github-link">
+                    <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                    </svg>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <div class="hero-badge">✨ 免费开源 · 轻量高效</div>
+            <h1 class="hero-title">
+                让每一天<br>
+                <span class="gradient-text">井井有条</span>
+            </h1>
+            <p class="hero-subtitle">
+                DeskFlow 是一款优雅的 Windows 桌面效率工具<br>
+                集日历、待办、习惯追踪、复盘于一体
+            </p>
+            <div class="hero-buttons">
+                <a href="#download" class="btn btn-primary">
+                    <span>⬇️</span> 立即下载
+                </a>
+                <a href="#features" class="btn btn-secondary">
+                    <span>👀</span> 了解更多
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">v1.0.6</span>
+                    <span class="stat-label">最新版本</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">2.8MB</span>
+                    <span class="stat-label">安装包</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">Win10+</span>
+                    <span class="stat-label">系统支持</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-image">
+            <div class="app-preview">
+                <div class="preview-header">
+                    <span class="dot red"></span>
+                    <span class="dot yellow"></span>
+                    <span class="dot green"></span>
+                </div>
+                <div class="preview-content">
+                    <div class="preview-sidebar">
+                        <div class="sidebar-item active">📋 待办</div>
+                        <div class="sidebar-item">📅 日历</div>
+                        <div class="sidebar-item">🎯 习惯</div>
+                        <div class="sidebar-item">📝 复盘</div>
+                    </div>
+                    <div class="preview-main">
+                        <div class="todo-item">
+                            <span class="checkbox">✓</span>
+                            <span>完成项目设计稿</span>
+                        </div>
+                        <div class="todo-item">
+                            <span class="checkbox">✓</span>
+                            <span>回复客户邮件</span>
+                        </div>
+                        <div class="todo-item pending">
+                            <span class="checkbox"></span>
+                            <span>准备周会材料</span>
+                        </div>
+                        <div class="todo-item pending">
+                            <span class="checkbox"></span>
+                            <span>学习新技术</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能特性 -->
+    <section id="features" class="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">核心功能</span>
+                <h2>为效率而生的工具集</h2>
+                <p>简洁不简单，DeskFlow 用心打磨每一个细节</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>智能待办</h3>
+                    <p>支持优先级、截止日期、分组管理，让任务一目了然</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📅</div>
+                    <h3>日历视图</h3>
+                    <p>直观的月历展示，快速浏览和管理日程安排</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>习惯追踪</h3>
+                    <p>养成好习惯，记录每日打卡，查看连续天数</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>每日复盘</h3>
+                    <p>记录今日成就与明日计划，持续进步</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🖥️</div>
+                    <h3>桌面小部件</h3>
+                    <p>常驻桌面的待办清单，随时查看和添加任务</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">☁️</div>
+                    <h3>云端同步</h3>
+                    <p>账号登录后数据自动同步，换电脑也不丢</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>多彩主题</h3>
+                    <p>内置多种精美主题，打造专属工作空间</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⌨️</div>
+                    <h3>全局热键</h3>
+                    <p>Ctrl+Shift+D 一键唤起，效率翻倍</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 截图展示 -->
+    <section id="screenshots" class="screenshots">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">界面预览</span>
+                <h2>简约而不简单的设计</h2>
+                <p>每一个像素都经过精心设计</p>
+            </div>
+            <div class="screenshot-placeholder">
+                <div class="placeholder-content">
+                    <span class="placeholder-icon">🖼️</span>
+                    <p>应用截图展示区</p>
+                    <small>（可添加实际应用截图）</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 下载区域 -->
+    <section id="download" class="download">
+        <div class="container">
+            <div class="download-card">
+                <div class="download-info">
+                    <h2>立即下载 DeskFlow</h2>
+                    <p>免费 · 开源 · 无广告 · 无后门</p>
+                    <div class="version-info">
+                        <span class="version-tag">v1.0.6</span>
+                        <span class="version-date">2026-01-20</span>
+                    </div>
+                </div>
+                <div class="download-buttons">
+                    <a href="https://github.com/ab18108289/DeskFlow/releases/latest" class="download-btn primary" target="_blank">
+                        <div class="btn-icon">
+                            <svg height="24" width="24" viewBox="0 0 16 16" fill="currentColor">
+                                <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+                            </svg>
+                        </div>
+                        <div class="btn-text">
+                            <span class="btn-title">GitHub 下载</span>
+                            <span class="btn-subtitle">国际线路 · 最新版</span>
+                        </div>
+                    </a>
+                    <a href="https://wwaly.lanzn.com/b01882wuwf" class="download-btn secondary" target="_blank">
+                        <div class="btn-icon">☁️</div>
+                        <div class="btn-text">
+                            <span class="btn-title">蓝奏云下载</span>
+                            <span class="btn-subtitle">国内高速 · 密码: 2rax</span>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 更新日志 -->
+    <section id="changelog" class="changelog">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">更新日志</span>
+                <h2>持续进化中</h2>
+                <p>我们一直在努力让 DeskFlow 变得更好</p>
+            </div>
+            <div class="changelog-list">
+                <div class="changelog-item">
+                    <div class="changelog-version">
+                        <span class="version">v1.0.6</span>
+                        <span class="date">2026-01-20</span>
+                    </div>
+                    <div class="changelog-content">
+                        <ul>
+                            <li>📅 日历收起功能 - 点击按钮可收起右侧日历</li>
+                            <li>✏️ 点击编辑待办 - 直接点击待办任务即可编辑</li>
+                            <li>🔧 输入框修复 - 修复弹窗内输入框无法输入的问题</li>
+                            <li>📐 窗口自由缩放 - 取消最小尺寸限制</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="changelog-item">
+                    <div class="changelog-version">
+                        <span class="version">v1.0.5</span>
+                        <span class="date">2026-01-18</span>
+                    </div>
+                    <div class="changelog-content">
+                        <ul>
+                            <li>☁️ 云端同步 - 支持账号注册登录，数据云端备份</li>
+                            <li>👤 个人中心 - 用户资料管理，修改密码</li>
+                            <li>🎨 界面优化 - 桌面小部件图标更清晰</li>
+                            <li>🛡️ 数据安全 - 智能同步，本地备份保护</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="changelog-item">
+                    <div class="changelog-version">
+                        <span class="version">v1.0.4</span>
+                        <span class="date">2026-01-15</span>
+                    </div>
+                    <div class="changelog-content">
+                        <ul>
+                            <li>🎨 多主题支持 - 新增紫色、蓝色、绿色等主题</li>
+                            <li>💰 赞助作者 - 添加打赏功能</li>
+                            <li>🔄 自动更新 - 支持应用内检查更新</li>
+                            <li>🐛 Bug 修复 - 修复若干已知问题</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <span class="logo-icon">📅</span>
+                    <span class="logo-text">DeskFlow</span>
+                </div>
+                <p class="footer-desc">让每一天井井有条</p>
+                <div class="footer-links">
+                    <a href="https://github.com/ab18108289/DeskFlow" target="_blank">GitHub</a>
+                    <span class="divider">·</span>
+                    <a href="https://github.com/ab18108289/DeskFlow/issues" target="_blank">反馈问题</a>
+                    <span class="divider">·</span>
+                    <a href="https://github.com/ab18108289/DeskFlow/releases" target="_blank">版本历史</a>
+                </div>
+                <p class="copyright">© 2026 DeskFlow. Made with ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
