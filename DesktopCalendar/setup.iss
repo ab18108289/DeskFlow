@@ -2,7 +2,7 @@
 ; 版本: 1.0.4
 
 #define MyAppName "DeskFlow"
-#define MyAppVersion "1.0.6"
+#define MyAppVersion "1.0.7"
 #define MyAppPublisher "DeskFlow"
 #define MyAppURL "https://github.com/ab18108289/DeskFlow"
 #define MyAppExeName "DesktopCalendar.exe"
