@@ -95,12 +95,18 @@ namespace DesktopCalendar.Services
             }
         }
 
-        public void Save()
+        public void Save(bool notifyCloud = true)
         {
             try
             {
                 var json = JsonConvert.SerializeObject(Todos, Formatting.Indented);
                 File.WriteAllText(_dataPath, json);
+                
+                // 通知云服务数据已变更
+                if (notifyCloud)
+                {
+                    CloudService.Instance.NotifyDataChanged();
+                }
             }
             catch (Exception ex)
             {
@@ -461,12 +467,14 @@ namespace DesktopCalendar.Services
             }
         }
 
-        public void SaveReviews()
+        public void SaveReviews(bool notifyCloud = true)
         {
             try
             {
                 var json = JsonConvert.SerializeObject(Reviews, Formatting.Indented);
                 File.WriteAllText(_reviewPath, json);
+                
+                if (notifyCloud) CloudService.Instance.NotifyDataChanged();
             }
             catch (Exception ex)
             {
@@ -900,12 +908,14 @@ namespace DesktopCalendar.Services
             }
         }
 
-        public void SaveGroups()
+        public void SaveGroups(bool notifyCloud = true)
         {
             try
             {
                 var json = JsonConvert.SerializeObject(Groups, Formatting.Indented);
                 File.WriteAllText(_groupsPath, json);
+                
+                if (notifyCloud) CloudService.Instance.NotifyDataChanged();
             }
             catch (Exception ex)
             {
@@ -1005,12 +1015,14 @@ namespace DesktopCalendar.Services
             }
         }
 
-        public void SaveProjects()
+        public void SaveProjects(bool notifyCloud = true)
         {
             try
             {
                 var json = JsonConvert.SerializeObject(Projects, Formatting.Indented);
                 File.WriteAllText(_projectsPath, json);
+                
+                if (notifyCloud) CloudService.Instance.NotifyDataChanged();
             }
             catch (Exception ex)
             {

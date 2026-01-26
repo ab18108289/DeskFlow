@@ -3,7 +3,9 @@ using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using Newtonsoft.Json;
 using DesktopCalendar.Models;
 using System.Collections.Generic;
@@ -23,11 +25,21 @@ namespace DesktopCalendar.Services
         private const string SUPABASE_URL = "https://sshenbpgeqfqbknqgcms.supabase.co";
         private const string SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNzaGVuYnBnZXFmcWJrbnFnY21zIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njg1MzkwNzcsImV4cCI6MjA4NDExNTA3N30.f_BPiKT6ufT1Vcu6PYu74YOp3SGC84n5u7Sxy468NUc";
 
+        // 自动同步配置
+        private const int DEBOUNCE_DELAY_MS = 3000;      // 防抖延迟：3秒
+        private const int AUTO_SYNC_INTERVAL_MS = 300000; // 定时同步：5分钟
+
         private readonly HttpClient _httpClient;
         private readonly string _sessionPath;
         private string? _accessToken;
         private string? _refreshToken;
         private string? _lastBackupPath;
+
+        // 自动同步相关
+        private CancellationTokenSource? _debounceCts;
+        private System.Timers.Timer? _autoSyncTimer;
+        private bool _isSyncing = false;
+        private DateTime _lastSyncTime = DateTime.MinValue;
 
         public event EventHandler? AuthStateChanged;
         public event EventHandler<string>? SyncStatusChanged;
@@ -35,6 +47,8 @@ namespace DesktopCalendar.Services
         public bool IsLoggedIn => CurrentUser != null;
         public UserInfo? CurrentUser { get; private set; }
         public string? UserEmail => CurrentUser?.Email;
+        public bool IsSyncing => _isSyncing;
+        public DateTime LastSyncTime => _lastSyncTime;
 
         private CloudService()
         {
@@ -54,12 +68,185 @@ namespace DesktopCalendar.Services
         }
 
         /// <summary>
-        /// 初始化服务
+        /// 初始化服务（恢复登录状态）
         /// </summary>
         public async Task InitializeAsync()
         {
             await RestoreSessionAsync();
         }
+
+        /// <summary>
+        /// 初始化并自动同步（应用启动时调用）
+        /// </summary>
+        public async Task InitializeWithSyncAsync()
+        {
+            await RestoreSessionAsync();
+            
+            // 如果已登录，启动时自动从云端拉取最新数据
+            if (IsLoggedIn)
+            {
+                await StartupSyncAsync();
+                StartAutoSyncTimer();
+            }
+        }
+
+        /// <summary>
+        /// 启动时同步 - 优先拉取云端数据
+        /// </summary>
+        private async Task StartupSyncAsync()
+        {
+            try
+            {
+                _isSyncing = true;
+                SyncStatusChanged?.Invoke(this, "正在同步...");
+                
+                // 智能同步：合并本地和云端数据
+                var (success, _, _) = await SmartSyncAsync();
+                
+                if (success)
+                {
+                    _lastSyncTime = DateTime.Now;
+                    SyncStatusChanged?.Invoke(this, "同步完成");
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Startup sync error: {ex.Message}");
+                SyncStatusChanged?.Invoke(this, "同步失败");
+            }
+            finally
+            {
+                _isSyncing = false;
+            }
+        }
+
+        #region 自动同步机制
+
+        /// <summary>
+        /// 启动定时自动同步
+        /// </summary>
+        public void StartAutoSyncTimer()
+        {
+            StopAutoSyncTimer();
+            
+            _autoSyncTimer = new System.Timers.Timer(AUTO_SYNC_INTERVAL_MS);
+            _autoSyncTimer.Elapsed += async (s, e) => await OnAutoSyncTimerElapsed();
+            _autoSyncTimer.AutoReset = true;
+            _autoSyncTimer.Start();
+            
+            System.Diagnostics.Debug.WriteLine("Auto sync timer started");
+        }
+
+        /// <summary>
+        /// 停止定时自动同步
+        /// </summary>
+        public void StopAutoSyncTimer()
+        {
+            if (_autoSyncTimer != null)
+            {
+                _autoSyncTimer.Stop();
+                _autoSyncTimer.Dispose();
+                _autoSyncTimer = null;
+            }
+        }
+
+        /// <summary>
+        /// 定时同步触发
+        /// </summary>
+        private async Task OnAutoSyncTimerElapsed()
+        {
+            if (!IsLoggedIn || _isSyncing) return;
+            
+            try
+            {
+                _isSyncing = true;
+                await UploadOnlyAsync();
+                _lastSyncTime = DateTime.Now;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Auto sync error: {ex.Message}");
+            }
+            finally
+            {
+                _isSyncing = false;
+            }
+        }
+
+        /// <summary>
+        /// 数据变更时调用 - 防抖上传
+        /// </summary>
+        public void NotifyDataChanged()
+        {
+            if (!IsLoggedIn) return;
+            
+            // 取消之前的延迟任务
+            _debounceCts?.Cancel();
+            _debounceCts = new CancellationTokenSource();
+            
+            var token = _debounceCts.Token;
+            
+            // 延迟执行上传
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(DEBOUNCE_DELAY_MS, token);
+                    
+                    if (!token.IsCancellationRequested && IsLoggedIn && !_isSyncing)
+                    {
+                        _isSyncing = true;
+                        SyncStatusChanged?.Invoke(this, "正在同步...");
+                        
+                        var (success, _) = await UploadOnlyAsync();
+                        
+                        if (success)
+                        {
+                            _lastSyncTime = DateTime.Now;
+                            SyncStatusChanged?.Invoke(this, "已同步");
+                        }
+                        
+                        _isSyncing = false;
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    // 被取消，忽略
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Debounce upload error: {ex.Message}");
+                    _isSyncing = false;
+                }
+            });
+        }
+
+        /// <summary>
+        /// 应用退出时强制同步
+        /// </summary>
+        public async Task ForceSyncOnExitAsync()
+        {
+            if (!IsLoggedIn || _isSyncing) return;
+            
+            try
+            {
+                _debounceCts?.Cancel(); // 取消防抖
+                StopAutoSyncTimer();    // 停止定时器
+                
+                _isSyncing = true;
+                await UploadOnlyAsync();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exit sync error: {ex.Message}");
+            }
+            finally
+            {
+                _isSyncing = false;
+            }
+        }
+
+        #endregion
 
         #region 认证方法
 
@@ -181,6 +368,10 @@ namespace DesktopCalendar.Services
         /// </summary>
         public async Task SignOutAsync()
         {
+            // 停止自动同步
+            StopAutoSyncTimer();
+            _debounceCts?.Cancel();
+            
             try
             {
                 if (_accessToken != null)
@@ -803,29 +994,29 @@ namespace DesktopCalendar.Services
         }
 
         /// <summary>
-        /// 应用合并后的数据到本地
+        /// 应用合并后的数据到本地（不触发云同步通知，避免死循环）
         /// </summary>
         private void ApplyMergedData(UserData data)
         {
             DataService.Instance.Todos.Clear();
             foreach (var todo in data.Todos)
                 DataService.Instance.Todos.Add(todo);
-            DataService.Instance.Save();
+            DataService.Instance.Save(notifyCloud: false);
 
             DataService.Instance.Groups.Clear();
             foreach (var group in data.Groups)
                 DataService.Instance.Groups.Add(group);
-            DataService.Instance.SaveGroups();
+            DataService.Instance.SaveGroups(notifyCloud: false);
 
             DataService.Instance.Projects.Clear();
             foreach (var project in data.Projects)
                 DataService.Instance.Projects.Add(project);
-            DataService.Instance.SaveProjects();
+            DataService.Instance.SaveProjects(notifyCloud: false);
 
             DataService.Instance.Reviews.Clear();
             foreach (var review in data.Reviews)
                 DataService.Instance.Reviews.Add(review);
-            DataService.Instance.SaveReviews();
+            DataService.Instance.SaveReviews(notifyCloud: false);
         }
 
         /// <summary>

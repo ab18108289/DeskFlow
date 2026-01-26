@@ -54,14 +54,15 @@ namespace DesktopCalendar
             
             base.OnStartup(e);
             
-            // 初始化云服务
-            await CloudService.Instance.InitializeAsync();
+            // 初始化数据服务
+            _ = DataService.Instance;
+            
+            // 初始化云服务并自动同步（如果已登录）
+            await CloudService.Instance.InitializeWithSyncAsync();
             
             // 检查更新（从 GitHub 获取 update.xml）- 使用自定义界面
             AutoUpdater.CheckForUpdateEvent += OnCheckForUpdate;
             AutoUpdater.Start("https://raw.githubusercontent.com/ab18108289/DeskFlow/main/update.xml");
-            
-            _ = DataService.Instance;
 
             _desktopWidget = new DesktopWidget();
             _desktopWidget.Show();
@@ -230,7 +231,7 @@ namespace DesktopCalendar
             }
         }
 
-        protected override void OnExit(ExitEventArgs e)
+        protected override async void OnExit(ExitEventArgs e)
         {
             // 取消注册热键
             if (_hwndSource != null)
@@ -240,7 +241,12 @@ namespace DesktopCalendar
                 _hwndSource.Dispose();
             }
             
-            DataService.Instance.Save();
+            // 保存本地数据
+            DataService.Instance.Save(notifyCloud: false);
+            
+            // 退出前强制同步到云端
+            await CloudService.Instance.ForceSyncOnExitAsync();
+            
             _notifyIcon?.Dispose();
             
             // 释放互斥锁

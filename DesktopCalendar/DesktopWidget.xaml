@@ -168,9 +168,9 @@
                             <Button Content="全部" Style="{StaticResource WidgetButton}" FontSize="11" Click="ShowAllTodos_Click" ToolTip="显示全部待办"/>
                             <Button Content="＋" Style="{StaticResource WidgetButton}" FontSize="16" Click="AddTodo_Click" ToolTip="添加待办"/>
                             <!-- 收起/展开日历按钮 -->
-                            <Border x:Name="ToggleCalendarBtn" Background="#20FFFFFF" CornerRadius="6" Padding="6,4" Margin="6,0,0,0" 
+                            <Border x:Name="ToggleCalendarBtn" Background="#20FFFFFF" CornerRadius="6" Padding="8,6" Margin="6,0,0,0" 
                                     Cursor="Hand" MouseLeftButtonDown="ToggleCalendar_Click" ToolTip="展开/收起日历">
-                                <TextBlock x:Name="ToggleCalendarIcon" Text="📅" FontSize="12"/>
+                                <TextBlock x:Name="ToggleCalendarIcon" Text="📅" FontSize="14"/>
                             </Border>
                         </StackPanel>
                     </Grid>
@@ -441,16 +441,11 @@
                                     <TextBlock Text="重要" Foreground="#F97316" FontSize="12"/>
                                 </StackPanel>
                             </Border>
-                            <Border x:Name="LowPriorityBtn" CornerRadius="8" Padding="16,8" Cursor="Hand" MouseLeftButtonDown="Priority_Click" Tag="Low">
-                                <Border.Background>
-                                    <LinearGradientBrush EndPoint="1,0">
-                                        <GradientStop Color="#22C55E" Offset="0"/>
-                                        <GradientStop Color="#16A34A" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
+                            <Border x:Name="LowPriorityBtn" Background="Transparent" BorderBrush="#22C55E" BorderThickness="1.5" 
+                                    CornerRadius="8" Padding="16,8" Cursor="Hand" MouseLeftButtonDown="Priority_Click" Tag="Low">
                                 <StackPanel Orientation="Horizontal">
-                                    <Ellipse Width="8" Height="8" Fill="White" Margin="0,0,6,0"/>
-                                    <TextBlock Text="普通" Foreground="White" FontSize="12"/>
+                                    <Ellipse Width="8" Height="8" Fill="#22C55E" Margin="0,0,6,0"/>
+                                    <TextBlock Text="普通" Foreground="#22C55E" FontSize="12"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -520,16 +515,11 @@
                                     <TextBlock Text="重要" Foreground="#F97316" FontSize="12"/>
                                 </StackPanel>
                             </Border>
-                            <Border x:Name="EditLowPriorityBtn" CornerRadius="8" Padding="16,8" Cursor="Hand" MouseLeftButtonDown="EditPriority_Click" Tag="Low">
-                                <Border.Background>
-                                    <LinearGradientBrush EndPoint="1,0">
-                                        <GradientStop Color="#22C55E" Offset="0"/>
-                                        <GradientStop Color="#16A34A" Offset="1"/>
-                                    </LinearGradientBrush>
-                                </Border.Background>
+                            <Border x:Name="EditLowPriorityBtn" Background="Transparent" BorderBrush="#22C55E" BorderThickness="1.5" 
+                                    CornerRadius="8" Padding="16,8" Cursor="Hand" MouseLeftButtonDown="EditPriority_Click" Tag="Low">
                                 <StackPanel Orientation="Horizontal">
-                                    <Ellipse Width="8" Height="8" Fill="White" Margin="0,0,6,0"/>
-                                    <TextBlock Text="普通" Foreground="White" FontSize="12"/>
+                                    <Ellipse Width="8" Height="8" Fill="#22C55E" Margin="0,0,6,0"/>
+                                    <TextBlock Text="普通" Foreground="#22C55E" FontSize="12"/>
                                 </StackPanel>
                             </Border>
                         </StackPanel>

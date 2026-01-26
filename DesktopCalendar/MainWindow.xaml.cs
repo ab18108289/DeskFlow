@@ -1957,6 +1957,9 @@ namespace DesktopCalendar
                         RefreshAll();
                     }
                     
+                    // 启动自动同步定时器
+                    CloudService.Instance.StartAutoSyncTimer();
+                    
                     UpdateCloudSyncUI();
                 }
             }

@@ -9,6 +9,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using DesktopCalendar.Models;
 using DesktopCalendar.Services;
@@ -867,12 +868,14 @@ namespace DesktopCalendar
             
             AddTodoPopup.Visibility = Visibility.Visible;
             
-            // 延迟聚焦，确保弹窗渲染完成后再聚焦
+            // 激活窗口并延迟聚焦，确保弹窗渲染完成后再聚焦
+            this.Activate();
             Dispatcher.BeginInvoke(new Action(() =>
             {
+                this.Activate();
                 TodoInput.Focus();
                 Keyboard.Focus(TodoInput);
-            }), System.Windows.Threading.DispatcherPriority.Loaded);
+            }), System.Windows.Threading.DispatcherPriority.Input);
         }
         
         private void EnableActivation()
@@ -915,8 +918,24 @@ namespace DesktopCalendar
 
         private void UpdatePriorityButtons()
         {
+            // 重置所有按钮为未选中状态
             HighPriorityBtn.Background = Brushes.Transparent;
             MediumPriorityBtn.Background = Brushes.Transparent;
+            LowPriorityBtn.Background = Brushes.Transparent;
+            LowPriorityBtn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
+            LowPriorityBtn.BorderThickness = new Thickness(1.5);
+            
+            // 更新"普通"按钮内部元素的颜色
+            if (LowPriorityBtn.Child is StackPanel lowPanel)
+            {
+                foreach (var child in lowPanel.Children)
+                {
+                    if (child is Ellipse ellipse)
+                        ellipse.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
+                    else if (child is TextBlock text)
+                        text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
+                }
+            }
 
             switch (_selectedPriority)
             {
@@ -925,6 +944,26 @@ namespace DesktopCalendar
                     break;
                 case Priority.Medium:
                     MediumPriorityBtn.Background = new SolidColorBrush(Color.FromArgb(40, 249, 115, 22));
+                    break;
+                case Priority.Low:
+                    // 选中时使用绿色渐变背景
+                    var gradient = new LinearGradientBrush();
+                    gradient.EndPoint = new Point(1, 0);
+                    gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#22C55E"), 0));
+                    gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#16A34A"), 1));
+                    LowPriorityBtn.Background = gradient;
+                    LowPriorityBtn.BorderThickness = new Thickness(0);
+                    // 选中时文字和圆点变白色
+                    if (LowPriorityBtn.Child is StackPanel selectedPanel)
+                    {
+                        foreach (var child in selectedPanel.Children)
+                        {
+                            if (child is Ellipse ellipse)
+                                ellipse.Fill = Brushes.White;
+                            else if (child is TextBlock text)
+                                text.Foreground = Brushes.White;
+                        }
+                    }
                     break;
             }
         }
@@ -1005,12 +1044,14 @@ namespace DesktopCalendar
                 
                 EditTodoPopup.Visibility = Visibility.Visible;
                 
-                // 延迟聚焦，确保弹窗渲染完成后再聚焦
+                // 激活窗口并延迟聚焦，确保弹窗渲染完成后再聚焦
+                this.Activate();
                 Dispatcher.BeginInvoke(new Action(() =>
                 {
+                    this.Activate();
                     EditTodoInput.Focus();
                     Keyboard.Focus(EditTodoInput);
-                }), System.Windows.Threading.DispatcherPriority.Loaded);
+                }), System.Windows.Threading.DispatcherPriority.Input);
             }
         }
         
@@ -1036,10 +1077,24 @@ namespace DesktopCalendar
         
         private void UpdateEditPriorityButtons()
         {
-            // 重置所有按钮
+            // 重置所有按钮为未选中状态
             EditHighPriorityBtn.Background = Brushes.Transparent;
             EditMediumPriorityBtn.Background = Brushes.Transparent;
             EditLowPriorityBtn.Background = Brushes.Transparent;
+            EditLowPriorityBtn.BorderBrush = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
+            EditLowPriorityBtn.BorderThickness = new Thickness(1.5);
+            
+            // 更新"普通"按钮内部元素的颜色
+            if (EditLowPriorityBtn.Child is StackPanel lowPanel)
+            {
+                foreach (var child in lowPanel.Children)
+                {
+                    if (child is Ellipse ellipse)
+                        ellipse.Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
+                    else if (child is TextBlock text)
+                        text.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#22C55E"));
+                }
+            }
             
             // 设置选中状态
             switch (_editPriority)
@@ -1051,7 +1106,24 @@ namespace DesktopCalendar
                     EditMediumPriorityBtn.Background = new SolidColorBrush(Color.FromArgb(40, 249, 115, 22));
                     break;
                 case Priority.Low:
-                    // 已经有渐变背景
+                    // 选中时使用绿色渐变背景
+                    var gradient = new LinearGradientBrush();
+                    gradient.EndPoint = new Point(1, 0);
+                    gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#22C55E"), 0));
+                    gradient.GradientStops.Add(new GradientStop((Color)ColorConverter.ConvertFromString("#16A34A"), 1));
+                    EditLowPriorityBtn.Background = gradient;
+                    EditLowPriorityBtn.BorderThickness = new Thickness(0);
+                    // 选中时文字和圆点变白色
+                    if (EditLowPriorityBtn.Child is StackPanel selectedPanel)
+                    {
+                        foreach (var child in selectedPanel.Children)
+                        {
+                            if (child is Ellipse ellipse)
+                                ellipse.Fill = Brushes.White;
+                            else if (child is TextBlock text)
+                                text.Foreground = Brushes.White;
+                        }
+                    }
                     break;
             }
         }
