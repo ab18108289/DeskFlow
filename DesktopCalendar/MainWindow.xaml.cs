@@ -159,6 +159,7 @@ namespace DesktopCalendar
                 // HabitPanel已移除
                 ProjectPanel.Visibility = Visibility.Collapsed;
                 ProjectDetailPanel.Visibility = Visibility.Collapsed;
+                DiaryPanel.Visibility = Visibility.Collapsed;
                 
                 _currentFilter = filter;
                 SetActiveNavButton(btn);
@@ -773,6 +774,7 @@ namespace DesktopCalendar
             // HabitPanel已移除
             ProjectPanel.Visibility = Visibility.Collapsed;
             ProjectDetailPanel.Visibility = Visibility.Collapsed;
+            DiaryPanel.Visibility = Visibility.Collapsed;
             
             ReviewPanel.Visibility = Visibility.Visible;
             _reviewPeriod = "Day";
@@ -1413,6 +1415,7 @@ namespace DesktopCalendar
                 // HabitPanel已移除
                 ProjectPanel.Visibility = Visibility.Collapsed;
                 ProjectDetailPanel.Visibility = Visibility.Collapsed;
+                DiaryPanel.Visibility = Visibility.Collapsed;
                 
                 SetActiveNavButton(null); // 分组按钮不使用通用高亮
                 RefreshAll();
@@ -1546,6 +1549,7 @@ namespace DesktopCalendar
                 ReviewPanel.Visibility = Visibility.Collapsed;
                 // HabitPanel已移除
                 ProjectPanel.Visibility = Visibility.Collapsed;
+                DiaryPanel.Visibility = Visibility.Collapsed;
                 
                 OpenProjectDetail(projectId);
             }
@@ -2013,6 +2017,156 @@ namespace DesktopCalendar
                     RefreshFilteredTodos();
                 }
             }
+        }
+
+        #endregion
+
+        #region 日记功能
+
+        private string? _editingDiaryId;
+
+        private void NavDiary_Click(object sender, RoutedEventArgs e)
+        {
+            // 取消导航按钮高亮
+            SetActiveNavButton(null);
+            
+            // 隐藏其他面板
+            ReviewPanel.Visibility = Visibility.Collapsed;
+            ProjectPanel.Visibility = Visibility.Collapsed;
+            ProjectDetailPanel.Visibility = Visibility.Collapsed;
+            
+            // 显示日记面板
+            DiaryPanel.Visibility = Visibility.Visible;
+            RefreshDiaryList();
+        }
+
+        private void CloseDiary_Click(object sender, RoutedEventArgs e)
+        {
+            DiaryPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void RefreshDiaryList(string? searchKeyword = null)
+        {
+            var diaries = DataService.Instance.Diaries.ToList();
+            
+            // 搜索过滤
+            if (!string.IsNullOrWhiteSpace(searchKeyword))
+            {
+                diaries = diaries.Where(d => d.Content.Contains(searchKeyword, StringComparison.OrdinalIgnoreCase)).ToList();
+            }
+
+            // 按天分组
+            var groups = diaries
+                .OrderByDescending(d => d.CreatedAt)
+                .GroupBy(d => d.DateKey)
+                .Select(g => new DiaryGroup
+                {
+                    DateKey = g.Key,
+                    DateDisplay = g.First().FriendlyDateDisplay + " " + g.First().DateDisplay,
+                    Entries = g.OrderByDescending(d => d.CreatedAt).ToList()
+                })
+                .ToList();
+
+            DiaryList.ItemsSource = groups;
+
+            // 更新统计
+            var totalCount = DataService.Instance.Diaries.Count;
+            var todayCount = DataService.Instance.GetTodayDiaryCount();
+            DiaryCountText.Text = $"共 {totalCount} 条记录，今日 {todayCount} 条";
+
+            // 空状态
+            DiaryEmptyState.Visibility = groups.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void DiarySearch_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            RefreshDiaryList(DiarySearchBox.Text);
+        }
+
+        private void DiaryInput_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Ctrl+Enter 提交
+            if (e.Key == Key.Enter && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                SubmitDiary();
+                e.Handled = true;
+            }
+        }
+
+        private void DiaryInput_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            // 更新字数
+            DiaryInputCount.Text = $"{DiaryInput.Text.Length} 字";
+        }
+
+        private void SubmitDiary_Click(object sender, RoutedEventArgs e)
+        {
+            SubmitDiary();
+        }
+
+        private void SubmitDiary()
+        {
+            var content = DiaryInput.Text?.Trim();
+            if (string.IsNullOrEmpty(content))
+            {
+                return;
+            }
+
+            DataService.Instance.AddDiary(content);
+            DiaryInput.Text = "";
+            DiaryInputCount.Text = "0 字";
+            RefreshDiaryList();
+        }
+
+        private void EditDiary_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string diaryId)
+            {
+                var diary = DataService.Instance.GetDiary(diaryId);
+                if (diary == null) return;
+
+                _editingDiaryId = diaryId;
+                EditDiaryContent.Text = diary.Content;
+                EditDiaryPopup.Visibility = Visibility.Visible;
+            }
+        }
+
+        private void DeleteDiary_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.Tag is string diaryId)
+            {
+                var result = MessageBox.Show("确定要删除这条日记吗？", "确认删除", 
+                    MessageBoxButton.YesNo, MessageBoxImage.Question);
+                
+                if (result == MessageBoxResult.Yes)
+                {
+                    DataService.Instance.DeleteDiary(diaryId);
+                    RefreshDiaryList();
+                }
+            }
+        }
+
+        private void CloseEditDiaryPopup_Click(object sender, RoutedEventArgs e)
+        {
+            EditDiaryPopup.Visibility = Visibility.Collapsed;
+            _editingDiaryId = null;
+        }
+
+        private void ConfirmEditDiary_Click(object sender, RoutedEventArgs e)
+        {
+            if (_editingDiaryId == null) return;
+
+            var content = EditDiaryContent.Text?.Trim();
+            if (string.IsNullOrEmpty(content))
+            {
+                MessageBox.Show("日记内容不能为空", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            DataService.Instance.UpdateDiary(_editingDiaryId, content);
+            EditDiaryPopup.Visibility = Visibility.Collapsed;
+            _editingDiaryId = null;
+            RefreshDiaryList();
         }
 
         #endregion

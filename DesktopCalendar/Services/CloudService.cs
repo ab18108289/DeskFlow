@@ -769,6 +769,7 @@ namespace DesktopCalendar.Services
                     Groups = DataService.Instance.Groups.ToList(),
                     Projects = DataService.Instance.Projects.ToList(),
                     Reviews = DataService.Instance.Reviews.ToList(),
+                    Diaries = DataService.Instance.Diaries.ToList(),
                     UpdatedAt = DateTime.UtcNow
                 };
 
@@ -834,6 +835,7 @@ namespace DesktopCalendar.Services
                     Groups = DataService.Instance.Groups.ToList(),
                     Projects = DataService.Instance.Projects.ToList(),
                     Reviews = DataService.Instance.Reviews.ToList(),
+                    Diaries = DataService.Instance.Diaries.ToList(),
                     UpdatedAt = DateTime.UtcNow
                 };
 
@@ -989,6 +991,30 @@ namespace DesktopCalendar.Services
             }
             merged.Reviews = allReviews.Values.ToList();
 
+            // 合并 Diaries - 以 ID 为准，保留最新的
+            var allDiaries = new Dictionary<string, DiaryEntry>();
+            if (cloud?.Diaries != null)
+            {
+                foreach (var d in cloud.Diaries) allDiaries[d.Id] = d;
+            }
+            foreach (var d in local.Diaries)
+            {
+                if (allDiaries.ContainsKey(d.Id))
+                {
+                    // 比较更新时间，保留最新的
+                    var existing = allDiaries[d.Id];
+                    if (d.UpdatedAt > existing.UpdatedAt)
+                    {
+                        allDiaries[d.Id] = d;
+                    }
+                }
+                else
+                {
+                    allDiaries[d.Id] = d;
+                }
+            }
+            merged.Diaries = allDiaries.Values.ToList();
+
             result.MergedData = merged;
             return result;
         }
@@ -1017,6 +1043,11 @@ namespace DesktopCalendar.Services
             foreach (var review in data.Reviews)
                 DataService.Instance.Reviews.Add(review);
             DataService.Instance.SaveReviews(notifyCloud: false);
+
+            DataService.Instance.Diaries.Clear();
+            foreach (var diary in data.Diaries)
+                DataService.Instance.Diaries.Add(diary);
+            DataService.Instance.SaveDiaries(notifyCloud: false);
         }
 
         /// <summary>
@@ -1038,6 +1069,7 @@ namespace DesktopCalendar.Services
                     Groups = DataService.Instance.Groups.ToList(),
                     Projects = DataService.Instance.Projects.ToList(),
                     Reviews = DataService.Instance.Reviews.ToList(),
+                    Diaries = DataService.Instance.Diaries.ToList(),
                     UpdatedAt = DateTime.UtcNow
                 };
 
@@ -1176,6 +1208,7 @@ namespace DesktopCalendar.Services
         public List<TodoGroup> Groups { get; set; } = new();
         public List<Project> Projects { get; set; } = new();
         public List<ReviewNote> Reviews { get; set; } = new();
+        public List<DiaryEntry> Diaries { get; set; } = new();
         public DateTime UpdatedAt { get; set; }
     }
 

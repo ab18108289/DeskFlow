@@ -24,6 +24,7 @@ namespace DesktopCalendar.Services
         private readonly string _habitRecordsPath;
         private readonly string _groupsPath;
         private readonly string _projectsPath;
+        private readonly string _diariesPath;
         private readonly string _backupFolder;
         
         public ObservableCollection<TodoItem> Todos { get; private set; }
@@ -32,9 +33,11 @@ namespace DesktopCalendar.Services
         public ObservableCollection<HabitRecord> HabitRecords { get; private set; }
         public ObservableCollection<TodoGroup> Groups { get; private set; }
         public ObservableCollection<Project> Projects { get; private set; }
+        public ObservableCollection<DiaryEntry> Diaries { get; private set; }
         
         public event EventHandler? GroupsChanged;
         public event EventHandler? ProjectsChanged;
+        public event EventHandler? DiariesChanged;
 
         private DataService()
         {
@@ -47,6 +50,7 @@ namespace DesktopCalendar.Services
             _habitRecordsPath = Path.Combine(appFolder, "habit_records.json");
             _groupsPath = Path.Combine(appFolder, "groups.json");
             _projectsPath = Path.Combine(appFolder, "projects.json");
+            _diariesPath = Path.Combine(appFolder, "diaries.json");
             _backupFolder = Path.Combine(appFolder, "backups");
             Directory.CreateDirectory(_backupFolder);
             
@@ -56,6 +60,7 @@ namespace DesktopCalendar.Services
             HabitRecords = new ObservableCollection<HabitRecord>();
             Groups = new ObservableCollection<TodoGroup>();
             Projects = new ObservableCollection<Project>();
+            Diaries = new ObservableCollection<DiaryEntry>();
             
             Load();
             LoadReviews();
@@ -63,6 +68,7 @@ namespace DesktopCalendar.Services
             LoadProjects();
             LoadHabitRecords();
             LoadGroups();
+            LoadDiaries();
             
             // 同步分类和分组（确保每个分类都有对应的分组）
             SyncProjectsAndGroups();
@@ -134,6 +140,8 @@ namespace DesktopCalendar.Services
                     File.Copy(_projectsPath, Path.Combine(backupDir, "projects.json"), true);
                 if (File.Exists(_reviewPath))
                     File.Copy(_reviewPath, Path.Combine(backupDir, "reviews.json"), true);
+                if (File.Exists(_diariesPath))
+                    File.Copy(_diariesPath, Path.Combine(backupDir, "diaries.json"), true);
 
                 // 只保留最近 10 个备份
                 CleanOldBackups(10);
@@ -160,6 +168,7 @@ namespace DesktopCalendar.Services
                 var groupsBackup = Path.Combine(backupDir, "groups.json");
                 var projectsBackup = Path.Combine(backupDir, "projects.json");
                 var reviewsBackup = Path.Combine(backupDir, "reviews.json");
+                var diariesBackup = Path.Combine(backupDir, "diaries.json");
 
                 if (File.Exists(todosBackup))
                     File.Copy(todosBackup, _dataPath, true);
@@ -169,12 +178,15 @@ namespace DesktopCalendar.Services
                     File.Copy(projectsBackup, _projectsPath, true);
                 if (File.Exists(reviewsBackup))
                     File.Copy(reviewsBackup, _reviewPath, true);
+                if (File.Exists(diariesBackup))
+                    File.Copy(diariesBackup, _diariesPath, true);
 
                 // 重新加载数据
                 Load();
                 LoadGroups();
                 LoadProjects();
                 LoadReviews();
+                LoadDiaries();
 
                 return true;
             }
@@ -1240,6 +1252,166 @@ namespace DesktopCalendar.Services
                 return Enumerable.Empty<TodoItem>();
             }
             return Todos.Where(t => t.GroupId == project.LinkedGroupId && !t.IsSubTask);
+        }
+
+        #endregion
+
+        #region 日记管理
+
+        /// <summary>
+        /// 加载日记数据
+        /// </summary>
+        public void LoadDiaries()
+        {
+            try
+            {
+                if (File.Exists(_diariesPath))
+                {
+                    var json = File.ReadAllText(_diariesPath);
+                    var items = JsonConvert.DeserializeObject<ObservableCollection<DiaryEntry>>(json);
+                    if (items != null)
+                    {
+                        Diaries.Clear();
+                        foreach (var item in items)
+                        {
+                            Diaries.Add(item);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Load diaries error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 保存日记数据
+        /// </summary>
+        public void SaveDiaries(bool notifyCloud = true)
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(Diaries, Formatting.Indented);
+                File.WriteAllText(_diariesPath, json);
+                
+                if (notifyCloud) CloudService.Instance.NotifyDataChanged();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Save diaries error: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 触发日记变化事件
+        /// </summary>
+        private void NotifyDiariesChanged()
+        {
+            DiariesChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// 添加日记
+        /// </summary>
+        public DiaryEntry AddDiary(string content, string? mood = null)
+        {
+            var entry = new DiaryEntry
+            {
+                Content = content,
+                Mood = mood,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+            Diaries.Insert(0, entry);
+            SaveDiaries();
+            NotifyDiariesChanged();
+            return entry;
+        }
+
+        /// <summary>
+        /// 更新日记
+        /// </summary>
+        public void UpdateDiary(string id, string content, string? mood = null)
+        {
+            var entry = Diaries.FirstOrDefault(d => d.Id == id);
+            if (entry != null)
+            {
+                entry.Content = content;
+                entry.Mood = mood;
+                entry.UpdatedAt = DateTime.Now;
+                SaveDiaries();
+                NotifyDiariesChanged();
+            }
+        }
+
+        /// <summary>
+        /// 删除日记
+        /// </summary>
+        public void DeleteDiary(string id)
+        {
+            var entry = Diaries.FirstOrDefault(d => d.Id == id);
+            if (entry != null)
+            {
+                Diaries.Remove(entry);
+                SaveDiaries();
+                NotifyDiariesChanged();
+            }
+        }
+
+        /// <summary>
+        /// 获取日记
+        /// </summary>
+        public DiaryEntry? GetDiary(string id)
+        {
+            return Diaries.FirstOrDefault(d => d.Id == id);
+        }
+
+        /// <summary>
+        /// 按天分组获取日记
+        /// </summary>
+        public List<DiaryGroup> GetDiariesGroupedByDay()
+        {
+            return Diaries
+                .OrderByDescending(d => d.CreatedAt)
+                .GroupBy(d => d.DateKey)
+                .Select(g => new DiaryGroup
+                {
+                    DateKey = g.Key,
+                    DateDisplay = g.First().FriendlyDateDisplay + " " + g.First().DateDisplay,
+                    Entries = g.OrderByDescending(d => d.CreatedAt).ToList()
+                })
+                .ToList();
+        }
+
+        /// <summary>
+        /// 获取今日日记数量
+        /// </summary>
+        public int GetTodayDiaryCount()
+        {
+            return Diaries.Count(d => d.IsToday);
+        }
+
+        /// <summary>
+        /// 获取指定日期的日记
+        /// </summary>
+        public IEnumerable<DiaryEntry> GetDiariesByDate(DateTime date)
+        {
+            return Diaries
+                .Where(d => d.CreatedAt.Date == date.Date)
+                .OrderByDescending(d => d.CreatedAt);
+        }
+
+        /// <summary>
+        /// 搜索日记
+        /// </summary>
+        public IEnumerable<DiaryEntry> SearchDiaries(string keyword)
+        {
+            if (string.IsNullOrWhiteSpace(keyword)) return Diaries;
+            
+            return Diaries
+                .Where(d => d.Content.Contains(keyword, StringComparison.OrdinalIgnoreCase))
+                .OrderByDescending(d => d.CreatedAt);
         }
 
         #endregion
