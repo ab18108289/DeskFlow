@@ -226,15 +226,26 @@ namespace DesktopCalendar.Services
         /// </summary>
         public async Task ForceSyncOnExitAsync()
         {
-            if (!IsLoggedIn || _isSyncing) return;
+            if (!IsLoggedIn) return;
             
             try
             {
                 _debounceCts?.Cancel(); // 取消防抖
                 StopAutoSyncTimer();    // 停止定时器
                 
+                // 等待当前同步完成（最多等待5秒）
+                int waitCount = 0;
+                while (_isSyncing && waitCount < 50)
+                {
+                    await Task.Delay(100);
+                    waitCount++;
+                }
+                
+                // 无论如何都执行最终上传
                 _isSyncing = true;
+                System.Diagnostics.Debug.WriteLine("ForceSyncOnExit: Starting final upload...");
                 await UploadOnlyAsync();
+                System.Diagnostics.Debug.WriteLine("ForceSyncOnExit: Upload completed.");
             }
             catch (Exception ex)
             {
@@ -827,7 +838,8 @@ namespace DesktopCalendar.Services
                 SyncStatusChanged?.Invoke(this, "正在同步...");
                 var cloudData = await FetchCloudDataAsync();
 
-                // 3. 获取本地数据
+                // 3. 获取本地数据（保存副本用于安全检查）
+                var localTodosCount = DataService.Instance.Todos.Count;
                 var localData = new UserData
                 {
                     UserId = CurrentUser!.Id,
@@ -839,13 +851,27 @@ namespace DesktopCalendar.Services
                     UpdatedAt = DateTime.UtcNow
                 };
 
+                System.Diagnostics.Debug.WriteLine($"SmartSync: Local todos={localTodosCount}, Cloud todos={cloudData?.Todos?.Count ?? 0}");
+
                 // 4. 合并数据（本地优先 + 云端补充）
                 var result = MergeData(localData, cloudData);
 
-                // 5. 保存合并后的数据到本地
+                // 5. 安全检查：合并后的数据不应该比本地少太多（防止数据丢失）
+                if (localTodosCount > 0 && result.MergedData.Todos.Count < localTodosCount * 0.5)
+                {
+                    System.Diagnostics.Debug.WriteLine($"SmartSync: WARNING - Merged data ({result.MergedData.Todos.Count}) is much less than local ({localTodosCount}), skipping apply.");
+                    // 只上传，不覆盖本地
+                    await UploadDataAsync(localData);
+                    SyncStatusChanged?.Invoke(this, "同步完成（保护模式）");
+                    return (true, null, result);
+                }
+
+                // 6. 保存合并后的数据到本地
                 ApplyMergedData(result.MergedData);
 
-                // 6. 上传合并后的数据到云端
+                System.Diagnostics.Debug.WriteLine($"SmartSync: Applied merged data, todos count={result.MergedData.Todos.Count}");
+
+                // 7. 上传合并后的数据到云端
                 await UploadDataAsync(result.MergedData);
 
                 SyncStatusChanged?.Invoke(this, "同步完成");
@@ -853,6 +879,7 @@ namespace DesktopCalendar.Services
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine($"SmartSync error: {ex.Message}");
                 SyncStatusChanged?.Invoke(this, "同步失败");
                 return (false, ex.Message, null);
             }

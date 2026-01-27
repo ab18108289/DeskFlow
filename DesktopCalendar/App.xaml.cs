@@ -231,7 +231,7 @@ namespace DesktopCalendar
             }
         }
 
-        protected override async void OnExit(ExitEventArgs e)
+        protected override void OnExit(ExitEventArgs e)
         {
             // 取消注册热键
             if (_hwndSource != null)
@@ -241,11 +241,22 @@ namespace DesktopCalendar
                 _hwndSource.Dispose();
             }
             
-            // 保存本地数据
+            // 保存本地数据（同步保存，确保完成）
             DataService.Instance.Save(notifyCloud: false);
+            DataService.Instance.SaveGroups(notifyCloud: false);
+            DataService.Instance.SaveProjects(notifyCloud: false);
+            DataService.Instance.SaveReviews(notifyCloud: false);
+            DataService.Instance.SaveDiaries(notifyCloud: false);
             
-            // 退出前强制同步到云端
-            await CloudService.Instance.ForceSyncOnExitAsync();
+            // 退出前强制同步到云端（同步等待完成）
+            try
+            {
+                CloudService.Instance.ForceSyncOnExitAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Exit sync failed: {ex.Message}");
+            }
             
             _notifyIcon?.Dispose();
             
